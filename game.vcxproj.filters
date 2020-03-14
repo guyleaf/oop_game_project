@@ -11,8 +11,11 @@
     <Filter Include="GameLibrary">
       <UniqueIdentifier>{df7aa532-3fdf-46a0-b3fc-8f5922e8d9e4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyGame">
+    <Filter Include="GameObject">
       <UniqueIdentifier>{0c798913-b7d2-4e26-8241-0f83266cd626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameState">
+      <UniqueIdentifier>{4bf3949f-def3-44a0-b842-4eb1429e1cf0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -117,17 +120,23 @@
     <ClCompile Include="Source\StdAfx.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="Source\mygame.cpp">
-      <Filter>MyGame</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CEraser.cpp">
-      <Filter>MyGame</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Source\CBall.cpp">
-      <Filter>MyGame</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Source\CBouncingBall.cpp">
-      <Filter>MyGame</Filter>
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CGameStateInit.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CGameStateOver.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CGameStateRun.cpp">
+      <Filter>GameState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,17 +164,23 @@
     <ClInclude Include="Source\StdAfx.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="Source\mygame.h">
-      <Filter>MyGame</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CEraser.h">
-      <Filter>MyGame</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Source\CBall.h">
-      <Filter>MyGame</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Source\CBouncingBall.h">
-      <Filter>MyGame</Filter>
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CGameStateRun.h">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CGameStateInit.h">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CGameStateOver.h">
+      <Filter>GameState</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
