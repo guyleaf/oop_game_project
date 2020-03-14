@@ -123,7 +123,9 @@
 #include <string.h>
 #include "audio.h"
 #include "gamelib.h"
-#include "mygame.h"
+#include "CGameStateInit.h"
+#include "CGameStateRun.h"
+#include "CGameStateOver.h"
 
 namespace game_framework
 {
