@@ -120,15 +120,6 @@
     <ClCompile Include="Source\StdAfx.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CEraser.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CBall.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CBouncingBall.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CGameStateInit.cpp">
       <Filter>GameState</Filter>
     </ClCompile>
@@ -139,6 +130,9 @@
       <Filter>GameState</Filter>
     </ClCompile>
     <ClCompile Include="Source\CGameMap.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MainGirl.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
@@ -167,15 +161,6 @@
     <ClInclude Include="Source\StdAfx.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CEraser.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CBall.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CBouncingBall.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CGameStateRun.h">
       <Filter>GameState</Filter>
     </ClInclude>
@@ -186,6 +171,9 @@
       <Filter>GameState</Filter>
     </ClInclude>
     <ClInclude Include="Source\CGameMap.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MainGirl.h">
       <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
@@ -206,6 +194,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="RES\map3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\left_girl.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

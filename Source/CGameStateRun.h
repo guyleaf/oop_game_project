@@ -2,6 +2,7 @@
 #include "CBall.h"
 #include "CBouncingBall.h"
 #include "CGameMap.h"
+#include "MainGirl.h"
 
 namespace game_framework
 {
@@ -32,6 +33,7 @@ namespace game_framework
         CMovingBitmap	help;		// 說明圖
         CInteger		hits_left;	// 剩下的撞擊數
         CGameMap map;
+        MainGirl girl;
     };
 }
 
