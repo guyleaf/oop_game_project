@@ -199,5 +199,8 @@
     <Image Include="RES\left_girl.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\loding.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
