@@ -104,11 +104,11 @@ IDB_HELP                BITMAP                  "..\\res\\help.bmp"
 
 IDB_LOADING             BITMAP                  "..\\res\\loading.bmp"
 
-IDB_FIRSTFLOOR          BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\map1.bmp"
+IDB_FIRSTFLOOR          BITMAP                  "..\\RES\\map1.bmp"
 
-IDB_SECONDFLOOR         BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\map2.bmp"
+IDB_SECONDFLOOR         BITMAP                  "..\\RES\\map2.bmp"
 
-IDB_CEILING             BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\map3.bmp"
+IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
