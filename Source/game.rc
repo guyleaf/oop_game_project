@@ -110,6 +110,8 @@ IDB_SECONDFLOOR         BITMAP                  "..\\RES\\map2.bmp"
 
 IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
 
+IDB_INITSCREEN          BITMAP                  "..\\RES\\loding.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
