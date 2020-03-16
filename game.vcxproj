@@ -261,6 +261,7 @@
     <ClCompile Include="Source\CBall.cpp" />
     <ClCompile Include="Source\CBouncingBall.cpp" />
     <ClCompile Include="Source\CEraser.cpp" />
+    <ClCompile Include="Source\CGameMap.cpp" />
     <ClCompile Include="Source\CGameStateInit.cpp" />
     <ClCompile Include="Source\CGameStateOver.cpp" />
     <ClCompile Include="Source\CGameStateRun.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="Source\CBall.h" />
     <ClInclude Include="Source\CBouncingBall.h" />
     <ClInclude Include="Source\CEraser.h" />
+    <ClInclude Include="Source\CGameMap.h" />
     <ClInclude Include="Source\CGameStateInit.h" />
     <ClInclude Include="Source\CGameStateOver.h" />
     <ClInclude Include="Source\CGameStateRun.h" />
@@ -322,6 +324,13 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\classroom.bmp" />
+    <Image Include="RES\map1.bmp" />
+    <Image Include="RES\map1.png" />
+    <Image Include="RES\map2.bmp" />
+    <Image Include="RES\map3.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
