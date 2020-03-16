@@ -326,7 +326,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\bitmap4.bmp" />
     <Image Include="RES\classroom.bmp" />
     <Image Include="RES\loding.bmp" />
     <Image Include="RES\map1.bmp" />
