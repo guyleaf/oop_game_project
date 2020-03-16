@@ -364,6 +364,7 @@ namespace game_framework
         location.bottom = ny + bitmapSize.bmHeight;
         SurfaceID = CDDraw::RegisterBitmap(IDB_BITMAP, color);
         isBitmapLoaded = true;
+        //bmp->DeleteObject();
     }
 
     void CMovingBitmap::LoadBitmap(char* filename, COLORREF color)

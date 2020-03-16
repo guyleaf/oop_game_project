@@ -138,6 +138,9 @@
     <ClCompile Include="Source\CGameStateRun.cpp">
       <Filter>GameState</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CGameMap.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\audio.h">
@@ -182,10 +185,28 @@
     <ClInclude Include="Source\CGameStateOver.h">
       <Filter>GameState</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CGameMap.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\game.rc">
       <Filter>MFC</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\classroom.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\map1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\map1.png" />
+    <Image Include="RES\map2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\map3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
