@@ -11,7 +11,7 @@ using namespace std;
 
 namespace game_framework
 {
-    CGameMap::CGameMap() : sx(0), sy(0), WIDTH(2315)
+    CGameMap::CGameMap() : sx(300), sy(0)
     {
         /*ParseCsv("floor.csv", map[0]);
 
@@ -54,7 +54,7 @@ namespace game_framework
     {
         if (value > 0)
         {
-            if (MAP_W - sx > 1000)
+            if (MAP_W - (sx + SIZE_X) > 0)
                 sx += value;
         }
         else
@@ -84,7 +84,7 @@ namespace game_framework
         return false;
     }
 
-    void CGameMap::ParseCsv(std::string name, int array[][24])
+    /*void CGameMap::ParseCsv(std::string name, int array[][24])
     {
         fstream data;
         data.open(name);
@@ -110,5 +110,5 @@ namespace game_framework
         }
         else
             ASSERT(0);
-    }
+    }*/
 }

@@ -9,7 +9,7 @@
 
 namespace game_framework
 {
-    MainGirl::MainGirl() : x(100), y(140), moving(false)
+    MainGirl::MainGirl() : x(450), y(140), moving(false), velocity(5), width(150), height(194)
     {
     }
 
@@ -24,29 +24,49 @@ namespace game_framework
         {
             if (direction)
             {
-                if (MAP_W - x > 20)
-                    x += 10;
+                if (MAP_W - (x + width) > 10)
+                    x += velocity;
 
-                map->Addsx(10);
+                map->Addsx(velocity);
             }
             else
             {
                 if (x > 10)
-                    x -= 10;
+                    x -= velocity;
 
-                map->Addsx(-10);
+                map->Addsx(-velocity);
             }
         }
     }
 
+    void MainGirl::SetVelocity(CGameMap* map, CPoint point)
+    {
+        if (!moving)
+            return;
+
+        int distance;
+
+        if (direction) //移動方向
+            distance = point.x - (map->ScreenX(x) + width);
+        else
+            distance = map->ScreenX(x) - point.x;
+
+        if (distance > 300)
+            velocity = 12;
+        else if (distance > 150)
+            velocity = 8;
+        else
+            velocity = 5;
+    }
+
     void MainGirl::SetMoving(CGameMap* map, CPoint point)
     {
-        if (point.x - map->ScreenX(x) > 10)
+        if (point.x - (map->ScreenX(x) + width) > 0) //滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
         {
             moving = true;
             direction = true;
         }
-        else if (map->ScreenX(x) - point.x > 10)
+        else if (map->ScreenX(x) - point.x > 0)
         {
             moving = true;
             direction = false;

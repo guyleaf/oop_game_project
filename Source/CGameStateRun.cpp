@@ -6,8 +6,10 @@
 #include "gamelib.h"
 #include "CGameStateRun.h"
 
+
 namespace game_framework
 {
+
     /////////////////////////////////////////////////////////////////////////////
     // Constants
     /////////////////////////////////////////////////////////////////////////////
@@ -105,6 +107,7 @@ namespace game_framework
     {
         // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
         girl.SetMoving(&map, point);
+        girl.SetVelocity(&map, point);
     }
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
