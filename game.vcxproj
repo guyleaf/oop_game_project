@@ -326,7 +326,6 @@
     <Image Include="RES\left_girl.bmp" />
     <Image Include="RES\loding.bmp" />
     <Image Include="RES\map1.bmp" />
-    <Image Include="RES\map1.png" />
     <Image Include="RES\map2.bmp" />
     <Image Include="RES\map3.bmp" />
   </ItemGroup>

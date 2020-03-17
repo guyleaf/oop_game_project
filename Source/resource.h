@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ ï¿½ï¿½ï¿½Íªï¿½ Include ï¿½É®×¡C
-// ï¿½ï¿½ game.rc ï¿½Ï¥ï¿½
+// Microsoft Visual C++ ²£¥Íªº Include ÀÉ®×¡C
+// ¥Ñ game.rc ¨Ï¥Î
 //
 #define IDD_ABOUTBOX                    100
 #define IDP_SOCKETS_INIT_FAILED         104
@@ -39,8 +39,6 @@
 #define IDB_FIRSTFLOOR                  168
 #define IDB_SECONDFLOOR                 169
 #define IDB_CEILING                     170
-#define IDB_BITMAP4                     171
-#define IDB_GIRLLEFT                    171
 #define IDB_INITSCREEN                  172
 #define IDC_README                      1001
 #define ID_FILE_PAUSE                   32771
@@ -54,7 +52,6 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_RESOURCE_VALUE        173
 #define _APS_NEXT_COMMAND_VALUE         32776
 #define _APS_NEXT_CONTROL_VALUE         1003

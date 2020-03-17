@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// ï¿½ï¿½ï¿½ï¿½ (ï¿½cï¿½ï¿½Aï¿½xï¿½W) resources
+// ¤¤¤å (ÁcÅé¡A¥xÆW) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
@@ -110,7 +110,6 @@ IDB_SECONDFLOOR         BITMAP                  "..\\RES\\map2.bmp"
 
 IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
 
-IDB_GIRLLEFT            BITMAP                  "..\\RES\\left_girl.bmp"
 IDB_INITSCREEN          BITMAP                  "..\\RES\\loding.bmp"
 
 
@@ -121,12 +120,12 @@ IDB_INITSCREEN          BITMAP                  "..\\RES\\loding.bmp"
 
 IDC_GAMECURSOR          CURSOR                  "..\\res\\gamecurs.cur"
 
-#endif    // ï¿½ï¿½ï¿½ï¿½ (ï¿½cï¿½ï¿½Aï¿½xï¿½W) resources
+#endif    // ¤¤¤å (ÁcÅé¡A¥xÆW) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// ï¿½^ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½) resources
+// ­^¤å (¬ü°ê) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -424,7 +423,7 @@ BEGIN
     ID_BUTTON_UNITTEST      "Perform Unit Test"
 END
 
-#endif    // ï¿½^ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½) resources
+#endif    // ­^¤å (¬ü°ê) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

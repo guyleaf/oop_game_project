@@ -15,7 +15,9 @@ namespace game_framework
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
-        CMovingBitmap girl;
+        CAnimation girl_left, girl_right;
+        CMovingBitmap girl_left_stand, girl_right_stand;
+        //CMovingBitmap girl;
     };
 }
 

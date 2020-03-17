@@ -15,7 +15,22 @@ namespace game_framework
 
     void MainGirl::LoadBitMap()
     {
-        girl.LoadBitmap(IDB_GIRLLEFT, RGB(0, 0, 0));
+        girl_left_stand.LoadBitmap("RES/girl/left/stand.bmp", RGB(255, 255, 255));
+        girl_right_stand.LoadBitmap("RES/girl/right/stand.bmp", RGB(255, 255, 255));
+
+        for (int i = 1; i <= 16; i++)
+        {
+            char text[100] = {0};
+            strcpy(text, ("RES/girl/right/girl (" + to_string(i) + ").bmp").c_str());
+            girl_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 16; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/girl/left/girl (" + to_string(i) + ").bmp").c_str());
+            girl_left.AddBitmap(text, RGB(255, 255, 255));
+        }
     }
 
     void MainGirl::OnMove(CGameMap* map)
@@ -36,17 +51,22 @@ namespace game_framework
 
                 map->Addsx(-velocity);
             }
+
+            if (direction)
+                girl_right.OnMove();
+            else
+                girl_left.OnMove();
         }
     }
 
     void MainGirl::SetVelocity(CGameMap* map, CPoint point)
     {
-        if (!moving)
+        if (!moving) //沒有正在移動則退出
             return;
 
-        int distance;
+        int distance; //滑鼠的螢幕點座標到人物的距離
 
-        if (direction) //移動方向
+        if (direction) //false => 往左, true => 往右
             distance = point.x - (map->ScreenX(x) + width);
         else
             distance = map->ScreenX(x) - point.x;
@@ -77,7 +97,29 @@ namespace game_framework
 
     void MainGirl::OnShow(CGameMap* map)
     {
-        girl.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-        girl.ShowBitmap();
+        if (moving) //是否正在移動
+            if (direction) //false => 往左, true => 往右
+            {
+                girl_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                girl_right.OnShow();
+            }
+            else
+            {
+                girl_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                girl_left.OnShow();
+            }
+        else
+        {
+            if (direction) //false => 往左, true => 往右
+            {
+                girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                girl_right_stand.ShowBitmap();
+            }
+            else
+            {
+                girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                girl_left_stand.ShowBitmap();
+            }
+        }
     }
 }
