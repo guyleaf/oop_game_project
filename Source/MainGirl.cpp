@@ -9,7 +9,7 @@
 
 namespace game_framework
 {
-    MainGirl::MainGirl() : x(450), y(140), moving(false), velocity(5), width(150), height(194)
+    MainGirl::MainGirl() : x(450), y(200), moving(false), velocity(5)
     {
     }
 
@@ -39,7 +39,7 @@ namespace game_framework
         {
             if (direction)
             {
-                if (MAP_W - (x + width) > 10)
+                if (MAP_W - (x + girl_right_stand.Width()) > 10)
                     x += velocity;
 
                 map->Addsx(velocity);
@@ -67,21 +67,33 @@ namespace game_framework
         int distance; //滑鼠的螢幕點座標到人物的距離
 
         if (direction) //false => 往左, true => 往右
-            distance = point.x - (map->ScreenX(x) + width);
+            distance = point.x - (map->ScreenX(x) + girl_right_stand.Width());
         else
             distance = map->ScreenX(x) - point.x;
 
-        if (distance > 300)
+        if (distance > 300) //距離越遠速度越快
+        {
             velocity = 12;
+            girl_left.SetDelayCount(1);
+            girl_right.SetDelayCount(1);
+        }
         else if (distance > 150)
+        {
             velocity = 8;
+            girl_left.SetDelayCount(3);
+            girl_right.SetDelayCount(3);
+        }
         else
+        {
             velocity = 5;
+            girl_left.SetDelayCount(5);
+            girl_right.SetDelayCount(5);
+        }
     }
 
     void MainGirl::SetMoving(CGameMap* map, CPoint point)
     {
-        if (point.x - (map->ScreenX(x) + width) > 0) //滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
+        if (point.x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) //滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
         {
             moving = true;
             direction = true;

@@ -11,7 +11,6 @@ namespace game_framework
         void OnShow(CGameMap* map);
     private:
         int x, y;
-        const int height, width;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
