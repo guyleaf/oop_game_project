@@ -138,6 +138,9 @@
     <ClCompile Include="Source\Girl.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Man.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\audio.h">
@@ -180,6 +183,9 @@
       <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Source\Girl.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Man.h">
       <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>

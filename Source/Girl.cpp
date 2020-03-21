@@ -26,7 +26,7 @@ namespace game_framework
 
     void Girl::SetMoving(bool status)
     {
-        moving - status;
+        moving = status;
     }
 
     void Girl::OnMove()

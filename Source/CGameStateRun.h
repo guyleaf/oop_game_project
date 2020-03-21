@@ -3,6 +3,7 @@
 #include "CBouncingBall.h"
 #include "CGameMap.h"
 #include "MainGirl.h"
+#include "Man.h"
 
 namespace game_framework
 {
@@ -34,6 +35,7 @@ namespace game_framework
         CInteger		hits_left;	// ³Ñ¤Uªº¼²À»¼Æ
         CGameMap map;
         MainGirl girl;
+		Man man;
     };
 }
 

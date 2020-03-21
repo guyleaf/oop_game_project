@@ -25,8 +25,9 @@ namespace game_framework
     // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
+    CGameStateRun::CGameStateRun(CGame* g) : CGameState(g),man(250,140,250,350,true)
     {
+
     }
 
     CGameStateRun::~CGameStateRun()
@@ -52,6 +53,7 @@ namespace game_framework
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
         girl.OnMove(&map);
+		man.OnMove(&map);
     }
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -66,6 +68,7 @@ namespace game_framework
         //
         map.LoadBitMap();
         girl.LoadBitMap();
+		man.LoadBitMap();
         //
         // 完成部分Loading動作，提高進度
         //
@@ -129,5 +132,6 @@ namespace game_framework
         //
         map.OnShow(1);
         girl.OnShow(&map);
+		man.OnShow(&map);
     }
 }
