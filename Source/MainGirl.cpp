@@ -59,6 +59,12 @@ namespace game_framework
         }
     }
 
+    void MainGirl::OnMouseMove(CGameMap* map, CPoint point)
+    {
+        SetMoving(map, point);
+        SetVelocity(map, point);
+    }
+
     void MainGirl::SetVelocity(CGameMap* map, CPoint point)
     {
         if (!moving) //沒有正在移動則退出

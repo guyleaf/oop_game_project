@@ -5,6 +5,7 @@ namespace game_framework
     public:
         MainGirl();
         void LoadBitMap();
+        void OnMouseMove(CGameMap* map, CPoint point);
         void SetMoving(CGameMap* map, CPoint point);
         void SetVelocity(CGameMap* map, CPoint point);
         void OnMove(CGameMap* map);
