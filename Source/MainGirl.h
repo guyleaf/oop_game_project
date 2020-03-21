@@ -5,13 +5,13 @@ namespace game_framework
     public:
         MainGirl();
         void LoadBitMap();
+        void OnMouseMove(CGameMap* map, CPoint point);
         void SetMoving(CGameMap* map, CPoint point);
         void SetVelocity(CGameMap* map, CPoint point);
         void OnMove(CGameMap* map);
         void OnShow(CGameMap* map);
     private:
         int x, y;
-        const int height, width;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
