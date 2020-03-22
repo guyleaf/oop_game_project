@@ -35,7 +35,11 @@ namespace game_framework
         CInteger		hits_left;	// ³Ñ¤Uªº¼²À»¼Æ
         CGameMap map;
         MainGirl girl;
-		Man man;
+    	Man man;
+		Man2 man2;
+		Man3 man3;
+		Man4 man4;
+		Man5 man5;
     };
 }
 
