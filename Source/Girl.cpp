@@ -9,14 +9,10 @@
 
 namespace game_framework
 {
-    Girl::Girl(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(false), direction(direction), velocity(5)
+    Girl::Girl(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(5)
     {
         range[0] = start;
         range[1] = end;
-    }
-
-    void Girl::LoadBitmap()
-    {
     }
 
     void Girl::SetDirection(bool direction)
@@ -26,7 +22,7 @@ namespace game_framework
 
     void Girl::SetMoving(bool status)
     {
-        moving = status;
+        this->moving = status;
     }
 
     void Girl::OnMove()
@@ -51,7 +47,7 @@ namespace game_framework
             if (direction)
                 girl_right.OnMove();
             else
-                girl_right.OnMove();
+                girl_left.OnMove();
         }
     }
 
@@ -80,6 +76,32 @@ namespace game_framework
                 girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                 girl_left_stand.ShowBitmap();
             }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
+    NormalGirl::NormalGirl(int x, int y, int start, int end, bool direction, int type) : Girl(x, y, start, end, direction), type(type)
+    {
+    }
+
+    void NormalGirl::LoadBitMap()
+    {
+        girl_left_stand.LoadBitmap("RES/normalGirl/left/stand.bmp", RGB(255, 255, 255));
+        girl_right_stand.LoadBitmap("RES/normalGirl/right/stand.bmp", RGB(255, 255, 255));
+
+        for (int i = 1; i <= 5; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/normalGirl/right/normalGirl (" + to_string(i) + ").bmp").c_str());
+            girl_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/normalGirl/left/normalGirl (" + to_string(i) + ").bmp").c_str());
+            girl_left.AddBitmap(text, RGB(255, 255, 255));
         }
     }
 }

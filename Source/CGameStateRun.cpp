@@ -25,9 +25,16 @@ namespace game_framework
     // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateRun::CGameStateRun(CGame* g) : CGameState(g),man(250,140,250,350,true),man2(0,0,0,0,true),man3(0,0,0,0,true),man4(0,0,0,0,true),man5(0,0,0,0,true)
+    CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
     {
-		
+        normalGirl[0].push_back(NormalGirl(800, 100, 800, 1500, true, 1));
+        normalGirl[1].push_back(NormalGirl(1500, 290, 300, 1500, false, 1));
+        normalMan[0].push_back(NormalMan(120, 100, 120, 300, true, 1));
+        normalMan[0].push_back(NormalMan(500, 100, 500, 1000, true, 2));
+        normalMan[0].push_back(NormalMan(1700, 100, 1700, 2000, true, 1));
+        normalMan[1].push_back(NormalMan(1800, 290, 1000, 1800, false, 1));
+        normalMan[1].push_back(NormalMan(1100, 290, 500, 1100, false, 2));
+        normalMan[1].push_back(NormalMan(1000, 290, 200, 1000, false, 3));
     }
 
     CGameStateRun::~CGameStateRun()
@@ -52,13 +59,27 @@ namespace game_framework
         // 如果希望修改cursor的樣式，則將下面程式的commment取消即可
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
-        girl.OnMove(&map);
-		man.OnMove(&map);
-		man2.OnMove(&map);
-		man3.OnMove(&map);
-		man4.OnMove(&map);
-		man5.OnMove(&map);
+        mainGirl.OnMove(&map);
 
+        for (size_t i = 0; i < normalMan[0].size(); i++)
+        {
+            normalMan[0][i].OnMove();
+        }
+
+        for (size_t i = 0; i < normalMan[1].size(); i++)
+        {
+            normalMan[1][i].OnMove();
+        }
+
+        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        {
+            normalGirl[0][i].OnMove();
+        }
+
+        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        {
+            normalGirl[1][i].OnMove();
+        }
     }
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -72,13 +93,27 @@ namespace game_framework
         // 開始載入資料
         //
         map.LoadBitMap();
-        girl.LoadBitMap();
-		man.LoadBitMap();
-		man2.LoadBitMap();
-		man3.LoadBitMap();
-		man4.LoadBitMap();
-		man5.LoadBitMap();
+        mainGirl.LoadBitMap();
 
+        for (size_t i = 0; i < normalMan[0].size(); i++)
+        {
+            normalMan[0][i].LoadBitMap();
+        }
+
+        for (size_t i = 0; i < normalMan[1].size(); i++)
+        {
+            normalMan[1][i].LoadBitMap();
+        }
+
+        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        {
+            normalGirl[0][i].LoadBitMap();
+        }
+
+        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        {
+            normalGirl[1][i].LoadBitMap();
+        }
 
         //
         // 完成部分Loading動作，提高進度
@@ -120,7 +155,7 @@ namespace game_framework
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
-        girl.OnMouseMove(&map, point);
+        mainGirl.OnMouseMove(&map, point);
     }
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -141,13 +176,28 @@ namespace game_framework
         //
         //  貼上背景圖、撞擊數、球、擦子、彈跳的球
         //
-        map.OnShow(1);
-        girl.OnShow(&map);
-		man.OnShow(&map);
-		man2.OnShow(&map);
-		man3.OnShow(&map);
-		man4.OnShow(&map);
-		man5.OnShow(&map);
+        map.OnShow();
 
+        for (size_t i = 0; i < normalMan[0].size(); i++)
+        {
+            normalMan[0][i].OnShow(&map);
+        }
+
+        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        {
+            normalGirl[0][i].OnShow(&map);
+        }
+
+        mainGirl.OnShow(&map);
+
+        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        {
+            normalGirl[1][i].OnShow(&map);
+        }
+
+        for (size_t i = 0; i < normalMan[1].size(); i++)
+        {
+            normalMan[1][i].OnShow(&map);
+        }
     }
 }

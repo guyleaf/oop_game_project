@@ -9,7 +9,7 @@
 
 namespace game_framework
 {
-    MainGirl::MainGirl() : x(450), y(200), moving(false), velocity(5)
+    MainGirl::MainGirl() : x(450), y(220), moving(false), velocity(5)
     {
     }
 

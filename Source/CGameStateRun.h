@@ -4,6 +4,8 @@
 #include "CGameMap.h"
 #include "MainGirl.h"
 #include "Man.h"
+#include "Girl.h"
+#include <vector>
 
 namespace game_framework
 {
@@ -34,12 +36,9 @@ namespace game_framework
         CMovingBitmap	help;		// 說明圖
         CInteger		hits_left;	// 剩下的撞擊數
         CGameMap map;
-        MainGirl girl;
-    	Man man;
-		Man2 man2;
-		Man3 man3;
-		Man4 man4;
-		Man5 man5;
+        MainGirl mainGirl;
+        vector<NormalMan> normalMan[2];
+        vector<NormalGirl> normalGirl[2];
     };
 }
 
