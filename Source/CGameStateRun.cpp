@@ -27,13 +27,13 @@ namespace game_framework
     CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
     {
         normalGirl[0].push_back(NormalGirl(800, 100, 800, 1500, true, 1));
-        normalGirl[1].push_back(NormalGirl(1500, 290, 300, 1500, false, 1));
+        normalGirl[1].push_back(NormalGirl(1500, 400, 300, 1500, false, 1));
         normalMan[0].push_back(new NormalMan(120, 100, 120, 300, true, 1));
         normalMan[0].push_back(new NormalMan(500, 100, 500, 1000, true, 2));
         normalMan[0].push_back(new NormalMan(1700, 100, 1700, 2000, true, 1));
-        normalMan[1].push_back(new NormalMan(1800, 290, 1000, 1800, false, 1));
-        normalMan[1].push_back(new NormalMan(1100, 290, 500, 1100, false, 2));
-        normalMan[1].push_back(new NormalMan(1000, 290, 200, 1000, false, 3));
+        normalMan[1].push_back(new NormalMan(1800, 400, 1000, 1800, false, 1));
+        normalMan[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
+        normalMan[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
     }
 
     CGameStateRun::~CGameStateRun()
@@ -59,6 +59,7 @@ namespace game_framework
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
         mainGirl.OnMove(&map);
+        mainGirl.SetIsFocusing(false);
 
         for (size_t i = 0; i < normalMan[0].size(); i++)
         {
@@ -76,6 +77,8 @@ namespace game_framework
             {
                 normalMan[0][i]->SetIsFocused(true);
                 normalMan[0][i]->SetMoving(false);
+                mainGirl.SetIsFocusing(true);
+                mainGirl.SetFocusPerson(&map, normalMan[0][i]);
             }
             else
                 normalMan[0][i]->SetMoving(true);
@@ -87,6 +90,8 @@ namespace game_framework
             {
                 normalMan[1][i]->SetIsFocused(true);
                 normalMan[1][i]->SetMoving(false);
+                mainGirl.SetIsFocusing(true);
+                mainGirl.SetFocusPerson(&map, normalMan[1][i]);
             }
             else
                 normalMan[1][i]->SetMoving(true);

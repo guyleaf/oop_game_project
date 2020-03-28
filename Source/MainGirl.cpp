@@ -8,32 +8,55 @@
 
 namespace game_framework
 {
-    MainGirl::MainGirl() : x(450), y(220), moving(false), velocity(5)
+    MainGirl::MainGirl() : x(450), y(220), moving(false), velocity(5), is_focusing(false)
     {
     }
 
     void MainGirl::LoadBitMap()
     {
-        girl_left_stand.LoadBitmap("RES/girl/left/stand.bmp", RGB(255, 255, 255));
-        girl_right_stand.LoadBitmap("RES/girl/right/stand.bmp", RGB(255, 255, 255));
+        girl_left_stand.LoadBitmap("RES/girl/left/stand.bmp", RGB(0, 0, 0));
+        girl_right_stand.LoadBitmap("RES/girl/right/stand.bmp", RGB(0, 0, 0));
+        girl_left_focusing_behind.LoadBitmap("RES/girl/left/focusing_behind.bmp", RGB(230, 230, 196));
+        girl_left_focusing_front.LoadBitmap("RES/girl/left/focusing_front.bmp", RGB(0, 0, 0));
+        girl_right_focusing_behind.LoadBitmap("RES/girl/right/focusing_behind.bmp", RGB(230, 230, 196));
+        girl_right_focusing_front.LoadBitmap("RES/girl/right/focusing_front.bmp", RGB(0, 0, 0));
 
-        for (int i = 1; i <= 16; i++)
+        for (int i = 1; i <= 7; i++)
         {
             char text[100] = {0};
             strcpy(text, ("RES/girl/right/girl (" + to_string(i) + ").bmp").c_str());
-            girl_right.AddBitmap(text, RGB(255, 255, 255));
+            girl_right.AddBitmap(text, RGB(230, 230, 196));
         }
 
-        for (int i = 1; i <= 16; i++)
+        for (int i = 1; i <= 7; i++)
         {
             char text[100] = { 0 };
             strcpy(text, ("RES/girl/left/girl (" + to_string(i) + ").bmp").c_str());
-            girl_left.AddBitmap(text, RGB(255, 255, 255));
+            girl_left.AddBitmap(text, RGB(230, 230, 196));
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/girl/focus_point_on (" + to_string(i) + ").bmp").c_str());
+            focus_point_on.AddBitmap(text, RGB(230, 230, 196));
+        }
+
+        for (int i = 1; i <= 4; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/girl/focus_point_off (" + to_string(i) + ").bmp").c_str());
+            focus_point_off.AddBitmap(text, RGB(230, 230, 196));
         }
     }
 
     void MainGirl::OnMove(CGameMap* map)
     {
+        if (is_focusing)
+        {
+            focus_point_on.OnMove();
+        }
+
         if (moving) //檢查是否正在移動
         {
             if (direction)
@@ -60,8 +83,14 @@ namespace game_framework
 
     void MainGirl::OnMouseMove(CGameMap* map, CPoint point)
     {
-        SetMoving(map, point);
-        SetVelocity(map, point);
+        if (!is_focusing)
+        {
+            SetMoving(map, point);
+            SetVelocity(map, point);
+        }
+        else
+            moving = false;
+
         cursor_x = point.x;
         cursor_y = point.y;
     }
@@ -116,7 +145,37 @@ namespace game_framework
 
     void MainGirl::OnShow(CGameMap* map)
     {
-        if (moving) //是否正在移動
+        if (is_focusing)
+        {
+            if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
+            {
+                if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
+                {
+                    girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_right_focusing_front.ShowBitmap();
+                }
+                else
+                {
+                    girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_right_focusing_behind.ShowBitmap();
+                }
+            }
+            else
+            {
+                if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
+                {
+                    girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_left_focusing_front.ShowBitmap();
+                }
+                else
+                {
+                    girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_left_focusing_behind.ShowBitmap();
+                }
+            }
+        }
+        else if (moving) //是否正在移動
+        {
             if (direction) //false => 往左, true => 往右
             {
                 girl_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -127,6 +186,7 @@ namespace game_framework
                 girl_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                 girl_left.OnShow();
             }
+        }
         else
         {
             if (direction) //false => 往左, true => 往右
@@ -150,5 +210,21 @@ namespace game_framework
     int MainGirl::GetCursorY()
     {
         return cursor_y;
+    }
+
+    void MainGirl::SetIsFocusing(bool status)
+    {
+        is_focusing = status;
+    }
+
+    bool MainGirl::IsFocusing()
+    {
+        return is_focusing;
+    }
+
+    void MainGirl::SetFocusPerson(CGameMap* map, Man* man)
+    {
+        focus_point_on.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
+        focus_point_off.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
     }
 }

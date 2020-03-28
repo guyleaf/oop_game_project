@@ -9,6 +9,8 @@ namespace game_framework
         void SetDirection(bool direction);
         void OnMove();
         void OnShow(CGameMap* map);
+        int GetX();
+        int GetY();
         bool HitMainGirl(CGameMap* map, MainGirl* girl);
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);

@@ -94,6 +94,38 @@ namespace game_framework
         return (cursor_x >= map->ScreenX(x) && cursor_y >= map->ScreenY(y)
                 && cursor_x <= map->ScreenX(x2) && cursor_y <= map->ScreenY(y2));
     }
+
+
+    void Man::SetIsAlive(bool status)
+    {
+        is_alive = status;
+    }
+
+    bool Man::IsAlive()
+    {
+        return is_alive;
+    }
+
+    void Man::SetIsFocused(bool status)
+    {
+        is_focused = status;
+    }
+
+    bool Man::IsFocused()
+    {
+        return is_focused;
+    }
+
+    int Man::GetX()
+    {
+        return x;
+    }
+
+    int Man::GetY()
+    {
+        return y;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
@@ -125,23 +157,4 @@ namespace game_framework
         man_left.SetDelayCount(13);
     }
 
-    void Man::SetIsAlive(bool status)
-    {
-        is_alive = status;
-    }
-
-    bool Man::IsAlive()
-    {
-        return is_alive;
-    }
-
-    void Man::SetIsFocused(bool status)
-    {
-        is_focused = status;
-    }
-
-    bool Man::IsFocused()
-    {
-        return is_focused;
-    }
 }
