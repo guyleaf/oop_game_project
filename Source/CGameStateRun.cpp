@@ -225,5 +225,7 @@ namespace game_framework
         {
             normalMan[1][i]->OnShow(&map);
         }
+
+        mainGirl.ShowFocus();
     }
 }

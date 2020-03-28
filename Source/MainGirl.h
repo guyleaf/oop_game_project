@@ -10,6 +10,7 @@ namespace game_framework
         int GetCursorY();
         void OnMove(CGameMap* map);
         void OnShow(CGameMap* map);
+        void ShowFocus();
         void SetIsFocusing(bool status);
         void SetFocusPerson(CGameMap* map, Man* man);
         bool IsFocusing();
@@ -22,7 +23,8 @@ namespace game_framework
         bool direction; //false => ©¹¥ª, true => ©¹¥k
         int velocity;
         bool is_focusing;
-        CAnimation girl_left, girl_right;
+        CAnimation girl_walk_left, girl_walk_right;
+        CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
         CMovingBitmap girl_left_focusing_behind, girl_left_focusing_front;
         CMovingBitmap girl_right_focusing_behind, girl_right_focusing_front;

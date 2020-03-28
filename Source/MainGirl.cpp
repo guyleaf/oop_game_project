@@ -24,15 +24,29 @@ namespace game_framework
         for (int i = 1; i <= 7; i++)
         {
             char text[100] = {0};
-            strcpy(text, ("RES/girl/right/girl (" + to_string(i) + ").bmp").c_str());
-            girl_right.AddBitmap(text, RGB(230, 230, 196));
+            strcpy(text, ("RES/girl/right/girl_walk (" + to_string(i) + ").bmp").c_str());
+            girl_walk_right.AddBitmap(text, RGB(230, 230, 196));
         }
 
         for (int i = 1; i <= 7; i++)
         {
             char text[100] = { 0 };
-            strcpy(text, ("RES/girl/left/girl (" + to_string(i) + ").bmp").c_str());
-            girl_left.AddBitmap(text, RGB(230, 230, 196));
+            strcpy(text, ("RES/girl/left/girl_walk (" + to_string(i) + ").bmp").c_str());
+            girl_walk_left.AddBitmap(text, RGB(230, 230, 196));
+        }
+
+        for (int i = 1; i <= 7; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/girl/right/girl_run (" + to_string(i) + ").bmp").c_str());
+            girl_run_right.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        for (int i = 1; i <= 7; i++)
+        {
+            char text[100] = { 0 };
+            strcpy(text, ("RES/girl/left/girl_run (" + to_string(i) + ").bmp").c_str());
+            girl_run_left.AddBitmap(text, RGB(0, 0, 0));
         }
 
         for (int i = 1; i <= 3; i++)
@@ -48,13 +62,28 @@ namespace game_framework
             strcpy(text, ("RES/girl/focus_point_off (" + to_string(i) + ").bmp").c_str());
             focus_point_off.AddBitmap(text, RGB(230, 230, 196));
         }
+
+        focus_point_on.SetDelayCount(1);
+        focus_point_off.SetDelayCount(1);
+        girl_run_left.SetDelayCount(5);
+        girl_run_right.SetDelayCount(5);
     }
 
     void MainGirl::OnMove(CGameMap* map)
     {
         if (is_focusing)
         {
-            focus_point_on.OnMove();
+            focus_point_off.Reset();
+
+            if (!focus_point_on.IsFinalBitmap())
+                focus_point_on.OnMove();
+        }
+        else
+        {
+            focus_point_on.Reset();
+
+            if (!focus_point_off.IsFinalBitmap())
+                focus_point_off.OnMove();
         }
 
         if (moving) //檢查是否正在移動
@@ -75,9 +104,19 @@ namespace game_framework
             }
 
             if (direction)
-                girl_right.OnMove();
+            {
+                if (velocity != 12)
+                    girl_walk_right.OnMove();
+                else
+                    girl_run_right.OnMove();
+            }
             else
-                girl_left.OnMove();
+            {
+                if (velocity != 12)
+                    girl_walk_left.OnMove();
+                else
+                    girl_run_left.OnMove();
+            }
         }
     }
 
@@ -110,20 +149,18 @@ namespace game_framework
         if (distance > 300) //距離越遠速度越快
         {
             velocity = 12;
-            girl_left.SetDelayCount(1);
-            girl_right.SetDelayCount(1);
         }
         else if (distance > 150)
         {
             velocity = 8;
-            girl_left.SetDelayCount(3);
-            girl_right.SetDelayCount(3);
+            girl_walk_left.SetDelayCount(3);
+            girl_walk_right.SetDelayCount(3);
         }
         else
         {
             velocity = 5;
-            girl_left.SetDelayCount(5);
-            girl_right.SetDelayCount(5);
+            girl_walk_left.SetDelayCount(5);
+            girl_walk_right.SetDelayCount(5);
         }
     }
 
@@ -178,13 +215,29 @@ namespace game_framework
         {
             if (direction) //false => 往左, true => 往右
             {
-                girl_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                girl_right.OnShow();
+                if (velocity != 12)
+                {
+                    girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_walk_right.OnShow();
+                }
+                else
+                {
+                    girl_run_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_run_right.OnShow();
+                }
             }
             else
             {
-                girl_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                girl_left.OnShow();
+                if (velocity != 12)
+                {
+                    girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_walk_left.OnShow();
+                }
+                else
+                {
+                    girl_run_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_run_left.OnShow();
+                }
             }
         }
         else
@@ -226,5 +279,18 @@ namespace game_framework
     {
         focus_point_on.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
         focus_point_off.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
+    }
+
+    void MainGirl::ShowFocus()
+    {
+        if (is_focusing)
+        {
+            focus_point_on.OnShow();
+        }
+        else
+        {
+            if (!focus_point_off.IsFinalBitmap())
+                focus_point_off.OnShow();
+        }
     }
 }

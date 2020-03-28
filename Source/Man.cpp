@@ -92,7 +92,7 @@ namespace game_framework
         int x2 = x + man_left_stand.Width();
         int y2 = y + man_left_stand.Height();
         return (cursor_x >= map->ScreenX(x) && cursor_y >= map->ScreenY(y)
-                && cursor_x <= map->ScreenX(x2) && cursor_y <= map->ScreenY(y2));
+                && cursor_x <= map->ScreenX(x2) && cursor_y <= (map->ScreenY(y2) - man_left_stand.Height() / 2));
     }
 
 
