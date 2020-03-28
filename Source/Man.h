@@ -11,6 +11,8 @@ namespace game_framework
         void OnShow(CGameMap* map);
         int GetX();
         int GetY();
+        int GetWidth();
+        int GetHeight();
         bool HitMainGirl(CGameMap* map, MainGirl* girl);
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);

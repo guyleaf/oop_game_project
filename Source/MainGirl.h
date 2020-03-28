@@ -13,22 +13,26 @@ namespace game_framework
         void ShowFocus();
         void SetIsFocusing(bool status);
         void SetFocusPerson(CGameMap* map, Man* man);
+        void SetIsAttacking(bool status);
         bool IsFocusing();
     private:
         void SetMoving(CGameMap* map, CPoint point);
         void SetVelocity(CGameMap* map, CPoint point);
+        void DrawBeam(CGameMap* map);
         int x, y;
         int cursor_x, cursor_y;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
         bool is_focusing;
+        bool is_attacking;
         CAnimation girl_walk_left, girl_walk_right;
         CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
         CMovingBitmap girl_left_focusing_behind, girl_left_focusing_front;
         CMovingBitmap girl_right_focusing_behind, girl_right_focusing_front;
         CAnimation focus_point_on, focus_point_off;
+        CPoint beam_pos[4];
     };
 }
 

@@ -8,7 +8,7 @@
 
 namespace game_framework
 {
-    MainGirl::MainGirl() : x(450), y(220), moving(false), velocity(5), is_focusing(false)
+    MainGirl::MainGirl() : x(450), y(220), moving(false), velocity(5), is_focusing(false), is_attacking(false)
     {
     }
 
@@ -210,6 +210,9 @@ namespace game_framework
                     girl_left_focusing_behind.ShowBitmap();
                 }
             }
+
+            if (is_attacking)
+                DrawBeam(map);
         }
         else if (moving) //是否正在移動
         {
@@ -279,6 +282,8 @@ namespace game_framework
     {
         focus_point_on.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
         focus_point_off.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
+        beam_pos[0].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 - 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
+        beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
     }
 
     void MainGirl::ShowFocus()
@@ -292,5 +297,25 @@ namespace game_framework
             if (!focus_point_off.IsFinalBitmap())
                 focus_point_off.OnShow();
         }
+    }
+
+    void MainGirl::SetIsAttacking(bool status)
+    {
+        is_attacking = status;
+    }
+
+    void MainGirl::DrawBeam(CGameMap* map)
+    {
+        CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+        CPen pen(PS_SOLID, 1, RGB(255, 0, 255));
+        CPen* pOldPen = pDC->SelectObject(&pen);
+        CBrush brush(RGB(255, 51, 255));
+        CBrush* pOldBrush = pDC->SelectObject(&brush);
+        beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 8);
+        beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 10, map->ScreenY(y) + girl_left_stand.Height() / 8);
+        pDC->Polygon(beam_pos, 4);
+        pDC->SelectObject(pOldPen);
+        pDC->SelectObject(pOldBrush);
+        CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
     }
 }

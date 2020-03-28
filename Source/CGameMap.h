@@ -1,4 +1,4 @@
-#define MAP_W 2315
+#define MAP_W 2894
 #include <string>
 namespace game_framework
 {

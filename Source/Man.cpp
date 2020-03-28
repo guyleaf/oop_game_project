@@ -126,6 +126,16 @@ namespace game_framework
         return y;
     }
 
+    int Man::GetWidth()
+    {
+        return man_left_stand.Width();
+    }
+
+    int Man::GetHeight()
+    {
+        return man_left_stand.Height();
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)

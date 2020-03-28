@@ -38,6 +38,15 @@ namespace game_framework
 
     CGameStateRun::~CGameStateRun()
     {
+        for (size_t i = 0; i < normalMan[0].size(); i++)
+        {
+            delete normalMan[0][i];
+        }
+
+        for (size_t i = 0; i < normalMan[1].size(); i++)
+        {
+            delete normalMan[1][i];
+        }
     }
 
     void CGameStateRun::OnBeginState()
@@ -172,10 +181,14 @@ namespace game_framework
 
     void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
+        if (mainGirl.IsFocusing())
+            mainGirl.SetIsAttacking(true);
     }
 
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
+        if (mainGirl.IsFocusing())
+            mainGirl.SetIsAttacking(false);
     }
 
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
