@@ -4,8 +4,7 @@
 #include <ddraw.h>
 #include "audio.h"
 #include "gamelib.h"
-#include "CGameMap.h"
-#include "MainGirl.h"
+#include "GameObject.h"
 
 namespace game_framework
 {
@@ -63,6 +62,8 @@ namespace game_framework
     {
         SetMoving(map, point);
         SetVelocity(map, point);
+        cursor_x = point.x;
+        cursor_y = point.y;
     }
 
     void MainGirl::SetVelocity(CGameMap* map, CPoint point)
@@ -139,5 +140,15 @@ namespace game_framework
                 girl_left_stand.ShowBitmap();
             }
         }
+    }
+
+    int MainGirl::GetCursorX()
+    {
+        return cursor_x;
+    }
+
+    int MainGirl::GetCursorY()
+    {
+        return cursor_y;
     }
 }

@@ -9,6 +9,11 @@ namespace game_framework
         void SetDirection(bool direction);
         void OnMove();
         void OnShow(CGameMap* map);
+        bool HitMainGirl(CGameMap* map, MainGirl* girl);
+        void SetIsAlive(bool status);
+        void SetIsFocused(bool status);
+        bool IsAlive();
+        bool IsFocused();
     protected:
         int x, y;
         bool moving; //是否正在移動
@@ -16,6 +21,8 @@ namespace game_framework
         int velocity;
         int score;
         int range[2];
+        bool is_alive;
+        bool is_focused;
         CAnimation man_left, man_right;
         CMovingBitmap man_left_stand, man_right_stand;
     };

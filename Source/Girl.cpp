@@ -4,8 +4,7 @@
 #include <ddraw.h>
 #include "audio.h"
 #include "gamelib.h"
-#include "CGameMap.h"
-#include "Girl.h"
+#include "GameObject.h"
 
 namespace game_framework
 {

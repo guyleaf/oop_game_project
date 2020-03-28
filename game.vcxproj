@@ -309,6 +309,7 @@
     <ClInclude Include="Source\CGameStateRun.h" />
     <ClInclude Include="Source\game.h" />
     <ClInclude Include="Source\gameDoc.h" />
+    <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\gameView.h" />
     <ClInclude Include="Source\Girl.h" />
     <ClInclude Include="Source\MainFrm.h" />

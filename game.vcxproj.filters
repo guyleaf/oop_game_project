@@ -188,6 +188,9 @@
     <ClInclude Include="Source\Man.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\game.rc">

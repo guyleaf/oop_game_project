@@ -1,10 +1,4 @@
-#include "CEraser.h"
-#include "CBall.h"
-#include "CBouncingBall.h"
-#include "CGameMap.h"
-#include "MainGirl.h"
-#include "Man.h"
-#include "Girl.h"
+#include "GameObject.h"
 #include <vector>
 
 namespace game_framework
@@ -37,7 +31,7 @@ namespace game_framework
         CInteger		hits_left;	// ³Ñ¤Uªº¼²À»¼Æ
         CGameMap map;
         MainGirl mainGirl;
-        vector<NormalMan> normalMan[2];
+        vector<Man*> normalMan[2];
         vector<NormalGirl> normalGirl[2];
     };
 }

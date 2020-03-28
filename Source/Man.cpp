@@ -4,8 +4,7 @@
 #include <ddraw.h>
 #include "audio.h"
 #include "gamelib.h"
-#include "CGameMap.h"
-#include "Man.h"
+#include "GameObject.h"
 
 namespace game_framework
 {
@@ -13,6 +12,8 @@ namespace game_framework
     {
         range[0] = start;
         range[1] = end;
+        is_alive = true;
+        is_focused = false;
     }
 
     void Man::OnMove()
@@ -84,7 +85,15 @@ namespace game_framework
         moving = status;
     }
 
-
+    bool Man::HitMainGirl(CGameMap* map, MainGirl* girl)
+    {
+        int cursor_x = girl->GetCursorX();
+        int cursor_y = girl->GetCursorY();
+        int x2 = x + man_left_stand.Width();
+        int y2 = y + man_left_stand.Height();
+        return (cursor_x >= map->ScreenX(x) && cursor_y >= map->ScreenY(y)
+                && cursor_x <= map->ScreenX(x2) && cursor_y <= map->ScreenY(y2));
+    }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
@@ -114,5 +123,25 @@ namespace game_framework
         }
 
         man_left.SetDelayCount(13);
+    }
+
+    void Man::SetIsAlive(bool status)
+    {
+        is_alive = status;
+    }
+
+    bool Man::IsAlive()
+    {
+        return is_alive;
+    }
+
+    void Man::SetIsFocused(bool status)
+    {
+        is_focused = status;
+    }
+
+    bool Man::IsFocused()
+    {
+        return is_focused;
     }
 }

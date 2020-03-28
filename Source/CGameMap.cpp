@@ -4,7 +4,7 @@
 #include <ddraw.h>
 #include "audio.h"
 #include "gamelib.h"
-#include "CGameMap.h"
+#include "GameObject.h"
 #include <fstream>
 #include <iostream>
 using namespace std;

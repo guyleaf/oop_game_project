@@ -6,7 +6,6 @@
 #include "gamelib.h"
 #include "CGameStateRun.h"
 
-
 namespace game_framework
 {
 
@@ -29,12 +28,12 @@ namespace game_framework
     {
         normalGirl[0].push_back(NormalGirl(800, 100, 800, 1500, true, 1));
         normalGirl[1].push_back(NormalGirl(1500, 290, 300, 1500, false, 1));
-        normalMan[0].push_back(NormalMan(120, 100, 120, 300, true, 1));
-        normalMan[0].push_back(NormalMan(500, 100, 500, 1000, true, 2));
-        normalMan[0].push_back(NormalMan(1700, 100, 1700, 2000, true, 1));
-        normalMan[1].push_back(NormalMan(1800, 290, 1000, 1800, false, 1));
-        normalMan[1].push_back(NormalMan(1100, 290, 500, 1100, false, 2));
-        normalMan[1].push_back(NormalMan(1000, 290, 200, 1000, false, 3));
+        normalMan[0].push_back(new NormalMan(120, 100, 120, 300, true, 1));
+        normalMan[0].push_back(new NormalMan(500, 100, 500, 1000, true, 2));
+        normalMan[0].push_back(new NormalMan(1700, 100, 1700, 2000, true, 1));
+        normalMan[1].push_back(new NormalMan(1800, 290, 1000, 1800, false, 1));
+        normalMan[1].push_back(new NormalMan(1100, 290, 500, 1100, false, 2));
+        normalMan[1].push_back(new NormalMan(1000, 290, 200, 1000, false, 3));
     }
 
     CGameStateRun::~CGameStateRun()
@@ -63,12 +62,34 @@ namespace game_framework
 
         for (size_t i = 0; i < normalMan[0].size(); i++)
         {
-            normalMan[0][i].OnMove();
+            normalMan[0][i]->OnMove();
         }
 
         for (size_t i = 0; i < normalMan[1].size(); i++)
         {
-            normalMan[1][i].OnMove();
+            normalMan[1][i]->OnMove();
+        }
+
+        for (size_t i = 0; i < normalMan[0].size(); i++)
+        {
+            if (normalMan[0][i]->IsAlive() && normalMan[0][i]->HitMainGirl(&map, &mainGirl))
+            {
+                normalMan[0][i]->SetIsFocused(true);
+                normalMan[0][i]->SetMoving(false);
+            }
+            else
+                normalMan[0][i]->SetMoving(true);
+        }
+
+        for (size_t i = 0; i < normalMan[1].size(); i++)
+        {
+            if (normalMan[1][i]->IsAlive() && normalMan[1][i]->HitMainGirl(&map, &mainGirl))
+            {
+                normalMan[1][i]->SetIsFocused(true);
+                normalMan[1][i]->SetMoving(false);
+            }
+            else
+                normalMan[1][i]->SetMoving(true);
         }
 
         for (size_t i = 0; i < normalGirl[0].size(); i++)
@@ -97,12 +118,12 @@ namespace game_framework
 
         for (size_t i = 0; i < normalMan[0].size(); i++)
         {
-            normalMan[0][i].LoadBitMap();
+            normalMan[0][i]->LoadBitMap();
         }
 
         for (size_t i = 0; i < normalMan[1].size(); i++)
         {
-            normalMan[1][i].LoadBitMap();
+            normalMan[1][i]->LoadBitMap();
         }
 
         for (size_t i = 0; i < normalGirl[0].size(); i++)
@@ -180,7 +201,7 @@ namespace game_framework
 
         for (size_t i = 0; i < normalMan[0].size(); i++)
         {
-            normalMan[0][i].OnShow(&map);
+            normalMan[0][i]->OnShow(&map);
         }
 
         for (size_t i = 0; i < normalGirl[0].size(); i++)
@@ -197,7 +218,7 @@ namespace game_framework
 
         for (size_t i = 0; i < normalMan[1].size(); i++)
         {
-            normalMan[1][i].OnShow(&map);
+            normalMan[1][i]->OnShow(&map);
         }
     }
 }
