@@ -71,19 +71,25 @@ namespace game_framework
 
     void MainGirl::OnMove(CGameMap* map)
     {
-        if (is_focusing)
-        {
-            focus_point_off.Reset();
+        if (!is_attacking)
+            if (is_focusing)
+            {
+                focus_point_off.Reset();
 
-            if (!focus_point_on.IsFinalBitmap())
-                focus_point_on.OnMove();
-        }
+                if (!focus_point_on.IsFinalBitmap())
+                    focus_point_on.OnMove();
+            }
+            else
+            {
+                focus_point_on.Reset();
+
+                if (!focus_point_off.IsFinalBitmap())
+                    focus_point_off.OnMove();
+            }
         else
         {
             focus_point_on.Reset();
-
-            if (!focus_point_off.IsFinalBitmap())
-                focus_point_off.OnMove();
+            focus_point_off.Reset();
         }
 
         if (moving) //檢查是否正在移動
@@ -186,6 +192,9 @@ namespace game_framework
         {
             if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
             {
+                beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 40, map->ScreenY(y) + girl_left_stand.Height() / 5);
+                beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2, map->ScreenY(y) + girl_left_stand.Height() / 5);
+
                 if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
                 {
                     girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -205,6 +214,9 @@ namespace game_framework
             }
             else
             {
+                beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
+                beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 20, map->ScreenY(y) + girl_left_stand.Height() / 5);
+
                 if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
                 {
                     girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -289,8 +301,8 @@ namespace game_framework
 
     void MainGirl::SetFocusPerson(CGameMap* map, Man* man)
     {
-        focus_point_on.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
-        focus_point_off.SetTopLeft(map->ScreenX(man->GetX()), map->ScreenY(man->GetY()));
+        focus_point_on.SetTopLeft(map->ScreenX(man->GetX()) + 10, map->ScreenY(man->GetY()) + 3);
+        focus_point_off.SetTopLeft(map->ScreenX(man->GetX()) + 10, map->ScreenY(man->GetY()) + 3);
         beam_pos[0].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 - 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
         beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
     }
@@ -330,8 +342,6 @@ namespace game_framework
         CPen* pOldPen = pDC->SelectObject(&pen);
         CBrush brush(RGB(255, 51, 255));
         CBrush* pOldBrush = pDC->SelectObject(&brush);
-        beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
-        beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
         pDC->Polygon(beam_pos, 4);
         pDC->SelectObject(pOldPen);
         pDC->SelectObject(pOldBrush);

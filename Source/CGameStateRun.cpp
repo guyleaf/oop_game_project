@@ -193,8 +193,7 @@ namespace game_framework
 
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
-        if (mainGirl.IsFocusing())
-            mainGirl.SetIsAttacking(false);
+        mainGirl.SetIsAttacking(false);
     }
 
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -245,6 +244,7 @@ namespace game_framework
             normalMan[1][i]->OnShow(&map);
         }
 
-        mainGirl.ShowFocus();
+        if (!mainGirl.IsAttacking())
+            mainGirl.ShowFocus();
     }
 }

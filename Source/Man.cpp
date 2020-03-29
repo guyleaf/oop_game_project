@@ -57,9 +57,9 @@ namespace game_framework
     {
         if (is_attacked)
         {
-            flash.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+            flash.SetTopLeft(map->ScreenX(x) - 18, map->ScreenY(y));
             flash.OnShow();
-            weakening.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+            weakening.SetTopLeft(map->ScreenX(x), map->ScreenY(y) + 5);
             weakening.OnShow();
         }
         else if (moving) //是否正在移動
