@@ -18,17 +18,23 @@ namespace game_framework
         void SetIsFocused(bool status);
         bool IsAlive();
         bool IsFocused();
+        void LoseHP(int value);
+        void RecoverHP();
     protected:
         int x, y;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
         int score;
+        int HP;
+        int recoverPerSec;
         int range[2];
         bool is_alive;
         bool is_focused;
+        bool is_attacked;
         CAnimation man_left, man_right;
         CMovingBitmap man_left_stand, man_right_stand;
+        CAnimation flash, weakening;
     };
 
     class NormalMan : public Man

@@ -190,9 +190,15 @@ namespace game_framework
                 {
                     girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     girl_right_focusing_front.ShowBitmap();
+
+                    if (is_attacking)
+                        DrawBeam(map);
                 }
                 else
                 {
+                    if (is_attacking)
+                        DrawBeam(map);
+
                     girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     girl_right_focusing_behind.ShowBitmap();
                 }
@@ -203,16 +209,19 @@ namespace game_framework
                 {
                     girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     girl_left_focusing_front.ShowBitmap();
+
+                    if (is_attacking)
+                        DrawBeam(map);
                 }
                 else
                 {
+                    if (is_attacking)
+                        DrawBeam(map);
+
                     girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     girl_left_focusing_behind.ShowBitmap();
                 }
             }
-
-            if (is_attacking)
-                DrawBeam(map);
         }
         else if (moving) //是否正在移動
         {
@@ -304,6 +313,16 @@ namespace game_framework
         is_attacking = status;
     }
 
+    bool MainGirl::IsAttacking()
+    {
+        return is_attacking;
+    }
+
+    void MainGirl::Attack(Man* man)
+    {
+        man->LoseHP(5);
+    }
+
     void MainGirl::DrawBeam(CGameMap* map)
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
@@ -311,8 +330,8 @@ namespace game_framework
         CPen* pOldPen = pDC->SelectObject(&pen);
         CBrush brush(RGB(255, 51, 255));
         CBrush* pOldBrush = pDC->SelectObject(&brush);
-        beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 8);
-        beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 10, map->ScreenY(y) + girl_left_stand.Height() / 8);
+        beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
+        beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
         pDC->Polygon(beam_pos, 4);
         pDC->SelectObject(pOldPen);
         pDC->SelectObject(pOldBrush);

@@ -18,7 +18,12 @@ namespace game_framework
 
     void Man::OnMove()
     {
-        if (moving)
+        if (is_attacked)
+        {
+            flash.OnMove();
+            weakening.OnMove();
+        }
+        else if (moving)
         {
             if (direction)
             {
@@ -44,11 +49,21 @@ namespace game_framework
                 man_left.OnMove();
             }
         }
+
+        is_attacked = false;
     }
 
     void Man::OnShow(CGameMap* map)
     {
-        if (moving) //是否正在移動
+        if (is_attacked)
+        {
+            flash.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+            flash.OnShow();
+            weakening.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+            weakening.OnShow();
+        }
+        else if (moving) //是否正在移動
+        {
             if (direction) //false => 往左, true => 往右
             {
                 man_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -59,6 +74,7 @@ namespace game_framework
                 man_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                 man_left.OnShow();
             }
+        }
         else
         {
             if (direction) //false => 往左, true => 往右
@@ -136,23 +152,34 @@ namespace game_framework
         return man_left_stand.Height();
     }
 
+    void Man::LoseHP(int value)
+    {
+        HP -= value;
+        is_attacked = true;
+    }
+
+    void Man::RecoverHP()
+    {
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
     {
+        HP = 1000;
     }
 
     void NormalMan::LoadBitMap()
     {
         char text[100] = { 0 };
-        strcpy(text, ("RES/normalMan" + to_string(type) + "/left/stand.bmp").c_str());
+        strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/left/stand.bmp").c_str());
         man_left_stand.LoadBitmap(text, RGB(255, 255, 255));
-        strcpy(text, ("RES/normalMan" + to_string(type) + "/right/stand.bmp").c_str());
+        strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/right/stand.bmp").c_str());
         man_right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         for (int i = 1; i <= 5; i++)
         {
-            strcpy(text, ("RES/normalMan" + to_string(type) + "/right/normalMan (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/right/normalMan (" + to_string(i) + ").bmp").c_str());
             man_right.AddBitmap(text, RGB(255, 255, 255));
         }
 
@@ -160,11 +187,23 @@ namespace game_framework
 
         for (int i = 1; i <= 5; i++)
         {
-            strcpy(text, ("RES/normalMan" + to_string(type) + "/left/normalMan (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/left/normalMan (" + to_string(i) + ").bmp").c_str());
             man_left.AddBitmap(text, RGB(255, 255, 255));
         }
 
         man_left.SetDelayCount(13);
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Man/flash (" + to_string(i) + ").bmp").c_str());
+            flash.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 2; i++)
+        {
+            strcpy(text, ("RES/Man/weakening (" + to_string(i) + ").bmp").c_str());
+            weakening.AddBitmap(text, RGB(255, 255, 255));
+        }
     }
 
 }

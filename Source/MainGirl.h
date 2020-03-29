@@ -15,6 +15,8 @@ namespace game_framework
         void SetFocusPerson(CGameMap* map, Man* man);
         void SetIsAttacking(bool status);
         bool IsFocusing();
+        bool IsAttacking();
+        void Attack(Man* man);
     private:
         void SetMoving(CGameMap* map, CPoint point);
         void SetVelocity(CGameMap* map, CPoint point);

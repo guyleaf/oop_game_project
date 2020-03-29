@@ -88,6 +88,9 @@ namespace game_framework
                 normalMan[0][i]->SetMoving(false);
                 mainGirl.SetIsFocusing(true);
                 mainGirl.SetFocusPerson(&map, normalMan[0][i]);
+
+                if (mainGirl.IsAttacking())
+                    mainGirl.Attack(normalMan[0][i]);
             }
             else
                 normalMan[0][i]->SetMoving(true);
@@ -101,6 +104,9 @@ namespace game_framework
                 normalMan[1][i]->SetMoving(false);
                 mainGirl.SetIsFocusing(true);
                 mainGirl.SetFocusPerson(&map, normalMan[1][i]);
+
+                if (mainGirl.IsAttacking())
+                    mainGirl.Attack(normalMan[1][i]);
             }
             else
                 normalMan[1][i]->SetMoving(true);
