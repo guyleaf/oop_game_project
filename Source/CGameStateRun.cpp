@@ -6,8 +6,10 @@
 #include "gamelib.h"
 #include "CGameStateRun.h"
 
+
 namespace game_framework
 {
+
     /////////////////////////////////////////////////////////////////////////////
     // Constants
     /////////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,7 @@ namespace game_framework
         // 如果希望修改cursor的樣式，則將下面程式的commment取消即可
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
+        girl.OnMove(&map);
     }
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -62,6 +65,7 @@ namespace game_framework
         // 開始載入資料
         //
         map.LoadBitMap();
+        girl.LoadBitMap();
         //
         // 完成部分Loading動作，提高進度
         //
@@ -102,6 +106,7 @@ namespace game_framework
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
+        girl.OnMouseMove(&map, point);
     }
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -123,5 +128,6 @@ namespace game_framework
         //  貼上背景圖、撞擊數、球、擦子、彈跳的球
         //
         map.OnShow(1);
+        girl.OnShow(&map);
     }
 }

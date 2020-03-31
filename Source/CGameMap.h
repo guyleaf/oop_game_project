@@ -1,3 +1,4 @@
+#define MAP_W 2315
 #include <string>
 namespace game_framework
 {
@@ -9,8 +10,11 @@ namespace game_framework
         void OnShow(int level);
         void Addsx(int val);
         void Addsy(int val);
+        int ScreenX(int val);
+        int ScreenY(int val);
+        bool IsEmpty(int x, int y);
     private:
-        void ParseCsv(std::string name, int array[][24]);
+        //void ParseCsv(std::string name, int array[][24]);
         CMovingBitmap firstFloor, secondFloor, ceiling;
         int sx, sy;
     };
