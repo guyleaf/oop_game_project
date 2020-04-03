@@ -1,0 +1,3 @@
+﻿擲回例外狀況: 讀取存取違規。
+**std::vector<game_framework::Man *,std::allocator<game_framework::Man *> >::operator[]**(...) 傳回 0x127。
+

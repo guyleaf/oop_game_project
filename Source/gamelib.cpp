@@ -240,7 +240,6 @@ namespace game_framework
         GAME_ASSERT(bmp.size() != 0, "CAnimation: Bitmaps must be loaded first.");
         return bmp_iter->Width();
     }
-
     /////////////////////////////////////////////////////////////////////////////
     // CInteger: 硂class矗ㄑ陪ボ俱计瓜
     // 1. 璶来眔或㊣(笲ノ)ㄤ贺琌ぃ来祘Α琌ぐ或種

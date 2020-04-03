@@ -6,7 +6,6 @@
 #include "gamelib.h"
 #include "CGameStateRun.h"
 
-
 namespace game_framework
 {
 
@@ -27,10 +26,27 @@ namespace game_framework
 
     CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
     {
+        normalGirl[0].push_back(NormalGirl(800, 100, 800, 1500, true, 1));
+        normalGirl[1].push_back(NormalGirl(1500, 400, 300, 1500, false, 1));
+        man[0].push_back(new NormalMan(120, 100, 120, 300, true, 1));
+        man[0].push_back(new NormalMan(500, 100, 500, 1000, true, 2));
+        man[0].push_back(new NormalMan(1700, 100, 1700, 2000, true, 1));
+        man[1].push_back(new NormalMan(1800, 400, 1000, 1800, false, 1));
+        man[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
+        man[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
     }
 
     CGameStateRun::~CGameStateRun()
     {
+        for (size_t i = 0; i < man[0].size(); i++)
+        {
+            delete man[0][i];
+        }
+
+        for (size_t i = 0; i < man[1].size(); i++)
+        {
+            delete man[1][i];
+        }
     }
 
     void CGameStateRun::OnBeginState()
@@ -51,7 +67,74 @@ namespace game_framework
         // 如果希望修改cursor的樣式，則將下面程式的commment取消即可
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
-        girl.OnMove(&map);
+        mainGirl.OnMove(&map);
+        //mainGirl.SetIsFocusing(false);
+
+        for (size_t i = 0; i < man[0].size(); i++)
+        {
+            man[0][i]->OnMove();
+        }
+
+        for (size_t i = 0; i < man[1].size(); i++)
+        {
+            man[1][i]->OnMove();
+        }
+
+        for (size_t i = 0; i < man[0].size(); i++)
+        {
+            if (mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
+            {
+                if (man[0][i]->HitMainGirl(&map, &mainGirl))
+                {
+                    if (mainGirl.IsAttacking())
+                        man[0][i]->LoseHP(20);
+                }
+                else
+                    mainGirl.SetIsFocusing(false);
+            }
+            else if (man[0][i]->IsAlive() && !mainGirl.IsFocusing() && man[0][i]->HitMainGirl(&map, &mainGirl))
+            {
+                man[0][i]->SetIsFocused(true);
+                man[0][i]->SetMoving(false);
+                mainGirl.SetIsFocusing(true);
+                mainGirl.SetFocusPerson(&map, man[0][i]);
+            }
+            else
+                man[0][i]->SetMoving(true);
+        }
+
+        for (size_t i = 0; i < man[1].size(); i++)
+        {
+            if (mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
+            {
+                if (man[1][i]->HitMainGirl(&map, &mainGirl))
+                {
+                    if (mainGirl.IsAttacking())
+                        man[1][i]->LoseHP(20);
+                }
+                else
+                    mainGirl.SetIsFocusing(false);
+            }
+            else if (man[1][i]->IsAlive() && !mainGirl.IsFocusing() && man[1][i]->HitMainGirl(&map, &mainGirl))
+            {
+                man[1][i]->SetIsFocused(true);
+                man[1][i]->SetMoving(false);
+                mainGirl.SetIsFocusing(true);
+                mainGirl.SetFocusPerson(&map, man[1][i]);
+            }
+            else
+                man[1][i]->SetMoving(true);
+        }
+
+        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        {
+            normalGirl[0][i].OnMove();
+        }
+
+        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        {
+            normalGirl[1][i].OnMove();
+        }
     }
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -65,7 +148,28 @@ namespace game_framework
         // 開始載入資料
         //
         map.LoadBitMap();
-        girl.LoadBitMap();
+        mainGirl.LoadBitMap();
+
+        for (size_t i = 0; i < man[0].size(); i++)
+        {
+            man[0][i]->LoadBitMap();
+        }
+
+        for (size_t i = 0; i < man[1].size(); i++)
+        {
+            man[1][i]->LoadBitMap();
+        }
+
+        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        {
+            normalGirl[0][i].LoadBitMap();
+        }
+
+        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        {
+            normalGirl[1][i].LoadBitMap();
+        }
+
         //
         // 完成部分Loading動作，提高進度
         //
@@ -97,16 +201,19 @@ namespace game_framework
 
     void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
+        if (mainGirl.IsFocusing())
+            mainGirl.SetIsAttacking(true);
     }
 
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
+        mainGirl.SetIsAttacking(false);
     }
 
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
-        girl.OnMouseMove(&map, point);
+        mainGirl.OnMouseMove(&map, point);
     }
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -127,7 +234,31 @@ namespace game_framework
         //
         //  貼上背景圖、撞擊數、球、擦子、彈跳的球
         //
-        map.OnShow(1);
-        girl.OnShow(&map);
+        map.OnShow();
+
+        for (size_t i = 0; i < man[0].size(); i++)
+        {
+            man[0][i]->OnShow(&map);
+        }
+
+        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        {
+            normalGirl[0][i].OnShow(&map);
+        }
+
+        mainGirl.OnShow(&map);
+
+        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        {
+            normalGirl[1][i].OnShow(&map);
+        }
+
+        for (size_t i = 0; i < man[1].size(); i++)
+        {
+            man[1][i]->OnShow(&map);
+        }
+
+        if (!mainGirl.IsAttacking())
+            mainGirl.ShowFocus();
     }
 }
