@@ -28,24 +28,24 @@ namespace game_framework
     {
         normalGirl[0].push_back(NormalGirl(800, 100, 800, 1500, true, 1));
         normalGirl[1].push_back(NormalGirl(1500, 400, 300, 1500, false, 1));
-        normalMan[0].push_back(new NormalMan(120, 100, 120, 300, true, 1));
-        normalMan[0].push_back(new NormalMan(500, 100, 500, 1000, true, 2));
-        normalMan[0].push_back(new NormalMan(1700, 100, 1700, 2000, true, 1));
-        normalMan[1].push_back(new NormalMan(1800, 400, 1000, 1800, false, 1));
-        normalMan[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
-        normalMan[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
+        man[0].push_back(new NormalMan(120, 100, 120, 300, true, 1));
+        man[0].push_back(new NormalMan(500, 100, 500, 1000, true, 2));
+        man[0].push_back(new NormalMan(1700, 100, 1700, 2000, true, 1));
+        man[1].push_back(new NormalMan(1800, 400, 1000, 1800, false, 1));
+        man[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
+        man[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
     }
 
     CGameStateRun::~CGameStateRun()
     {
-        for (size_t i = 0; i < normalMan[0].size(); i++)
+        for (size_t i = 0; i < man[0].size(); i++)
         {
-            delete normalMan[0][i];
+            delete man[0][i];
         }
 
-        for (size_t i = 0; i < normalMan[1].size(); i++)
+        for (size_t i = 0; i < man[1].size(); i++)
         {
-            delete normalMan[1][i];
+            delete man[1][i];
         }
     }
 
@@ -68,48 +68,62 @@ namespace game_framework
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
         mainGirl.OnMove(&map);
-        mainGirl.SetIsFocusing(false);
+        //mainGirl.SetIsFocusing(false);
 
-        for (size_t i = 0; i < normalMan[0].size(); i++)
+        for (size_t i = 0; i < man[0].size(); i++)
         {
-            normalMan[0][i]->OnMove();
+            man[0][i]->OnMove();
         }
 
-        for (size_t i = 0; i < normalMan[1].size(); i++)
+        for (size_t i = 0; i < man[1].size(); i++)
         {
-            normalMan[1][i]->OnMove();
+            man[1][i]->OnMove();
         }
 
-        for (size_t i = 0; i < normalMan[0].size(); i++)
+        for (size_t i = 0; i < man[0].size(); i++)
         {
-            if (normalMan[0][i]->IsAlive() && normalMan[0][i]->HitMainGirl(&map, &mainGirl))
+            if (mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
             {
-                normalMan[0][i]->SetIsFocused(true);
-                normalMan[0][i]->SetMoving(false);
+                if (man[0][i]->HitMainGirl(&map, &mainGirl))
+                {
+                    if (mainGirl.IsAttacking())
+                        man[0][i]->LoseHP(20);
+                }
+                else
+                    mainGirl.SetIsFocusing(false);
+            }
+            else if (man[0][i]->IsAlive() && !mainGirl.IsFocusing() && man[0][i]->HitMainGirl(&map, &mainGirl))
+            {
+                man[0][i]->SetIsFocused(true);
+                man[0][i]->SetMoving(false);
                 mainGirl.SetIsFocusing(true);
-                mainGirl.SetFocusPerson(&map, normalMan[0][i]);
-
-                if (mainGirl.IsAttacking())
-                    mainGirl.Attack(normalMan[0][i]);
+                mainGirl.SetFocusPerson(&map, man[0][i]);
             }
             else
-                normalMan[0][i]->SetMoving(true);
+                man[0][i]->SetMoving(true);
         }
 
-        for (size_t i = 0; i < normalMan[1].size(); i++)
+        for (size_t i = 0; i < man[1].size(); i++)
         {
-            if (normalMan[1][i]->IsAlive() && normalMan[1][i]->HitMainGirl(&map, &mainGirl))
+            if (mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
             {
-                normalMan[1][i]->SetIsFocused(true);
-                normalMan[1][i]->SetMoving(false);
+                if (man[1][i]->HitMainGirl(&map, &mainGirl))
+                {
+                    if (mainGirl.IsAttacking())
+                        man[1][i]->LoseHP(20);
+                }
+                else
+                    mainGirl.SetIsFocusing(false);
+            }
+            else if (man[1][i]->IsAlive() && !mainGirl.IsFocusing() && man[1][i]->HitMainGirl(&map, &mainGirl))
+            {
+                man[1][i]->SetIsFocused(true);
+                man[1][i]->SetMoving(false);
                 mainGirl.SetIsFocusing(true);
-                mainGirl.SetFocusPerson(&map, normalMan[1][i]);
-
-                if (mainGirl.IsAttacking())
-                    mainGirl.Attack(normalMan[1][i]);
+                mainGirl.SetFocusPerson(&map, man[1][i]);
             }
             else
-                normalMan[1][i]->SetMoving(true);
+                man[1][i]->SetMoving(true);
         }
 
         for (size_t i = 0; i < normalGirl[0].size(); i++)
@@ -136,14 +150,14 @@ namespace game_framework
         map.LoadBitMap();
         mainGirl.LoadBitMap();
 
-        for (size_t i = 0; i < normalMan[0].size(); i++)
+        for (size_t i = 0; i < man[0].size(); i++)
         {
-            normalMan[0][i]->LoadBitMap();
+            man[0][i]->LoadBitMap();
         }
 
-        for (size_t i = 0; i < normalMan[1].size(); i++)
+        for (size_t i = 0; i < man[1].size(); i++)
         {
-            normalMan[1][i]->LoadBitMap();
+            man[1][i]->LoadBitMap();
         }
 
         for (size_t i = 0; i < normalGirl[0].size(); i++)
@@ -222,9 +236,9 @@ namespace game_framework
         //
         map.OnShow();
 
-        for (size_t i = 0; i < normalMan[0].size(); i++)
+        for (size_t i = 0; i < man[0].size(); i++)
         {
-            normalMan[0][i]->OnShow(&map);
+            man[0][i]->OnShow(&map);
         }
 
         for (size_t i = 0; i < normalGirl[0].size(); i++)
@@ -239,9 +253,9 @@ namespace game_framework
             normalGirl[1][i].OnShow(&map);
         }
 
-        for (size_t i = 0; i < normalMan[1].size(); i++)
+        for (size_t i = 0; i < man[1].size(); i++)
         {
-            normalMan[1][i]->OnShow(&map);
+            man[1][i]->OnShow(&map);
         }
 
         if (!mainGirl.IsAttacking())

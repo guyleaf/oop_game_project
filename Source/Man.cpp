@@ -14,6 +14,8 @@ namespace game_framework
         range[1] = end;
         is_alive = true;
         is_focused = false;
+        is_attacked = false;
+        id = rand();
     }
 
     void Man::OnMove()
@@ -22,6 +24,16 @@ namespace game_framework
         {
             flash.OnMove();
             weakening.OnMove();
+
+            if (HP >= 900 && blood.GetCurrentBitmapNumber() != 1)
+                blood.OnMove();
+            else if (0 < HP && HP < 900 && blood.GetCurrentBitmapNumber() != ((1000 - HP) / 100 + 1)) //鎖定顯示最終圖片
+                blood.OnMove();
+            else if (HP == 0 && !blood.IsFinalBitmap())
+                blood.OnMove();
+
+            is_attacked = false;
+            return;
         }
         else if (moving)
         {
@@ -49,8 +61,6 @@ namespace game_framework
                 man_left.OnMove();
             }
         }
-
-        is_attacked = false;
     }
 
     void Man::OnShow(CGameMap* map)
@@ -61,6 +71,8 @@ namespace game_framework
             flash.OnShow();
             weakening.SetTopLeft(map->ScreenX(x), map->ScreenY(y) + 5);
             weakening.OnShow();
+            blood.SetTopLeft(map->ScreenX(x), map->ScreenY(y) - blood.Height());
+            blood.OnShow();
         }
         else if (moving) //是否正在移動
         {
@@ -154,14 +166,18 @@ namespace game_framework
 
     void Man::LoseHP(int value)
     {
-        HP -= value;
+        if (HP > 0)
+            HP -= value;
+        else
+            HP = 0;
+
         is_attacked = true;
     }
 
-    void Man::RecoverHP()
+    int Man::GetId()
     {
+        return id;
     }
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
@@ -204,6 +220,14 @@ namespace game_framework
             strcpy(text, ("RES/Man/weakening (" + to_string(i) + ").bmp").c_str());
             weakening.AddBitmap(text, RGB(255, 255, 255));
         }
+
+        for (int i = 1; i <= 14; i++)
+        {
+            strcpy(text, ("RES/Man/blood (" + to_string(i) + ").bmp").c_str());
+            blood.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        blood.SetDelayCount(1);
     }
 
 }

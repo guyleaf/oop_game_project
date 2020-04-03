@@ -291,6 +291,9 @@ namespace game_framework
 
     void MainGirl::SetIsFocusing(bool status)
     {
+        if (status == false)
+            focus_id = 0;
+
         is_focusing = status;
     }
 
@@ -299,12 +302,18 @@ namespace game_framework
         return is_focusing;
     }
 
+    bool MainGirl::IsFocusPerson(Man* man)
+    {
+        return focus_id == man->GetId();
+    }
+
     void MainGirl::SetFocusPerson(CGameMap* map, Man* man)
     {
         focus_point_on.SetTopLeft(map->ScreenX(man->GetX()) + 10, map->ScreenY(man->GetY()) + 3);
         focus_point_off.SetTopLeft(map->ScreenX(man->GetX()) + 10, map->ScreenY(man->GetY()) + 3);
         beam_pos[0].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 - 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
         beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
+        focus_id = man->GetId();
     }
 
     void MainGirl::ShowFocus()
@@ -328,11 +337,6 @@ namespace game_framework
     bool MainGirl::IsAttacking()
     {
         return is_attacking;
-    }
-
-    void MainGirl::Attack(Man* man)
-    {
-        man->LoseHP(5);
     }
 
     void MainGirl::DrawBeam(CGameMap* map)

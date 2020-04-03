@@ -15,8 +15,8 @@ namespace game_framework
         void SetFocusPerson(CGameMap* map, Man* man);
         void SetIsAttacking(bool status);
         bool IsFocusing();
+        bool IsFocusPerson(Man* man);
         bool IsAttacking();
-        void Attack(Man* man);
     private:
         void SetMoving(CGameMap* map, CPoint point);
         void SetVelocity(CGameMap* map, CPoint point);
@@ -28,6 +28,7 @@ namespace game_framework
         int velocity;
         bool is_focusing;
         bool is_attacking;
+        int focus_id;
         CAnimation girl_walk_left, girl_walk_right;
         CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;

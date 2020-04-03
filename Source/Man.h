@@ -13,14 +13,15 @@ namespace game_framework
         int GetY();
         int GetWidth();
         int GetHeight();
+        int GetId();
         bool HitMainGirl(CGameMap* map, MainGirl* girl);
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);
         bool IsAlive();
         bool IsFocused();
         void LoseHP(int value);
-        void RecoverHP();
     protected:
+        int id;
         int x, y;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
@@ -35,6 +36,7 @@ namespace game_framework
         CAnimation man_left, man_right;
         CMovingBitmap man_left_stand, man_right_stand;
         CAnimation flash, weakening;
+        CAnimation blood;
     };
 
     class NormalMan : public Man

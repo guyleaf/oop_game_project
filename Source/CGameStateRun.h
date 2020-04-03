@@ -31,7 +31,7 @@ namespace game_framework
         CInteger		hits_left;	// ³Ñ¤Uªº¼²À»¼Æ
         CGameMap map;
         MainGirl mainGirl;
-        vector<Man*> normalMan[2];
+        vector<Man*> man[2];
         vector<NormalGirl> normalGirl[2];
     };
 }
