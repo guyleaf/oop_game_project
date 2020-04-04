@@ -23,7 +23,7 @@ namespace game_framework
     {
         char text[100] = { 0 };
 
-        for (int i = 1; i < 15; i++)
+        for (int i = 1; i <= 15; i++)
         {
             if (size == 0)
             {

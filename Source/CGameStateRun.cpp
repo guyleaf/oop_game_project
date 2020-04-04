@@ -88,7 +88,7 @@ namespace game_framework
                     man[0][i]->SetIsAlive(false);
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
-                    hearts.push_back(Heart(0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
+                    hearts.push_back(new Heart(0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
                     mainGirl.AddSlave(man[0][i]);
                     man[0].erase(man[0].begin() + i);
                     break;
@@ -122,7 +122,7 @@ namespace game_framework
                     man[1][i]->SetIsAlive(false);
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
-                    hearts.push_back(Heart(0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY(), 500));
+                    hearts.push_back(new Heart(0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY(), 500));
                     mainGirl.AddSlave(man[1][i]);
                     man[1].erase(man[1].begin() + i);
                     break;
@@ -159,14 +159,15 @@ namespace game_framework
 
         for (size_t i = 0; i < hearts.size(); i++)
         {
-            if (hearts[i].HitMainGirl(&mainGirl))
+            if (hearts[i]->HitMainGirl(&mainGirl))
             {
                 //do something like increasing score
+                delete hearts[i];
                 hearts.erase(hearts.begin() + i);
                 break;
             }
             else
-                hearts[i].OnMove();
+                hearts[i]->OnMove();
         }
 
         mainGirl.OnMove(&map);
@@ -284,7 +285,7 @@ namespace game_framework
         mainGirl.OnShow(&map);
 
         for (size_t i = 0; i < hearts.size(); i++)
-            hearts[i].OnShow(&map);
+            hearts[i]->OnShow(&map);
 
         for (size_t i = 0; i < normalGirl[1].size(); i++)
         {
