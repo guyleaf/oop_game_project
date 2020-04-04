@@ -164,6 +164,8 @@ namespace game_framework
                 hearts.erase(hearts.begin() + i);
                 break;
             }
+            else
+                hearts[i].OnMove();
         }
 
         mainGirl.OnMove(&map);

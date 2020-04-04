@@ -13,18 +13,37 @@ namespace game_framework
         LoadBitmap();
     }
 
+    void Heart::OnMove()
+    {
+        if (!heart.IsFinalBitmap())
+            heart.OnMove();
+    }
+
     void Heart::LoadBitmap()
     {
-        if (size == 0)
-            heart.LoadBitmap("RES/heart_small.bmp", RGB(255, 255, 255));
-        else
-            heart.LoadBitmap("RES/heart_big.bmp", RGB(255, 255, 255));
+        char text[100] = { 0 };
+
+        for (int i = 1; i < 15; i++)
+        {
+            if (size == 0)
+            {
+                strcpy(text, ("RES/Heart/heart_small (" + to_string(i) + ").bmp").c_str());
+                heart.AddBitmap(text, RGB(0, 0, 0));
+            }
+            else
+            {
+                strcpy(text, ("RES/Heart/heart_big (" + to_string(i) + ").bmp").c_str());
+                heart.AddBitmap(text, RGB(0, 0, 0));
+            }
+        }
+
+        heart.SetDelayCount(1);
     }
 
     void Heart::OnShow(CGameMap* map)
     {
         heart.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-        heart.ShowBitmap();
+        heart.OnShow();
     }
 
     bool Heart::HitMainGirl(MainGirl* girl)
