@@ -88,6 +88,7 @@ namespace game_framework
                     hearts.push_back(Heart(0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
                     mainGirl.AddSlave(man[0][i]);
                     man[0].erase(man[0].begin() + i);
+                    CAudio::Instance()->Stop(AUDIO_LASER);
                     break;
                 }
 
@@ -122,6 +123,7 @@ namespace game_framework
                     hearts.push_back(Heart(0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY(), 500));
                     mainGirl.AddSlave(man[1][i]);
                     man[1].erase(man[1].begin() + i);
+                    CAudio::Instance()->Stop(AUDIO_LASER);
                     break;
                 }
 
