@@ -64,9 +64,8 @@ namespace game_framework
         // 如果希望修改cursor的樣式，則將下面程式的commment取消即可
         //
         // SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
-        mainGirl.OnMove(&map);
-        //mainGirl.SetIsFocusing(false);
 
+        //mainGirl.SetIsFocusing(false);
         for (size_t i = 0; i < man[0].size(); i++)
         {
             man[0][i]->OnMove();
@@ -79,8 +78,19 @@ namespace game_framework
 
         for (size_t i = 0; i < man[0].size(); i++)
         {
-            if (mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
+            if (man[0][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
             {
+                if (man[0][i]->GetHP() == 0)
+                {
+                    man[0][i]->SetIsAlive(false);
+                    mainGirl.SetIsFocusing(false);
+                    mainGirl.SetIsAttacking(false);
+                    hearts.push_back(Heart(0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
+                    mainGirl.AddSlave(man[0][i]);
+                    man[0].erase(man[0].begin() + i);
+                    break;
+                }
+
                 if (man[0][i]->HitMainGirl(&map, &mainGirl))
                 {
                     if (mainGirl.IsAttacking())
@@ -102,8 +112,19 @@ namespace game_framework
 
         for (size_t i = 0; i < man[1].size(); i++)
         {
-            if (mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
+            if (man[1][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
             {
+                if (man[1][i]->GetHP() == 0)
+                {
+                    man[1][i]->SetIsAlive(false);
+                    mainGirl.SetIsFocusing(false);
+                    mainGirl.SetIsAttacking(false);
+                    hearts.push_back(Heart(0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY(), 500));
+                    mainGirl.AddSlave(man[1][i]);
+                    man[1].erase(man[1].begin() + i);
+                    break;
+                }
+
                 if (man[1][i]->HitMainGirl(&map, &mainGirl))
                 {
                     if (mainGirl.IsAttacking())
@@ -132,6 +153,18 @@ namespace game_framework
         {
             normalGirl[1][i].OnMove();
         }
+
+        for (size_t i = 0; i < hearts.size(); i++)
+        {
+            if (hearts[i].HitMainGirl(&mainGirl))
+            {
+                //do something like increasing score
+                hearts.erase(hearts.begin() + i);
+                break;
+            }
+        }
+
+        mainGirl.OnMove(&map);
     }
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -247,6 +280,9 @@ namespace game_framework
         }
 
         mainGirl.OnShow(&map);
+
+        for (size_t i = 0; i < hearts.size(); i++)
+            hearts[i].OnShow(&map);
 
         for (size_t i = 0; i < normalGirl[1].size(); i++)
         {
