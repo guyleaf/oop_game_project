@@ -1,3 +1,4 @@
+#include <vector>
 namespace game_framework
 {
     class MainGirl
@@ -8,6 +9,10 @@ namespace game_framework
         void OnMouseMove(CGameMap* map, CPoint point);
         int GetCursorX();
         int GetCursorY();
+        int GetPositionX();
+        int GetPositionY();
+        int Height();
+        int Width();
         void OnMove(CGameMap* map);
         void OnShow(CGameMap* map);
         void ShowFocus();
@@ -17,6 +22,7 @@ namespace game_framework
         bool IsFocusing();
         bool IsFocusPerson(Man* man);
         bool IsAttacking();
+        void AddSlave(Man* man);
     private:
         void SetMoving(CGameMap* map, CPoint point);
         void SetVelocity(CGameMap* map, CPoint point);
@@ -29,6 +35,8 @@ namespace game_framework
         bool is_focusing;
         bool is_attacking;
         int focus_id;
+        int heartPoints;
+
         CAnimation girl_walk_left, girl_walk_right;
         CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
@@ -36,6 +44,7 @@ namespace game_framework
         CMovingBitmap girl_right_focusing_behind, girl_right_focusing_front;
         CAnimation focus_point_on, focus_point_off;
         CPoint beam_pos[4];
+        vector<Man*> slaves;
     };
 }
 
