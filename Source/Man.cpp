@@ -37,9 +37,9 @@ namespace game_framework
 
                 if (HP >= 900 && blood.GetCurrentBitmapNumber() != 1)
                     blood.OnMove();
-                else if (0 < HP && HP < 900 && blood.GetCurrentBitmapNumber() != ((1000 - HP) / 100 + 1)) //鎖定顯示最終圖片
+                else if (50 < HP && HP < 900 && blood.GetCurrentBitmapNumber() != ((1000 - HP) / 100 + 1)) //鎖定顯示最終圖片
                     blood.OnMove();
-                else if (HP == 0 && !blood.IsFinalBitmap())
+                else if (HP < 50 && !blood.IsFinalBitmap())
                     blood.OnMove();
 
                 is_attacked = false;
