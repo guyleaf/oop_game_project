@@ -128,21 +128,21 @@ namespace game_framework
         int sx;
 
         if (direction)
-            sx = x - 8;
+            sx = x - 30;
         else
-            sx = x + girl_left_stand.Width() + 8;
+            sx = x + girl_left_stand.Width();
 
         for (size_t i = 0; i < slaves.size(); i++)
         {
             if (direction)
             {
-                sx -= girl_left_stand.Width() + 8;
+                sx -= (girl_left_stand.Width() + 8);
                 slaves[i]->Follow(sx, y, direction);
             }
             else
             {
                 slaves[i]->Follow(sx, y, direction);
-                sx += girl_left_stand.Width() + 8;
+                sx += (girl_left_stand.Width() + 8);
             }
 
             slaves[i]->SetVelocity(velocity);

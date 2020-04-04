@@ -33,7 +33,7 @@ namespace game_framework
         MainGirl mainGirl;
         vector<Man*> man[2];
         vector<NormalGirl> normalGirl[2];
-        vector<Heart> hearts;
+        vector<Heart*> hearts;
     };
 }
 

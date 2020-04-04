@@ -24,6 +24,7 @@ namespace game_framework
         is_attacked = false;
         id = rand();
         fdirection = false;
+        is_positioned = false;
     }
 
     void Man::OnMove()
@@ -95,18 +96,32 @@ namespace game_framework
         }
         else
         {
-            if (fx - x >= 8)
+            velocity = 15;
+
+            //«Ý­×¥¿ after demo
+            if (is_positioned && direction != fdirection)
             {
-                direction = true;
+                if (fdirection)
+                    x = fx + 80;
+                else
+                    x = fx - 80;
+
+                direction = fdirection;
+                is_positioned = false;
+            }
+            else if (!is_positioned && fx - x >= 8)
+            {
+                direction = fdirection;
                 x += velocity;
             }
-            else if (x - fx >= 8)
+            else if (!is_positioned && x - fx >= 8)
             {
-                direction = false;
+                direction = fdirection;
                 x -= velocity;
             }
             else
             {
+                is_positioned = true;
                 direction = fdirection;
                 x = fx;
             }

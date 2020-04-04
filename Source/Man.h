@@ -30,6 +30,7 @@ namespace game_framework
         int x, y;
         int fx, fy;
         bool fdirection;
+        bool is_positioned;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
