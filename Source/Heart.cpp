@@ -8,7 +8,7 @@
 
 namespace game_framework
 {
-    Heart::Heart(int size, int x, int y, int HP) : size(size), x(x), y(y), HP(HP)
+    Heart::Heart(int pos, int size, int x, int y, int HP) : size(size), x(x), y(y), HP(HP), pos(pos)
     {
         LoadBitmap();
     }
@@ -23,17 +23,20 @@ namespace game_framework
     {
         char text[100] = { 0 };
 
-        for (int i = 1; i <= 15; i++)
+        if (pos == 0)
         {
-            if (size == 0)
+            for (int i = 1; i <= 15; i++)
             {
-                strcpy(text, ("RES/Heart/heart_small (" + to_string(i) + ").bmp").c_str());
-                heart.AddBitmap(text, RGB(0, 0, 0));
+                strcpy(text, ("RES/Heart/heart_small_top (" + to_string(i) + ").bmp").c_str());
+                heart.AddBitmap(text, RGB(255, 255, 255));
             }
-            else
+        }
+        else
+        {
+            for (int i = 1; i <= 9; i++)
             {
-                strcpy(text, ("RES/Heart/heart_big (" + to_string(i) + ").bmp").c_str());
-                heart.AddBitmap(text, RGB(0, 0, 0));
+                strcpy(text, ("RES/Heart/heart_small_bottom (" + to_string(i) + ").bmp").c_str());
+                heart.AddBitmap(text, RGB(255, 255, 255));
             }
         }
 
