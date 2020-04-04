@@ -6,6 +6,7 @@ namespace game_framework
         Man(int x, int y, int start, int end, bool direction);
         virtual void LoadBitMap() = 0;
         void SetMoving(bool status);
+        void SetVelocity(int speed);
         void SetDirection(bool direction);
         void OnMove();
         void OnShow(CGameMap* map);
@@ -14,27 +15,33 @@ namespace game_framework
         int GetWidth();
         int GetHeight();
         int GetId();
+        int GetHP();
         bool HitMainGirl(CGameMap* map, MainGirl* girl);
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);
         bool IsAlive();
         bool IsFocused();
         void LoseHP(int value);
+
+        //only affect when status is following
+        void Follow(int x, int y, bool direction);
     protected:
         int id;
         int x, y;
+        int fx, fy;
+        bool fdirection;
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
-        int score;
         int HP;
-        int recoverPerSec;
         int range[2];
-        bool is_alive;
+        int status;
         bool is_focused;
         bool is_attacked;
         CAnimation man_left, man_right;
         CMovingBitmap man_left_stand, man_right_stand;
+        CAnimation man_dead_left, man_dead_right;
+        CAnimation man_following_left, man_following_right;
         CAnimation flash, weakening;
         CAnimation blood;
     };

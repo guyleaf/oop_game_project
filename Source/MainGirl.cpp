@@ -8,7 +8,7 @@
 
 namespace game_framework
 {
-    MainGirl::MainGirl() : x(450), y(220), moving(false), velocity(5), is_focusing(false), is_attacking(false)
+    MainGirl::MainGirl() : x(450), y(MIDDLE), moving(false), velocity(5), is_focusing(false), is_attacking(false)
     {
     }
 
@@ -92,7 +92,7 @@ namespace game_framework
             focus_point_off.Reset();
         }
 
-        if (moving) //檢查是否正在移動
+        if (!is_focusing && moving) //檢查是否正在移動
         {
             if (direction)
             {
@@ -123,6 +123,30 @@ namespace game_framework
                 else
                     girl_run_left.OnMove();
             }
+        }
+
+        int sx;
+
+        if (direction)
+            sx = x - 8;
+        else
+            sx = x + girl_left_stand.Width() + 8;
+
+        for (size_t i = 0; i < slaves.size(); i++)
+        {
+            if (direction)
+            {
+                sx -= girl_left_stand.Width() + 8;
+                slaves[i]->Follow(sx, y, direction);
+            }
+            else
+            {
+                slaves[i]->Follow(sx, y, direction);
+                sx += girl_left_stand.Width() + 8;
+            }
+
+            slaves[i]->SetVelocity(velocity);
+            slaves[i]->OnMove();
         }
     }
 
@@ -277,6 +301,11 @@ namespace game_framework
                 girl_left_stand.ShowBitmap();
             }
         }
+
+        for (size_t i = 0; i < slaves.size(); i++)
+        {
+            slaves[i]->OnShow(map);
+        }
     }
 
     int MainGirl::GetCursorX()
@@ -291,9 +320,6 @@ namespace game_framework
 
     void MainGirl::SetIsFocusing(bool status)
     {
-        if (status == false)
-            focus_id = 0;
-
         is_focusing = status;
     }
 
@@ -324,7 +350,8 @@ namespace game_framework
         }
         else
         {
-            if (!focus_point_off.IsFinalBitmap())
+            //避免電死男生時，準星出現的情況
+            if (!focus_point_off.IsFinalBitmap() && (slaves.size() == 0 || (*(slaves.end() - 1))->GetId() != focus_id))
                 focus_point_off.OnShow();
         }
     }
@@ -339,6 +366,11 @@ namespace game_framework
         return is_attacking;
     }
 
+    void MainGirl::AddSlave(Man* man)
+    {
+        slaves.push_back(man);
+    }
+
     void MainGirl::DrawBeam(CGameMap* map)
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
@@ -350,5 +382,25 @@ namespace game_framework
         pDC->SelectObject(pOldPen);
         pDC->SelectObject(pOldBrush);
         CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
+    }
+
+    int MainGirl::GetPositionX()
+    {
+        return x;
+    }
+
+    int MainGirl::GetPositionY()
+    {
+        return y;
+    }
+
+    int MainGirl::Height()
+    {
+        return girl_left_stand.Height();
+    }
+
+    int MainGirl::Width()
+    {
+        return girl_left_stand.Width();
     }
 }
