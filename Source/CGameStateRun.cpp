@@ -16,7 +16,8 @@ namespace game_framework
     enum AUDIO_ID  				// 定義各種音效的編號
     {
         AUDIO_GAME,				// 0
-        AUDIO_LASER				// 1
+        AUDIO_LASER,			// 1
+        AUDIO_EAT_HEART			// 2
     };
 
     /////////////////////////////////////////////////////////////////////////////
@@ -161,6 +162,7 @@ namespace game_framework
             if (hearts[i]->HitMainGirl(&mainGirl))
             {
                 //do something like increasing score
+                CAudio::Instance()->Play(AUDIO_EAT_HEART, false);
                 delete hearts[i];
                 hearts.erase(hearts.begin() + i);
                 break;
@@ -212,6 +214,7 @@ namespace game_framework
         Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
         CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
+        CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
