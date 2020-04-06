@@ -99,14 +99,20 @@ namespace game_framework
                 if (MAP_W - (x + girl_right_stand.Width()) > 10)
                     x += velocity;
 
-                map->Addsx(velocity);
+                if (map->ScreenX(x) <= 150)
+                    map->Addsx(velocity);
+                else
+                    map->Addsx(35);
             }
             else
             {
                 if (x > 10)
                     x -= velocity;
 
-                map->Addsx(-velocity);
+                if (map->ScreenX(x) >= 550)
+                    map->Addsx(-velocity);
+                else
+                    map->Addsx(-35);
             }
 
             if (direction)
@@ -130,7 +136,7 @@ namespace game_framework
         if (direction)
             sx = x - 30;
         else
-            sx = x + girl_left_stand.Width();
+            sx = x + girl_left_stand.Width() + 20;
 
         for (size_t i = 0; i < slaves.size(); i++)
         {
@@ -145,7 +151,7 @@ namespace game_framework
                 sx += (girl_left_stand.Width() + 8);
             }
 
-            slaves[i]->SetVelocity(velocity);
+            //slaves[i]->SetVelocity(velocity);
             slaves[i]->OnMove();
         }
     }
@@ -368,7 +374,7 @@ namespace game_framework
 
     void MainGirl::AddSlave(Man* man)
     {
-        slaves.push_back(man);
+        slaves.insert(slaves.begin(), man);
     }
 
     void MainGirl::DrawBeam(CGameMap* map)

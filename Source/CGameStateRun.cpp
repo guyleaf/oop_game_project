@@ -79,6 +79,13 @@ namespace game_framework
 
         for (size_t i = 0; i < man[0].size(); i++)
         {
+            if (man[0][i]->IsAlreadyDead())
+            {
+                mainGirl.AddSlave(man[0][i]);
+                man[0].erase(man[0].begin() + i);
+                break;
+            }
+
             if (man[0][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
             {
                 if (man[0][i]->GetHP() == 0)
@@ -87,10 +94,7 @@ namespace game_framework
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
                     hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
-                    mainGirl.AddSlave(man[0][i]);
-                    man[0].erase(man[0].begin() + i);
                     CAudio::Instance()->Stop(AUDIO_LASER);
-                    break;
                 }
 
                 if (man[0][i]->HitMainGirl(&map, &mainGirl))
@@ -114,6 +118,13 @@ namespace game_framework
 
         for (size_t i = 0; i < man[1].size(); i++)
         {
+            if (man[1][i]->IsAlreadyDead())
+            {
+                mainGirl.AddSlave(man[1][i]);
+                man[1].erase(man[1].begin() + i);
+                break;
+            }
+
             if (man[1][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
             {
                 if (man[1][i]->GetHP() == 0)
@@ -122,10 +133,7 @@ namespace game_framework
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
                     hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 500));
-                    mainGirl.AddSlave(man[1][i]);
-                    man[1].erase(man[1].begin() + i);
                     CAudio::Instance()->Stop(AUDIO_LASER);
-                    break;
                 }
 
                 if (man[1][i]->HitMainGirl(&map, &mainGirl))
