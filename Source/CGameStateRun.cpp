@@ -15,9 +15,9 @@ namespace game_framework
 
     enum AUDIO_ID  				// 定義各種音效的編號
     {
-        AUDIO_DING,				// 0
-        AUDIO_LAKE,				// 1
-        AUDIO_NTUT				// 2
+        AUDIO_GAME,				// 0
+        AUDIO_LASER,			// 1
+        AUDIO_EAT_HEART			// 2
     };
 
     /////////////////////////////////////////////////////////////////////////////
@@ -56,9 +56,7 @@ namespace game_framework
         const int HITS_LEFT_Y = 0;
         /*hits_left.SetInteger(HITS_LEFT);					// 指定剩下的撞擊數
         hits_left.SetTopLeft(HITS_LEFT_X, HITS_LEFT_Y);		// 指定剩下撞擊數的座標*/
-        CAudio::Instance()->Play(AUDIO_LAKE, true);			// 撥放 WAVE
-        CAudio::Instance()->Play(AUDIO_DING, false);		// 撥放 WAVE
-        CAudio::Instance()->Play(AUDIO_NTUT, true);			// 撥放 MIDI
+        CAudio::Instance()->Play(AUDIO_GAME, true);			// 撥放 GAME
     }
 
     void CGameStateRun::OnMove()							// 移動遊戲元素
@@ -81,6 +79,13 @@ namespace game_framework
 
         for (size_t i = 0; i < man[0].size(); i++)
         {
+            if (man[0][i]->IsAlreadyDead())
+            {
+                mainGirl.AddSlave(man[0][i]);
+                man[0].erase(man[0].begin() + i);
+                break;
+            }
+
             if (man[0][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
             {
                 if (man[0][i]->GetHP() == 0)
@@ -89,9 +94,7 @@ namespace game_framework
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
                     hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
-                    mainGirl.AddSlave(man[0][i]);
-                    man[0].erase(man[0].begin() + i);
-                    break;
+                    CAudio::Instance()->Stop(AUDIO_LASER);
                 }
 
                 if (man[0][i]->HitMainGirl(&map, &mainGirl))
@@ -115,6 +118,13 @@ namespace game_framework
 
         for (size_t i = 0; i < man[1].size(); i++)
         {
+            if (man[1][i]->IsAlreadyDead())
+            {
+                mainGirl.AddSlave(man[1][i]);
+                man[1].erase(man[1].begin() + i);
+                break;
+            }
+
             if (man[1][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
             {
                 if (man[1][i]->GetHP() == 0)
@@ -123,9 +133,7 @@ namespace game_framework
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
                     hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 500));
-                    mainGirl.AddSlave(man[1][i]);
-                    man[1].erase(man[1].begin() + i);
-                    break;
+                    CAudio::Instance()->Stop(AUDIO_LASER);
                 }
 
                 if (man[1][i]->HitMainGirl(&map, &mainGirl))
@@ -162,6 +170,7 @@ namespace game_framework
             if (hearts[i]->HitMainGirl(&mainGirl))
             {
                 //do something like increasing score
+                CAudio::Instance()->Play(AUDIO_EAT_HEART, false);
                 delete hearts[i];
                 hearts.erase(hearts.begin() + i);
                 break;
@@ -211,9 +220,9 @@ namespace game_framework
         //
         ShowInitProgress(50);
         Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
-        CAudio::Instance()->Load(AUDIO_DING, "sounds\\ding.wav");	// 載入編號0的聲音ding.wav
-        CAudio::Instance()->Load(AUDIO_LAKE, "sounds\\lake.mp3");	// 載入編號1的聲音lake.mp3
-        CAudio::Instance()->Load(AUDIO_NTUT, "sounds\\ntut.mid");	// 載入編號2的聲音ntut.mid
+        CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
+        CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
+        CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
@@ -238,12 +247,16 @@ namespace game_framework
     void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
         if (mainGirl.IsFocusing())
+        {
+            CAudio::Instance()->Play(AUDIO_LASER, true);
             mainGirl.SetIsAttacking(true);
+        }
     }
 
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         mainGirl.SetIsAttacking(false);
+        CAudio::Instance()->Stop(AUDIO_LASER);
     }
 
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
