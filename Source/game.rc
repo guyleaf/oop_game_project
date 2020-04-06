@@ -110,7 +110,7 @@ IDB_SECONDFLOOR         BITMAP                  "..\\RES\\map2.bmp"
 
 IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
 
-IDB_INITSCREEN          BITMAP                  "D:\\Desktop\\oop_game_v2\\RES\\initScreen2.bmp"
+IDB_INITSCREEN          BITMAP                  "..\\RES\\initScreen2.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
