@@ -96,7 +96,7 @@ namespace game_framework
         }
         else
         {
-            velocity = 15;
+            velocity = 20;
 
             //«Ý­×¥¿ after demo
             if (is_positioned && direction != fdirection)
@@ -109,12 +109,12 @@ namespace game_framework
                 direction = fdirection;
                 is_positioned = false;
             }
-            else if (!is_positioned && fx - x >= 8)
+            else if (!is_positioned && fx - x >= 10)
             {
                 direction = fdirection;
                 x += velocity;
             }
-            else if (!is_positioned && x - fx >= 8)
+            else if (!is_positioned && x - fx >= 10)
             {
                 direction = fdirection;
                 x -= velocity;
@@ -126,11 +126,11 @@ namespace game_framework
                 x = fx;
             }
 
-            if (fy - y >= 8)
+            if (fy - y >= 20)
             {
                 y += velocity;
             }
-            else if (y - fy >= 8)
+            else if (y - fy >= 20)
             {
                 y -= velocity;
             }
@@ -250,6 +250,14 @@ namespace game_framework
     bool Man::IsAlive()
     {
         return this->status == ALIVE;
+    }
+
+    bool Man::IsAlreadyDead()
+    {
+        if (direction)
+            return man_dead_right.IsFinalBitmap();
+        else
+            return man_dead_left.IsFinalBitmap();
     }
 
     void Man::SetIsFocused(bool status)

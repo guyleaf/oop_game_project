@@ -20,6 +20,7 @@ namespace game_framework
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);
         bool IsAlive();
+        bool IsAlreadyDead();
         bool IsFocused();
         void LoseHP(int value);
 
