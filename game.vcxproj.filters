@@ -222,5 +222,8 @@
     <Image Include="RES\loding.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\initScreen2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
