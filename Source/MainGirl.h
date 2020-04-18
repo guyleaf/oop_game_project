@@ -15,17 +15,22 @@ namespace game_framework
         int Width();
         void OnMove(CGameMap* map);
         void OnShow(CGameMap* map);
+        void Attack(Man* man, CGameMap* map);
         void ShowFocus();
         void SetIsFocusing(bool status);
         void SetFocusPerson(CGameMap* map, Man* man);
         void SetIsAttacking(bool status);
+        void SetIsLocked(bool status);
+        bool IsLocked();
         bool IsFocusing();
         bool IsFocusPerson(Man* man);
         bool IsAttacking();
+        void Lose();
+        void Click();
+        bool IsClicked();
         void AddSlave(Man* man);
     private:
-        void SetMoving(CGameMap* map, CPoint point);
-        void SetVelocity(CGameMap* map, CPoint point);
+        void SetVelocity(CGameMap* map);
         void DrawBeam(CGameMap* map);
         int x, y;
         int cursor_x, cursor_y;
@@ -34,6 +39,8 @@ namespace game_framework
         int velocity;
         bool is_focusing;
         bool is_attacking;
+        bool is_locked;
+        bool is_clicked;
         int focus_id;
         int heartPoints;
 

@@ -15,18 +15,24 @@ namespace game_framework
         int GetWidth();
         int GetHeight();
         int GetId();
-        int GetHP();
+        double GetHP();
         bool HitMainGirl(CGameMap* map, MainGirl* girl);
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);
+        void SetIsAttackedBy(int who);
+        bool IsAttackedBy(int who);
         bool IsAlive();
         bool IsAlreadyDead();
         bool IsFocused();
-        void LoseHP(int value);
+        void LoseHP(double value);
 
         //only affect when status is following
         void Follow(int x, int y, bool direction);
+
+        static int mainGirl;
+        static int all;
     protected:
+        void DrawBeam(CGameMap* map);
         int id;
         int x, y;
         int fx, fy;
@@ -35,17 +41,21 @@ namespace game_framework
         bool moving; //是否正在移動
         bool direction; //false => 往左, true => 往右
         int velocity;
-        int HP;
+        double HP;
         int range[2];
         int status;
         bool is_focused;
-        bool is_attacked;
+        static bool bitmapIsLoaded;
+        //bool is_attacked;
         CAnimation man_left, man_right;
         CMovingBitmap man_left_stand, man_right_stand;
         CAnimation man_dead_left, man_dead_right;
         CAnimation man_following_left, man_following_right;
-        CAnimation flash, weakening;
+        CAnimation flash, flash_multi, weakening;
         CAnimation blood;
+        static CAnimation clicking;
+        static CMovingBitmap clicking_bar;
+        CPoint color_point[2];
     };
 
     class NormalMan : public Man
