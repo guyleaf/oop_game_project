@@ -112,6 +112,14 @@ IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
 
 IDB_INITSCREEN          BITMAP                  "..\\RES\\initScreen2.bmp"
 
+IDB_BUTTON1_2           BITMAP                  "..\\RES\\button (2).bmp"
+
+IDB_BUTTON1_1           BITMAP                  "..\\RES\\button (1).bmp"
+
+IDB_BUTTON2_1           BITMAP                  "..\\RES\\button (3).bmp"
+
+IDB_BUTTON2_2           BITMAP                  "..\\RES\\button (4).bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

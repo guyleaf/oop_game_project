@@ -322,6 +322,10 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="RES\button (1).bmp" />
+    <Image Include="RES\button (2).bmp" />
+    <Image Include="RES\button (3).bmp" />
+    <Image Include="RES\button (4).bmp" />
     <Image Include="RES\classroom.bmp" />
     <Image Include="RES\initScreen2.bmp" />
     <Image Include="RES\left_girl.bmp" />
