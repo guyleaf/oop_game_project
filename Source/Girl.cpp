@@ -44,17 +44,12 @@ namespace game_framework
         {
             if (is_shocking)
             {
-                if (!exclamation.IsFinalBitmap())
-                {
-                    exclamation.OnMove();
+                exclamation.OnMove();
 
-                    if (direction)
-                        surprising_right.OnMove();
-                    else
-                        surprising_left.OnMove();
-                }
+                if (direction)
+                    surprising_right.OnMove();
                 else
-                    status = ATTACKING;
+                    surprising_left.OnMove();
             }
 
             if (moving)
@@ -230,12 +225,13 @@ namespace game_framework
     void Girl::Attack(Man* man, CGameMap* map)
     {
         man->LoseHP(-3);
+        status = ATTACKING;
     }
 
 
     bool Girl::IsLocked()
     {
-        return status == ATTACKING;
+        return exclamation.IsFinalBitmap();
     }
 
     void Girl::Win()
@@ -327,7 +323,7 @@ namespace game_framework
             exclamation.AddBitmap(text, RGB(255, 255, 255));
         }
 
-        exclamation.SetDelayCount(5);
+        exclamation.SetDelayCount(4);
         strcpy(text, "RES/Girl/surprising_left.bmp");
         surprising_left.AddBitmap(text, RGB(255, 255, 255));
         strcpy(text, "RES/Girl/blank.bmp");
