@@ -12,13 +12,10 @@ namespace game_framework
     {
         ALIVE,
         ATTACKING,
-        WIN,
         FLYING,
         LEAVING,
         DEAD
     };
-
-    vector<Man*> Girl::slaves;
 
     Girl::Girl(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(5)
     {
@@ -26,6 +23,11 @@ namespace game_framework
         range[1] = end;
         is_shocking = false;
         status = ALIVE;
+        distance = 500;
+    }
+
+    Girl::~Girl()
+    {
     }
 
     void Girl::SetDirection(bool direction)
@@ -93,6 +95,27 @@ namespace game_framework
                     y -= 15;
                     flying_left.OnMove();
                 }
+            else
+                status = DEAD;
+        }
+        else if (status == LEAVING)
+        {
+            if (distance > 0)
+            {
+                if (direction)
+                {
+                    x += velocity;
+                    leaving_right.OnMove();
+                }
+                else
+                {
+                    x -= velocity;
+                    leaving_left.OnMove();
+                }
+
+                fun.OnMove();
+                distance -= velocity;
+            }
             else
                 status = DEAD;
         }
@@ -204,6 +227,22 @@ namespace game_framework
                 flying_left.OnShow();
             }
         }
+        else if (status == LEAVING)
+        {
+            if (direction)
+            {
+                leaving_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                leaving_right.OnShow();
+            }
+            else
+            {
+                leaving_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                leaving_left.OnShow();
+            }
+
+            fun.SetTopLeft(map->ScreenX(x) + 12, map->ScreenY(y));
+            fun.OnShow();
+        }
     }
 
     void Girl::SetIsShocking(bool status)
@@ -236,7 +275,7 @@ namespace game_framework
 
     void Girl::Win()
     {
-        status = WIN;
+        status = LEAVING;
     }
 
     void Girl::Lose()
@@ -247,7 +286,7 @@ namespace game_framework
 
     bool Girl::IsWinner()
     {
-        return status == WIN;
+        return status == LEAVING;
     }
 
     bool Girl::IsAlreadyDead()
@@ -275,16 +314,12 @@ namespace game_framework
         return girl_left_stand.Height();
     }
 
-    void Girl::AddSlave(Man* man)
-    {
-    }
-
     void Girl::DrawBeam(CGameMap* map)
     {
         CDC* pDC = CDDraw::GetBackCDC();			// ¨ú±o Back Plain ªº CDC
-        CPen pen(PS_SOLID, 1, RGB(255, 0, 255));
+        CPen pen(PS_SOLID, 3, RGB(255, 166, 0));
         CPen* pOldPen = pDC->SelectObject(&pen);
-        CBrush brush(RGB(255, 51, 255));
+        CBrush brush(RGB(255, 209, 0));
         CBrush* pOldBrush = pDC->SelectObject(&brush);
         pDC->Polygon(beam_pos, 4);
         pDC->SelectObject(pOldPen);
@@ -356,5 +391,37 @@ namespace game_framework
         notice_left.LoadBitmap(text, RGB(255, 255, 255));
         strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/notice.bmp").c_str());
         notice_right.LoadBitmap(text, RGB(255, 255, 255));
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/left/win (" + to_string(i) + ").bmp").c_str());
+            leaving_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/win (" + to_string(i) + ").bmp").c_str());
+            leaving_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/left/win (" + to_string(i) + ").bmp").c_str());
+            leaving_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/win (" + to_string(i) + ").bmp").c_str());
+            leaving_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/Girl/fun (" + to_string(i) + ").bmp").c_str());
+            fun.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        fun.SetDelayCount(5);
     }
 }

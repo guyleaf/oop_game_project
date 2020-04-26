@@ -10,10 +10,12 @@ namespace game_framework
 {
     MainGirl::MainGirl() : x(450), y(MIDDLE), moving(false), velocity(5), is_focusing(false), is_attacking(false), is_locked(false), is_clicked(false)
     {
+        is_bump = false;
     }
 
     void MainGirl::LoadBitMap()
     {
+        char text[100] = { 0 };
         girl_left_stand.LoadBitmap("RES/mainGirl/left/stand.bmp", RGB(0, 0, 0));
         girl_right_stand.LoadBitmap("RES/mainGirl/right/stand.bmp", RGB(0, 0, 0));
         girl_left_focusing_behind.LoadBitmap("RES/mainGirl/left/focusing_behind.bmp", RGB(230, 230, 196));
@@ -23,42 +25,36 @@ namespace game_framework
 
         for (int i = 1; i <= 7; i++)
         {
-            char text[100] = {0};
             strcpy(text, ("RES/mainGirl/right/girl_walk (" + to_string(i) + ").bmp").c_str());
             girl_walk_right.AddBitmap(text, RGB(230, 230, 196));
         }
 
         for (int i = 1; i <= 7; i++)
         {
-            char text[100] = { 0 };
             strcpy(text, ("RES/mainGirl/left/girl_walk (" + to_string(i) + ").bmp").c_str());
             girl_walk_left.AddBitmap(text, RGB(230, 230, 196));
         }
 
         for (int i = 1; i <= 7; i++)
         {
-            char text[100] = { 0 };
             strcpy(text, ("RES/mainGirl/right/girl_run (" + to_string(i) + ").bmp").c_str());
             girl_run_right.AddBitmap(text, RGB(0, 0, 0));
         }
 
         for (int i = 1; i <= 7; i++)
         {
-            char text[100] = { 0 };
             strcpy(text, ("RES/mainGirl/left/girl_run (" + to_string(i) + ").bmp").c_str());
             girl_run_left.AddBitmap(text, RGB(0, 0, 0));
         }
 
         for (int i = 1; i <= 3; i++)
         {
-            char text[100] = { 0 };
             strcpy(text, ("RES/mainGirl/focus_point_on (" + to_string(i) + ").bmp").c_str());
             focus_point_on.AddBitmap(text, RGB(230, 230, 196));
         }
 
         for (int i = 1; i <= 4; i++)
         {
-            char text[100] = { 0 };
             strcpy(text, ("RES/mainGirl/focus_point_off (" + to_string(i) + ").bmp").c_str());
             focus_point_off.AddBitmap(text, RGB(230, 230, 196));
         }
@@ -67,6 +63,21 @@ namespace game_framework
         focus_point_off.SetDelayCount(1);
         girl_run_left.SetDelayCount(5);
         girl_run_right.SetDelayCount(5);
+
+        for (int i = 1; i <= 15; i++)
+        {
+            strcpy(text, ("RES/mainGirl/left/bump (" + to_string(i) + ").bmp").c_str());
+            bump_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 15; i++)
+        {
+            strcpy(text, ("RES/mainGirl/right/bump (" + to_string(i) + ").bmp").c_str());
+            bump_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        bump_left.SetDelayCount(6);
+        bump_right.SetDelayCount(6);
     }
 
     void MainGirl::OnMove(CGameMap* map)
@@ -92,73 +103,122 @@ namespace game_framework
             focus_point_off.Reset();
         }
 
-        if (!is_focusing)
+        if (is_bump)
         {
-            if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) //滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
+            if (direction)
             {
-                moving = true;
-                direction = true;
-            }
-            else if (map->ScreenX(x) - cursor_x > 0)
-            {
-                moving = true;
-                direction = false;
+                if (bump_right.GetCurrentBitmapNumber() <= 3)
+                {
+                    map->Addsx(-(9 - bump_right.GetCurrentBitmapNumber()));
+                    x -= (9 - bump_right.GetCurrentBitmapNumber());
+                    y += bump_right.GetCurrentBitmapNumber() + 1;
+                }
+                else if (bump_right.GetCurrentBitmapNumber() >= 11)
+                {
+                    map->Addsx((bump_right.GetCurrentBitmapNumber() - 5));
+                    x += (bump_right.GetCurrentBitmapNumber() - 5);
+                    y -= 15 - bump_right.GetCurrentBitmapNumber();
+                }
+
+                if (!bump_right.IsFinalBitmap())
+                    bump_right.OnMove();
+                else
+                    is_bump = false;
             }
             else
-                moving = false;
+            {
+                if (bump_left.GetCurrentBitmapNumber() <= 3)
+                {
+                    map->Addsx((9 - bump_left.GetCurrentBitmapNumber()));
+                    x += (9 - bump_left.GetCurrentBitmapNumber());
+                    y += bump_left.GetCurrentBitmapNumber() + 1;
+                }
+                else if (bump_left.GetCurrentBitmapNumber() >= 11)
+                {
+                    map->Addsx(-(bump_left.GetCurrentBitmapNumber() - 5));
+                    x -= (bump_left.GetCurrentBitmapNumber() - 5);
+                    y -= 15 - bump_left.GetCurrentBitmapNumber();
+                }
 
-            SetVelocity(map);
+                if (!bump_left.IsFinalBitmap())
+                    bump_left.OnMove();
+                else
+                    is_bump = false;
+            }
         }
         else
         {
-            moving = false;
+            bump_left.Reset();
+            bump_right.Reset();
 
-            if (!is_locked)
+            if (!is_focusing)
             {
-                //調整鎖定時的瞄準方向
-                if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
+                if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) //滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
+                {
+                    moving = true;
                     direction = true;
-                else
+                }
+                else if (map->ScreenX(x) - cursor_x > 0)
+                {
+                    moving = true;
                     direction = false;
-            }
-        }
-
-        if (!is_focusing && moving) //檢查是否正在移動
-        {
-            if (direction)
-            {
-                if (map->Width() - (x + girl_right_stand.Width()) > 10)
-                    x += velocity;
-
-                if (map->ScreenX(x) <= 150)
-                    map->Addsx(velocity);
+                }
                 else
-                    map->Addsx(35);
+                    moving = false;
+
+                SetVelocity(map);
             }
             else
             {
-                if (x > 10)
-                    x -= velocity;
+                moving = false;
 
-                if (map->ScreenX(x) >= 550)
-                    map->Addsx(-velocity);
-                else
-                    map->Addsx(-35);
+                if (!is_locked)
+                {
+                    //調整鎖定時的瞄準方向
+                    if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
+                        direction = true;
+                    else
+                        direction = false;
+                }
             }
 
-            if (direction)
+            if (!is_focusing && moving) //檢查是否正在移動
             {
-                if (velocity != 12)
-                    girl_walk_right.OnMove();
+                if (direction)
+                {
+                    if (map->Width() - (x + girl_right_stand.Width()) > 10)
+                        x += velocity;
+
+                    if (map->ScreenX(x) <= 150)
+                        map->Addsx(velocity);
+                    else
+                        map->Addsx(35);
+                }
                 else
-                    girl_run_right.OnMove();
-            }
-            else
-            {
-                if (velocity != 12)
-                    girl_walk_left.OnMove();
+                {
+                    if (x > 10)
+                        x -= velocity;
+
+                    if (map->ScreenX(x) >= 550)
+                        map->Addsx(-velocity);
+                    else
+                        map->Addsx(-35);
+                }
+
+                if (direction)
+                {
+                    if (velocity != 12)
+                        girl_walk_right.OnMove();
+                    else
+                        girl_run_right.OnMove();
+                }
                 else
-                    girl_run_left.OnMove();
+                {
+                    if (velocity != 12)
+                        girl_walk_left.OnMove();
+                    else
+                        girl_run_left.OnMove();
+                }
             }
         }
 
@@ -182,7 +242,6 @@ namespace game_framework
                 sx += (girl_left_stand.Width() + 8);
             }
 
-            //slaves[i]->SetVelocity(velocity);
             slaves[i]->OnMove();
         }
     }
@@ -226,7 +285,20 @@ namespace game_framework
 
     void MainGirl::OnShow(CGameMap* map)
     {
-        if (is_locked)
+        if (is_bump)
+        {
+            if (direction)
+            {
+                bump_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                bump_right.OnShow();
+            }
+            else
+            {
+                bump_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                bump_left.OnShow();
+            }
+        }
+        else if (is_locked)
         {
             if (direction)
             {
@@ -411,7 +483,7 @@ namespace game_framework
 
     void MainGirl::ShowFocus()
     {
-        if (!is_attacking)
+        if (!is_attacking && !is_bump)
         {
             if (is_focusing)
             {
@@ -447,6 +519,7 @@ namespace game_framework
 
     void MainGirl::Lose()
     {
+        is_bump = true;
     }
 
     void MainGirl::Click()

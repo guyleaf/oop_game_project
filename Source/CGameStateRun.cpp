@@ -137,11 +137,23 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (size_t i = 0; i < man[0].size(); i++)
         {
+            if (man[0][i]->IsOver())
+            {
+                delete man[0][i];
+                man[0].erase(man[0].begin() + i);
+            }
+
             man[0][i]->OnMove();
         }
 
         for (size_t i = 0; i < man[1].size(); i++)
         {
+            if (man[1][i]->IsOver())
+            {
+                delete man[1][i];
+                man[1].erase(man[1].begin() + i);
+            }
+
             man[1][i]->OnMove();
         }
 
@@ -171,26 +183,16 @@ namespace game_framework
         }
         else if (!mainGirl.IsAttacking())
         {
-            bool girlIsWinner = false;
-
             for (size_t i = 0; i < girlsOnScreen.size(); i++)
             {
                 if (girlsOnScreen[i] == NULL)
                     break;
 
-                if (girlsOnScreen[i]->IsWinner())
-                {
-                    girlIsWinner = true;
-                    break;
-                }
-
                 girlsOnScreen[i]->SetIsShocking(false);
                 girlsOnScreen[i]->SetMoving(true);
             }
 
-            //判斷女生是否為贏家
-            if (!girlIsWinner)
-                girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+            girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,17 +201,11 @@ namespace game_framework
             if (man[0][i]->IsAlreadyDead())
             {
                 if (man[0][i]->GetHP() == 0)
-                    mainGirl.AddSlave(man[0][i]);
-                else
                 {
-                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                        girlsOnScreen[j]->AddSlave(man[0][i]);
-
-                    girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                    mainGirl.AddSlave(man[0][i]);
+                    man[0].erase(man[0].begin() + i);
+                    break;
                 }
-
-                man[0].erase(man[0].begin() + i);
-                break;
             }
 
             if (man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl.IsAttacking())
@@ -228,7 +224,9 @@ namespace game_framework
                         for (size_t j = 0; j < girlsOnScreen.size(); j++)
                             girlsOnScreen[j]->Lose();
 
+                        man[0][i]->SetIsKilledBy(Man::mainGirl);
                         CAudio::Instance()->Stop(AUDIO_LASER);
+                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                     }
                     else if (man[0][i]->GetHP() == 800)
                     {
@@ -236,7 +234,9 @@ namespace game_framework
                             girlsOnScreen[j]->Win();
 
                         mainGirl.Lose();
+                        man[0][i]->SetIsKilledBy(Man::girl);
                         CAudio::Instance()->Stop(AUDIO_LASER);
+                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                     }
 
                     break;
@@ -257,6 +257,7 @@ namespace game_framework
                     if (man[0][i]->GetHP() == 0)
                     {
                         man[0][i]->SetIsAlive(false);
+                        man[0][i]->SetIsKilledBy(Man::mainGirl);
                         mainGirl.SetIsFocusing(false);
                         mainGirl.SetIsAttacking(false);
                         hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
@@ -315,17 +316,11 @@ namespace game_framework
             if (man[1][i]->IsAlreadyDead())
             {
                 if (man[1][i]->GetHP() == 0)
-                    mainGirl.AddSlave(man[1][i]);
-                else
                 {
-                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                        girlsOnScreen[j]->AddSlave(man[1][i]);
-
-                    girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                    mainGirl.AddSlave(man[1][i]);
+                    man[1].erase(man[1].begin() + i);
+                    break;
                 }
-
-                man[1].erase(man[1].begin() + i);
-                break;
             }
 
             if (man[1][i]->IsAttackedBy(Man::all) && man[1][i]->IsAlive() && mainGirl.IsAttacking())
@@ -344,7 +339,9 @@ namespace game_framework
                         for (size_t j = 0; j < girlsOnScreen.size(); j++)
                             girlsOnScreen[j]->Lose();
 
+                        man[1][i]->SetIsKilledBy(Man::mainGirl);
                         CAudio::Instance()->Stop(AUDIO_LASER);
+                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                     }
                     else if (man[1][i]->GetHP() == 800)
                     {
@@ -352,7 +349,9 @@ namespace game_framework
                             girlsOnScreen[j]->Win();
 
                         mainGirl.Lose();
+                        man[1][i]->SetIsKilledBy(Man::girl);
                         CAudio::Instance()->Stop(AUDIO_LASER);
+                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                     }
 
                     break;
@@ -373,6 +372,7 @@ namespace game_framework
                     if (man[1][i]->GetHP() == 0)
                     {
                         man[1][i]->SetIsAlive(false);
+                        man[1][i]->SetIsKilledBy(Man::mainGirl);
                         mainGirl.SetIsFocusing(false);
                         mainGirl.SetIsAttacking(false);
                         hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 500));

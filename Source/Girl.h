@@ -4,6 +4,7 @@ namespace game_framework
     {
     public:
         Girl(int x, int y, int start, int end, bool direction);
+        ~Girl();
         virtual void LoadBitMap() = 0;
         void SetMoving(bool status);
         void SetDirection(bool direction);
@@ -22,7 +23,6 @@ namespace game_framework
         int GetY();
         int GetWidth();
         int GetHeight();
-        void AddSlave(Man* man);
     protected:
         void DrawBeam(CGameMap* map);
         int x, y;
@@ -31,7 +31,7 @@ namespace game_framework
         int velocity;
         int range[2];
         bool is_shocking;
-
+        int distance;
         int status;
         CPoint beam_pos[4];
         CAnimation girl_left, girl_right;
@@ -41,7 +41,8 @@ namespace game_framework
         CMovingBitmap shooting_left, shooting_right;
         CMovingBitmap notice_left, notice_right;
         CAnimation flying_left, flying_right;
-        static vector<Man*> slaves;
+        CAnimation leaving_left, leaving_right;
+        CAnimation fun;
     };
 
     class NormalGirl : public Girl

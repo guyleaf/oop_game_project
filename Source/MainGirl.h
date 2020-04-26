@@ -43,13 +43,14 @@ namespace game_framework
         bool is_clicked;
         int focus_id;
         int heartPoints;
-
+        bool is_bump;
         CAnimation girl_walk_left, girl_walk_right;
         CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
         CMovingBitmap girl_left_focusing_behind, girl_left_focusing_front;
         CMovingBitmap girl_right_focusing_behind, girl_right_focusing_front;
         CAnimation focus_point_on, focus_point_off;
+        CAnimation bump_left, bump_right;
         CPoint beam_pos[4];
         vector<Man*> slaves;
     };

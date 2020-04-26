@@ -8,17 +8,26 @@
 
 namespace game_framework
 {
+    enum Role
+    {
+        MAINGIRL,
+        GIRL,
+        ALL
+    };
+
     enum State
     {
         ALIVE,
         ATTACKED_BY_MAINGIRL,
         ATTACKED_BY_ALL,
         DEAD,
-        FOLLOW
+        FOLLOW,
+        LEAVING
     };
 
-    int Man::mainGirl = ATTACKED_BY_MAINGIRL;
-    int Man::all = ATTACKED_BY_ALL;
+    int Man::mainGirl = MAINGIRL;
+    int Man::all = ALL;
+    int Man::girl = GIRL;
 
     CAnimation Man::clicking;
     CMovingBitmap Man::clicking_bar;
@@ -30,10 +39,10 @@ namespace game_framework
         range[1] = end;
         status = ALIVE;
         is_focused = false;
-        //is_attacked = false;
         id = rand();
         fdirection = false;
         is_positioned = false;
+        distance = 300;
     }
 
     void Man::OnMove()
@@ -72,15 +81,14 @@ namespace game_framework
             flash.OnMove();
             weakening.OnMove();
 
-            if (HP >= 900 && blood.GetCurrentBitmapNumber() != 1)
+            if (HP >= 700 && blood.GetCurrentBitmapNumber() != 1)
                 blood.OnMove();
-            else if (50 < HP && HP < 900 && blood.GetCurrentBitmapNumber() != ((1000 - int(HP)) / 100 + 1)) //鎖定顯示最終圖片
+            else if (50 < HP && HP < 700 && blood.GetCurrentBitmapNumber() != ((800 - int(HP)) / 75 + 1)) //鎖定顯示最終圖片
                 blood.OnMove();
             else if (HP < 50 && !blood.IsFinalBitmap())
                 blood.OnMove();
 
             status = ALIVE;
-            //is_attacked = false;
         }
         else if (status == ATTACKED_BY_ALL)
         {
@@ -97,7 +105,12 @@ namespace game_framework
                     man_dead_right.OnMove();
                 }
                 else
-                    status = FOLLOW;
+                {
+                    if (is_killed_by == MAINGIRL)
+                        status = FOLLOW;
+                    else
+                        status = LEAVING;
+                }
             }
             else
             {
@@ -106,12 +119,17 @@ namespace game_framework
                     man_dead_left.OnMove();
                 }
                 else
-                    status = FOLLOW;
+                {
+                    if (is_killed_by == MAINGIRL)
+                        status = FOLLOW;
+                    else
+                        status = LEAVING;
+                }
             }
         }
-        else
+        else if (status == FOLLOW)
         {
-            velocity = 20;
+            //velocity = 20;
 
             //待修正 after demo
             if (is_positioned && direction != fdirection)
@@ -157,6 +175,24 @@ namespace game_framework
             else
                 man_following_left.OnMove();
         }
+        else if (status == LEAVING)
+        {
+            if (distance > 0)
+            {
+                if (direction)
+                {
+                    x += velocity;
+                    man_following_girl_right.OnMove();
+                }
+                else
+                {
+                    x -= velocity;
+                    man_following_girl_left.OnMove();
+                }
+
+                distance -= velocity;
+            }
+        }
     }
 
     void Man::OnShow(CGameMap* map)
@@ -201,18 +237,18 @@ namespace game_framework
         }
         else if (status == ATTACKED_BY_ALL)
         {
-            color_point[0].x = clicking_bar.Left() + 3;
-            color_point[0].y = clicking_bar.Top() + 3;
-            color_point[1].x = int(clicking_bar.Left() + ((800 - HP) / 40) * 10.5);
-            color_point[1].y = clicking_bar.Top() + clicking_bar.Height() - 3;
             flash_multi.SetTopLeft(map->ScreenX(x) - 40, map->ScreenY(y) - 25);
             flash_multi.OnShow();
             weakening.SetTopLeft(map->ScreenX(x), map->ScreenY(y) + 5);
             weakening.OnShow();
             clicking_bar.SetTopLeft(map->ScreenX(x) - 40, map->ScreenY(y));
             clicking_bar.ShowBitmap();
+            color_point[0].x = clicking_bar.Left() + 3;
+            color_point[0].y = clicking_bar.Top() + 3;
+            color_point[1].x = int(clicking_bar.Left() + ((800 - HP) / 40) * 10.5);
+            color_point[1].y = clicking_bar.Top() + clicking_bar.Height() - 3;
             DrawBeam(map);
-            clicking.SetTopLeft(int(map->ScreenX(x) - clicking.Width() / 2 - 40 + ((800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
+            clicking.SetTopLeft(int(clicking_bar.Left() - clicking.Width() / 2 + ((800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
             clicking.OnShow();
         }
         else if (status == DEAD)
@@ -228,7 +264,7 @@ namespace game_framework
                 man_dead_left.OnShow();
             }
         }
-        else
+        else if (status == FOLLOW)
         {
             if (direction)
             {
@@ -239,6 +275,19 @@ namespace game_framework
             {
                 man_following_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                 man_following_left.OnShow();
+            }
+        }
+        else if (status == LEAVING)
+        {
+            if (direction)
+            {
+                man_following_girl_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                man_following_girl_right.OnShow();
+            }
+            else
+            {
+                man_following_girl_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                man_following_girl_left.OnShow();
             }
         }
     }
@@ -287,6 +336,11 @@ namespace game_framework
         return status == FOLLOW;
     }
 
+    bool Man::IsOver()
+    {
+        return status == LEAVING && distance <= 0;
+    }
+
     void Man::SetIsFocused(bool status)
     {
         is_focused = status;
@@ -294,18 +348,20 @@ namespace game_framework
 
     void Man::SetIsAttackedBy(int who)
     {
-        if (who == mainGirl)
+        if (who == MAINGIRL)
             status = ATTACKED_BY_MAINGIRL;
-        else
-        {
+        else if (who == ALL)
             status = ATTACKED_BY_ALL;
-            HP = 400;
-        }
     }
 
     bool Man::IsAttackedBy(int who)
     {
-        return who == status;
+        if (who == MAINGIRL && status == ATTACKED_BY_MAINGIRL)
+            return true;
+        else if (who == ALL && status == ATTACKED_BY_ALL)
+            return true;
+
+        return false;
     }
 
     bool Man::IsFocused()
@@ -336,12 +392,7 @@ namespace game_framework
     void Man::LoseHP(double value)
     {
         GAME_ASSERT(status == ATTACKED_BY_ALL || status == ATTACKED_BY_MAINGIRL, "Change Stat first!");
-        int limit;
-
-        if (status == ATTACKED_BY_ALL)
-            limit = 800;
-        else
-            limit = 1000;
+        int limit = 800;
 
         if (HP > limit)
             HP = limit;
@@ -351,6 +402,18 @@ namespace game_framework
             HP = 0;
 
         //is_attacked = true;
+    }
+
+    void Man::SetIsKilledBy(int who)
+    {
+        GAME_ASSERT(status == DEAD, "KKKK");
+
+        if (who == MAINGIRL)
+            velocity = 20;
+        else
+            velocity = 5;
+
+        is_killed_by = who;
     }
 
     void Man::Follow(int x, int y, bool direction)
@@ -389,7 +452,7 @@ namespace game_framework
 
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
     {
-        HP = 1000;
+        HP = 800;
     }
 
     void NormalMan::LoadBitMap()
@@ -501,6 +564,21 @@ namespace game_framework
             clicking_bar.LoadBitmap(text, RGB(255, 255, 255));
             bitmapIsLoaded = true;
         }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/follow/left/slave_girl (" + to_string(i) + ").bmp").c_str());
+            man_following_girl_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/follow/right/slave_girl (" + to_string(i) + ").bmp").c_str());
+            man_following_girl_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        man_following_girl_left.SetDelayCount(8);
+        man_following_girl_right.SetDelayCount(8);
     }
 
 }
