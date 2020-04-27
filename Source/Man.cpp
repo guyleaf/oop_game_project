@@ -245,10 +245,10 @@ namespace game_framework
             clicking_bar.ShowBitmap();
             color_point[0].x = clicking_bar.Left() + 3;
             color_point[0].y = clicking_bar.Top() + 3;
-            color_point[1].x = int(clicking_bar.Left() + ((800 - HP) / 40) * 10.5);
+            color_point[1].x = int(clicking_bar.Left() + (abs(800 - HP) / 40) * 10.5);
             color_point[1].y = clicking_bar.Top() + clicking_bar.Height() - 3;
             DrawBeam(map);
-            clicking.SetTopLeft(int(clicking_bar.Left() - clicking.Width() / 2 + ((800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
+            clicking.SetTopLeft(int(clicking_bar.Left() - clicking.Width() / 2 + (abs(800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
             clicking.OnShow();
         }
         else if (status == DEAD)
@@ -392,7 +392,7 @@ namespace game_framework
     void Man::LoseHP(double value)
     {
         GAME_ASSERT(status == ATTACKED_BY_ALL || status == ATTACKED_BY_MAINGIRL, "Change Stat first!");
-        int limit = 800;
+        double limit = 800;
 
         if (HP > limit)
             HP = limit;

@@ -141,7 +141,11 @@ namespace game_framework
             {
                 delete (*person);
                 person = man[0].erase(person);
-                continue;
+
+                if (person != man[0].end())
+                    continue;
+                else
+                    break;
             }
 
             (*person)->OnMove();
@@ -153,7 +157,11 @@ namespace game_framework
             {
                 delete (*person);
                 person = man[1].erase(person);
-                continue;
+
+                if (person != man[1].end())
+                    continue;
+                else
+                    break;
             }
 
             (*person)->OnMove();
