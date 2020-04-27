@@ -135,26 +135,28 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (size_t i = 0; i < man[0].size(); i++)
+        for (vector<Man*>::iterator person = man[0].begin(); person != man[0].end(); person++)
         {
-            if (man[0][i]->IsOver())
+            if ((*person)->IsOver())
             {
-                delete man[0][i];
-                man[0].erase(man[0].begin() + i);
+                delete (*person);
+                person = man[0].erase(person);
+                continue;
             }
 
-            man[0][i]->OnMove();
+            (*person)->OnMove();
         }
 
-        for (size_t i = 0; i < man[1].size(); i++)
+        for (vector<Man*>::iterator person = man[1].begin(); person != man[1].end(); person++)
         {
-            if (man[1][i]->IsOver())
+            if ((*person)->IsOver())
             {
-                delete man[1][i];
-                man[1].erase(man[1].begin() + i);
+                delete (*person);
+                person = man[1].erase(person);
+                continue;
             }
 
-            man[1][i]->OnMove();
+            (*person)->OnMove();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
