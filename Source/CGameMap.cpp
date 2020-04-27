@@ -11,7 +11,7 @@ using namespace std;
 
 namespace game_framework
 {
-    CGameMap::CGameMap() : sx(300), sy(0), level(1)
+    CGameMap::CGameMap() : sx(300), sy(0), level(1), width(2894), height(600)
     {
     }
 
@@ -45,7 +45,7 @@ namespace game_framework
     {
         if (value > 0)
         {
-            if (MAP_W - (sx + SIZE_X) > 0)
+            if (width - (sx + SIZE_X) > 0)
                 sx += value;
         }
         else
@@ -60,6 +60,16 @@ namespace game_framework
         sy += value;
     }
 
+    int CGameMap::Height()
+    {
+        return height;
+    }
+
+    int CGameMap::Width()
+    {
+        return width;
+    }
+
     int CGameMap::ScreenX(int val)
     {
         return val - sx;
@@ -70,9 +80,12 @@ namespace game_framework
         return val - sy;
     }
 
-    bool CGameMap::IsEmpty(int x, int y)
+    bool CGameMap::IsInScreen(int start_x, int end_x)
     {
-        return false;
+        if (sx <= start_x && end_x <= sx + SIZE_X)
+            return true;
+        else
+            return false;
     }
 
     int CGameMap::GetLevel()

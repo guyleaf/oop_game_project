@@ -32,8 +32,9 @@ namespace game_framework
         CGameMap map;
         MainGirl mainGirl;
         vector<Man*> man[2];
-        vector<NormalGirl> normalGirl[2];
+        vector<Girl*> normalGirl[2];
         vector<Heart*> hearts;
+        vector<Girl*> girlsOnScreen;
     };
 }
 
