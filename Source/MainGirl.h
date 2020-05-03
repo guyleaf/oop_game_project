@@ -29,6 +29,7 @@ namespace game_framework
         void Click();
         bool IsClicked();
         void AddSlave(Man* man);
+        int GetHeartPoints();
     private:
         void SetVelocity(CGameMap* map);
         void DrawBeam(CGameMap* map);

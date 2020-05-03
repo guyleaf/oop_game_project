@@ -11,6 +11,7 @@ namespace game_framework
     MainGirl::MainGirl() : x(450), y(MIDDLE), moving(false), velocity(5), is_focusing(false), is_attacking(false), is_locked(false), is_clicked(false)
     {
         is_bump = false;
+        heartPoints = 0;
     }
 
     void MainGirl::LoadBitMap()
@@ -61,6 +62,8 @@ namespace game_framework
 
         focus_point_on.SetDelayCount(1);
         focus_point_off.SetDelayCount(1);
+        focus_point_on.SetTopLeft(-100, -100);
+        focus_point_off.SetTopLeft(-100, -100);
         girl_run_left.SetDelayCount(5);
         girl_run_right.SetDelayCount(5);
 
@@ -535,6 +538,11 @@ namespace game_framework
     void MainGirl::AddSlave(Man* man)
     {
         slaves.insert(slaves.begin(), man);
+    }
+
+    int MainGirl::GetHeartPoints()
+    {
+        return heartPoints;
     }
 
     void MainGirl::DrawBeam(CGameMap* map)

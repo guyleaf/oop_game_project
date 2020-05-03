@@ -10,7 +10,8 @@ namespace game_framework
         AUDIO_GAME,				// 0
         AUDIO_LASER,			// 1
         AUDIO_EAT_HEART,		// 2
-        AUDIO_FLYING			// 3
+        AUDIO_FLYING,			// 3
+        AUDIO_BELL				// 4
     };
 
     class CGameMap;
@@ -18,9 +19,11 @@ namespace game_framework
     class Man;
     class Girl;
     class Heart;
+    class UI;
 }
 #include "CGameMap.h"
 #include "MainGirl.h"
 #include "Man.h"
 #include "Girl.h"
 #include "Heart.h"
+#include "UI.h"

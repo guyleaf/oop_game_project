@@ -35,6 +35,7 @@ namespace game_framework
         vector<Girl*> normalGirl[2];
         vector<Heart*> hearts;
         vector<Girl*> girlsOnScreen;
+        UI ui;
     };
 }
 
