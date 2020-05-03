@@ -550,7 +550,7 @@ namespace game_framework
             // 如果在暫停狀態，則顯示Ctrl-Q...
             //
             CMovingBitmap bmp;
-            bmp.LoadBitmap(IDB_CONTINUE);
+            bmp.LoadBitmap("RES/pause1.bmp", RGB(255, 255, 255));
             bmp.SetTopLeft(0, 0);
             bmp.ShowBitmap();
         }
