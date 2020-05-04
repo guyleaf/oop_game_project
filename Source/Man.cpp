@@ -328,7 +328,7 @@ namespace game_framework
 
     bool Man::IsAlive()
     {
-        return this->status != DEAD && this->status != FOLLOW;
+        return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING;
     }
 
     bool Man::IsAlreadyDead()
