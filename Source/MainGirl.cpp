@@ -525,6 +525,11 @@ namespace game_framework
         is_bump = true;
     }
 
+    bool MainGirl::IsLoser()
+    {
+        return is_bump;
+    }
+
     void MainGirl::Click()
     {
         is_clicked = true;

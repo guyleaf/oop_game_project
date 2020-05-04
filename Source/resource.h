@@ -40,8 +40,12 @@
 #define IDB_6                           182
 #define IDB_7                           183
 #define IDB_8                           184
-#define IDB_BITMAP12                    185
 #define IDB_9                           185
+#define IDB_BUTTON1_2                   186
+#define IDB_BUTTON1_1                   187
+#define IDB_BUTTON2_1                   188
+#define IDB_BITMAP4                     189
+#define IDB_BUTTON2_2                   190
 #define IDC_README                      1001
 #define ID_FILE_PAUSE                   32771
 #define ID_TOGGLE_FULLSCREEN            32772

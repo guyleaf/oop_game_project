@@ -109,30 +109,33 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ui.OnMove();
 
-        for (size_t i = 0; i < man[0].size(); i++)
+        if (!mainGirl.IsLoser())
         {
-            if (man[0][i]->IsAlive() && !mainGirl.IsFocusing() && man[0][i]->HitMainGirl(&map, &mainGirl))
+            for (size_t i = 0; i < man[0].size(); i++)
             {
-                man[0][i]->SetIsFocused(true);
-                man[0][i]->SetMoving(false);
-                mainGirl.SetIsFocusing(true);
-                mainGirl.SetFocusPerson(&map, man[0][i]);
+                if (man[0][i]->IsAlive() && !mainGirl.IsFocusing() && man[0][i]->HitMainGirl(&map, &mainGirl))
+                {
+                    man[0][i]->SetIsFocused(true);
+                    man[0][i]->SetMoving(false);
+                    mainGirl.SetIsFocusing(true);
+                    mainGirl.SetFocusPerson(&map, man[0][i]);
+                }
+                else if (!man[0][i]->IsFocused())
+                    man[0][i]->SetMoving(true);
             }
-            else if (!man[0][i]->IsFocused())
-                man[0][i]->SetMoving(true);
-        }
 
-        for (size_t i = 0; i < man[1].size(); i++)
-        {
-            if (man[1][i]->IsAlive() && !mainGirl.IsFocusing() && man[1][i]->HitMainGirl(&map, &mainGirl))
+            for (size_t i = 0; i < man[1].size(); i++)
             {
-                man[1][i]->SetIsFocused(true);
-                man[1][i]->SetMoving(false);
-                mainGirl.SetIsFocusing(true);
-                mainGirl.SetFocusPerson(&map, man[1][i]);
+                if (man[1][i]->IsAlive() && !mainGirl.IsFocusing() && man[1][i]->HitMainGirl(&map, &mainGirl))
+                {
+                    man[1][i]->SetIsFocused(true);
+                    man[1][i]->SetMoving(false);
+                    mainGirl.SetIsFocusing(true);
+                    mainGirl.SetFocusPerson(&map, man[1][i]);
+                }
+                else if (!man[1][i]->IsFocused())
+                    man[1][i]->SetMoving(true);
             }
-            else if (!man[1][i]->IsFocused())
-                man[1][i]->SetMoving(true);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,279 +172,286 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (mainGirl.IsAttacking() && girlsOnScreen.size() == 0)
+        if (!mainGirl.IsLoser())
         {
-            for (size_t i = 0; i < normalGirl[0].size(); i++)
+            if (mainGirl.IsAttacking() && girlsOnScreen.size() == 0)
             {
-                if (map.IsInScreen(normalGirl[0][i]->GetX(), normalGirl[0][i]->GetX() + normalGirl[0][i]->GetWidth()))
+                for (size_t i = 0; i < normalGirl[0].size(); i++)
                 {
-                    girlsOnScreen.push_back(normalGirl[0][i]);
-                }
-            }
-
-            for (size_t i = 0; i < normalGirl[1].size(); i++)
-            {
-                if (map.IsInScreen(normalGirl[1][i]->GetX(), normalGirl[1][i]->GetX() + normalGirl[1][i]->GetWidth()))
-                {
-                    girlsOnScreen.push_back(normalGirl[1][i]);
-                }
-            }
-
-            if (girlsOnScreen.size() == 0)
-            {
-                girlsOnScreen.push_back(NULL);
-            }
-        }
-        else if (!mainGirl.IsAttacking())
-        {
-            for (size_t i = 0; i < girlsOnScreen.size(); i++)
-            {
-                if (girlsOnScreen[i] == NULL)
-                    break;
-
-                girlsOnScreen[i]->SetIsShocking(false);
-                girlsOnScreen[i]->SetMoving(true);
-            }
-
-            girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (size_t i = 0; i < man[0].size(); i++)
-        {
-            if (man[0][i]->IsAlreadyDead())
-            {
-                if (man[0][i]->GetHP() == 0)
-                {
-                    mainGirl.AddSlave(man[0][i]);
-                    man[0].erase(man[0].begin() + i);
-                    break;
-                }
-            }
-
-            if (man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl.IsAttacking())
-            {
-                if (man[0][i]->GetHP() == 800 || man[0][i]->GetHP() == 0)
-                {
-                    man[0][i]->SetIsAlive(false);
-                    mainGirl.SetIsFocusing(false);
-                    mainGirl.SetIsAttacking(false);
-                    mainGirl.SetIsLocked(false);
-
-                    if (man[0][i]->GetHP() == 0)
+                    if (map.IsInScreen(normalGirl[0][i]->GetX(), normalGirl[0][i]->GetX() + normalGirl[0][i]->GetWidth()) && normalGirl[0][i]->IsAlive())
                     {
-                        hearts.push_back(new Heart(0, 1, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), girlsOnScreen.size()));
-
-                        for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                            girlsOnScreen[j]->Lose();
-
-                        man[0][i]->SetIsKilledBy(Man::mainGirl);
-                        CAudio::Instance()->Stop(AUDIO_LASER);
-                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        girlsOnScreen.push_back(normalGirl[0][i]);
                     }
-                    else if (man[0][i]->GetHP() == 800)
+                }
+
+                for (size_t i = 0; i < normalGirl[1].size(); i++)
+                {
+                    if (map.IsInScreen(normalGirl[1][i]->GetX(), normalGirl[1][i]->GetX() + normalGirl[1][i]->GetWidth()) && normalGirl[1][i]->IsAlive())
                     {
-                        for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                            girlsOnScreen[j]->Win();
-
-                        mainGirl.Lose();
-                        man[0][i]->SetIsKilledBy(Man::girl);
-                        CAudio::Instance()->Stop(AUDIO_LASER);
-                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        girlsOnScreen.push_back(normalGirl[1][i]);
                     }
-
-                    break;
                 }
 
-                if (mainGirl.IsClicked())
+                if (girlsOnScreen.size() == 0)
                 {
-                    mainGirl.Attack(man[0][i], &map);
-                    ui.AddScore(3 * girlsOnScreen.size());
-                }
-
-                for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                {
-                    girlsOnScreen[j]->Attack(man[0][i], &map);
+                    girlsOnScreen.push_back(NULL);
                 }
             }
-            else
+            else if (!mainGirl.IsAttacking())
             {
-                if (man[0][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
+                for (size_t i = 0; i < girlsOnScreen.size(); i++)
                 {
-                    if (man[0][i]->GetHP() == 0)
+                    if (girlsOnScreen[i] == NULL)
+                        break;
+
+                    girlsOnScreen[i]->SetIsShocking(false);
+                    girlsOnScreen[i]->SetMoving(true);
+                }
+
+                girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            for (size_t i = 0; i < man[0].size(); i++)
+            {
+                int HP = int(man[0][i]->GetHP());
+
+                if (man[0][i]->IsAlreadyDead())
+                {
+                    if (HP == 0)
+                    {
+                        mainGirl.AddSlave(man[0][i]);
+                        man[0].erase(man[0].begin() + i);
+                        break;
+                    }
+                }
+
+                if (man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl.IsAttacking())
+                {
+                    if (HP == 800 || HP == 0)
                     {
                         man[0][i]->SetIsAlive(false);
-                        man[0][i]->SetIsKilledBy(Man::mainGirl);
                         mainGirl.SetIsFocusing(false);
                         mainGirl.SetIsAttacking(false);
-                        hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 0));
-                        CAudio::Instance()->Stop(AUDIO_LASER);
+                        mainGirl.SetIsLocked(false);
+
+                        if (HP == 0)
+                        {
+                            hearts.push_back(new Heart(0, 1, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), girlsOnScreen.size()));
+
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                girlsOnScreen[j]->Lose();
+
+                            man[0][i]->SetIsKilledBy(Man::mainGirl);
+                            CAudio::Instance()->Stop(AUDIO_LASER);
+                            girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        }
+                        else if (HP == 800)
+                        {
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                girlsOnScreen[j]->Win();
+
+                            mainGirl.Lose();
+                            man[0][i]->SetIsKilledBy(Man::girl);
+                            CAudio::Instance()->Stop(AUDIO_LASER);
+                            girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        }
+
+                        break;
                     }
 
-                    if (man[0][i]->HitMainGirl(&map, &mainGirl))
+                    if (mainGirl.IsClicked())
                     {
-                        if (mainGirl.IsAttacking())
+                        mainGirl.Attack(man[0][i], &map);
+                        ui.AddScore(3 * girlsOnScreen.size());
+                    }
+
+                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                    {
+                        girlsOnScreen[j]->Attack(man[0][i], &map);
+                    }
+                }
+                else
+                {
+                    if (man[0][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
+                    {
+                        if (HP == 0)
                         {
-                            man[0][i]->SetIsAttackedBy(Man::mainGirl);
-                            mainGirl.Attack(man[0][i], &map);
-                            ui.AddScore(1);
+                            man[0][i]->SetIsAlive(false);
+                            man[0][i]->SetIsKilledBy(Man::mainGirl);
+                            mainGirl.SetIsFocusing(false);
+                            mainGirl.SetIsAttacking(false);
+                            hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 0));
+                            CAudio::Instance()->Stop(AUDIO_LASER);
+                        }
 
-                            if (girlsOnScreen.size() != 0)
+                        if (man[0][i]->HitMainGirl(&map, &mainGirl))
+                        {
+                            if (mainGirl.IsAttacking())
                             {
-                                int ready = 0;
+                                man[0][i]->SetIsAttackedBy(Man::mainGirl);
+                                mainGirl.Attack(man[0][i], &map);
+                                ui.AddScore(1);
 
-                                for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                if (girlsOnScreen.size() != 0)
                                 {
-                                    if (girlsOnScreen[j] == NULL)
-                                        break;
+                                    int ready = 0;
 
-                                    if (girlsOnScreen[j]->IsLocked())
-                                        ready++;
+                                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                    {
+                                        if (girlsOnScreen[j] == NULL)
+                                            break;
 
-                                    if (girlsOnScreen[j]->GetX() >= man[0][i]->GetX() + man[0][i]->GetWidth() / 2)
-                                        girlsOnScreen[j]->SetDirection(false);
-                                    else
-                                        girlsOnScreen[j]->SetDirection(true);
+                                        if (girlsOnScreen[j]->IsLocked())
+                                            ready++;
 
-                                    girlsOnScreen[j]->LockPerson(man[0][i], &map);
-                                    girlsOnScreen[j]->SetIsShocking(true);
-                                    girlsOnScreen[j]->SetMoving(false);
-                                }
+                                        if (girlsOnScreen[j]->GetX() >= man[0][i]->GetX() + man[0][i]->GetWidth() / 2)
+                                            girlsOnScreen[j]->SetDirection(false);
+                                        else
+                                            girlsOnScreen[j]->SetDirection(true);
 
-                                if (ready == girlsOnScreen.size() && mainGirl.IsAttacking())
-                                {
-                                    man[0][i]->SetIsAttackedBy(Man::all);
-                                    mainGirl.SetIsLocked(true);
-                                    CAudio::Instance()->Play(AUDIO_SNATCH, false);
+                                        girlsOnScreen[j]->LockPerson(man[0][i], &map);
+                                        girlsOnScreen[j]->SetIsShocking(true);
+                                        girlsOnScreen[j]->SetMoving(false);
+                                    }
+
+                                    if (ready == girlsOnScreen.size() && mainGirl.IsAttacking())
+                                    {
+                                        man[0][i]->SetIsAttackedBy(Man::all);
+                                        mainGirl.SetIsLocked(true);
+                                        CAudio::Instance()->Play(AUDIO_SNATCH, false);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        man[0][i]->SetIsFocused(false);
-                        mainGirl.SetIsFocusing(false);
-                        mainGirl.SetIsAttacking(false);
+                        else
+                        {
+                            man[0][i]->SetIsFocused(false);
+                            mainGirl.SetIsFocusing(false);
+                            mainGirl.SetIsAttacking(false);
+                        }
                     }
                 }
             }
-        }
 
-        for (size_t i = 0; i < man[1].size(); i++)
-        {
-            if (man[1][i]->IsAlreadyDead())
+            for (size_t i = 0; i < man[1].size(); i++)
             {
-                if (man[1][i]->GetHP() == 0)
-                {
-                    mainGirl.AddSlave(man[1][i]);
-                    man[1].erase(man[1].begin() + i);
-                    break;
-                }
-            }
+                int HP = int(man[1][i]->GetHP());
 
-            if (man[1][i]->IsAttackedBy(Man::all) && man[1][i]->IsAlive() && mainGirl.IsAttacking())
-            {
-                if (man[1][i]->GetHP() == 800 || man[1][i]->GetHP() == 0)
+                if (man[1][i]->IsAlreadyDead())
                 {
-                    man[1][i]->SetIsAlive(false);
-                    mainGirl.SetIsFocusing(false);
-                    mainGirl.SetIsAttacking(false);
-                    mainGirl.SetIsLocked(false);
-
-                    if (man[1][i]->GetHP() == 0)
+                    if (HP == 0)
                     {
-                        hearts.push_back(new Heart(1, 1, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, girlsOnScreen.size()));
-
-                        for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                            girlsOnScreen[j]->Lose();
-
-                        man[1][i]->SetIsKilledBy(Man::mainGirl);
-                        CAudio::Instance()->Stop(AUDIO_LASER);
-                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        mainGirl.AddSlave(man[1][i]);
+                        man[1].erase(man[1].begin() + i);
+                        break;
                     }
-                    else if (man[1][i]->GetHP() == 800)
-                    {
-                        for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                            girlsOnScreen[j]->Win();
-
-                        mainGirl.Lose();
-                        man[1][i]->SetIsKilledBy(Man::girl);
-                        CAudio::Instance()->Stop(AUDIO_LASER);
-                        girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
-                    }
-
-                    break;
                 }
 
-                if (mainGirl.IsClicked())
+                if (man[1][i]->IsAttackedBy(Man::all) && man[1][i]->IsAlive() && mainGirl.IsAttacking())
                 {
-                    mainGirl.Attack(man[1][i], &map);
-                    ui.AddScore(3 * girlsOnScreen.size());
-                }
-
-                for (size_t j = 0; j < girlsOnScreen.size(); j++)
-                {
-                    girlsOnScreen[j]->Attack(man[1][i], &map);
-                }
-            }
-            else
-            {
-                if (man[1][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
-                {
-                    if (man[1][i]->GetHP() == 0)
+                    if (HP == 800 || HP == 0)
                     {
                         man[1][i]->SetIsAlive(false);
-                        man[1][i]->SetIsKilledBy(Man::mainGirl);
                         mainGirl.SetIsFocusing(false);
                         mainGirl.SetIsAttacking(false);
-                        hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 0));
-                        CAudio::Instance()->Stop(AUDIO_LASER);
+                        mainGirl.SetIsLocked(false);
+
+                        if (HP == 0)
+                        {
+                            hearts.push_back(new Heart(1, 1, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, girlsOnScreen.size()));
+
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                girlsOnScreen[j]->Lose();
+
+                            man[1][i]->SetIsKilledBy(Man::mainGirl);
+                            CAudio::Instance()->Stop(AUDIO_LASER);
+                            girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        }
+                        else if (HP == 800)
+                        {
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                girlsOnScreen[j]->Win();
+
+                            mainGirl.Lose();
+                            man[1][i]->SetIsKilledBy(Man::girl);
+                            CAudio::Instance()->Stop(AUDIO_LASER);
+                            girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
+                        }
+
+                        break;
                     }
 
-                    if (man[1][i]->HitMainGirl(&map, &mainGirl))
+                    if (mainGirl.IsClicked())
                     {
-                        if (mainGirl.IsAttacking())
+                        mainGirl.Attack(man[1][i], &map);
+                        ui.AddScore(3 * girlsOnScreen.size());
+                    }
+
+                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                    {
+                        girlsOnScreen[j]->Attack(man[1][i], &map);
+                    }
+                }
+                else
+                {
+                    if (man[1][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
+                    {
+                        if (HP == 0)
                         {
-                            man[1][i]->SetIsAttackedBy(Man::mainGirl);
-                            mainGirl.Attack(man[1][i], &map);
-                            ui.AddScore(1);
+                            man[1][i]->SetIsAlive(false);
+                            man[1][i]->SetIsKilledBy(Man::mainGirl);
+                            mainGirl.SetIsFocusing(false);
+                            mainGirl.SetIsAttacking(false);
+                            hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 0));
+                            CAudio::Instance()->Stop(AUDIO_LASER);
+                        }
 
-                            if (girlsOnScreen.size() != 0)
+                        if (man[1][i]->HitMainGirl(&map, &mainGirl))
+                        {
+                            if (mainGirl.IsAttacking())
                             {
-                                int ready = 0;
+                                man[1][i]->SetIsAttackedBy(Man::mainGirl);
+                                mainGirl.Attack(man[1][i], &map);
+                                ui.AddScore(1);
 
-                                for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                if (girlsOnScreen.size() != 0)
                                 {
-                                    if (girlsOnScreen[j] == NULL)
-                                        break;
+                                    int ready = 0;
 
-                                    if (girlsOnScreen[j]->IsLocked())
-                                        ready++;
+                                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                    {
+                                        if (girlsOnScreen[j] == NULL)
+                                            break;
 
-                                    if (girlsOnScreen[j]->GetX() + girlsOnScreen[j]->GetWidth() / 2 >= man[1][i]->GetX() + man[1][i]->GetWidth() / 2)
-                                        girlsOnScreen[j]->SetDirection(false);
-                                    else
-                                        girlsOnScreen[j]->SetDirection(true);
+                                        if (girlsOnScreen[j]->IsLocked())
+                                            ready++;
 
-                                    girlsOnScreen[j]->LockPerson(man[1][i], &map);
-                                    girlsOnScreen[j]->SetIsShocking(true);
-                                    girlsOnScreen[j]->SetMoving(false);
-                                }
+                                        if (girlsOnScreen[j]->GetX() + girlsOnScreen[j]->GetWidth() / 2 >= man[1][i]->GetX() + man[1][i]->GetWidth() / 2)
+                                            girlsOnScreen[j]->SetDirection(false);
+                                        else
+                                            girlsOnScreen[j]->SetDirection(true);
 
-                                if (ready == girlsOnScreen.size() && mainGirl.IsAttacking())
-                                {
-                                    man[1][i]->SetIsAttackedBy(Man::all);
-                                    mainGirl.SetIsLocked(true);
-                                    CAudio::Instance()->Play(AUDIO_SNATCH, false);
+                                        girlsOnScreen[j]->LockPerson(man[1][i], &map);
+                                        girlsOnScreen[j]->SetIsShocking(true);
+                                        girlsOnScreen[j]->SetMoving(false);
+                                    }
+
+                                    if (ready == girlsOnScreen.size() && mainGirl.IsAttacking())
+                                    {
+                                        man[1][i]->SetIsAttackedBy(Man::all);
+                                        mainGirl.SetIsLocked(true);
+                                        CAudio::Instance()->Play(AUDIO_SNATCH, false);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        man[1][i]->SetIsFocused(false);
-                        mainGirl.SetIsFocusing(false);
-                        mainGirl.SetIsAttacking(false);
+                        else
+                        {
+                            man[1][i]->SetIsFocused(false);
+                            mainGirl.SetIsFocusing(false);
+                            mainGirl.SetIsAttacking(false);
+                        }
                     }
                 }
             }

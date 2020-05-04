@@ -284,9 +284,9 @@ namespace game_framework
         CAudio::Instance()->Play(AUDIO_FLYING, false);
     }
 
-    bool Girl::IsWinner()
+    bool Girl::IsAlive()
     {
-        return status == LEAVING;
+        return status == ALIVE;
     }
 
     bool Girl::IsAlreadyDead()

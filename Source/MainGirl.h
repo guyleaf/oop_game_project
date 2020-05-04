@@ -26,6 +26,7 @@ namespace game_framework
         bool IsFocusPerson(Man* man);
         bool IsAttacking();
         void Lose();
+        bool IsLoser();
         void Click();
         bool IsClicked();
         void AddSlave(Man* man);
