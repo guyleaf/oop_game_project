@@ -4,6 +4,7 @@ namespace game_framework
     {
     public:
         Man(int x, int y, int start, int end, bool direction);
+        virtual ~Man();
         virtual void LoadBitMap() = 0;
         void SetMoving(bool status);
         void SetVelocity(int speed);
@@ -69,6 +70,7 @@ namespace game_framework
     {
     public:
         NormalMan(int x, int y, int start, int end, bool direction, int type);
+        ~NormalMan();
         void LoadBitMap();
     private:
         const int type;

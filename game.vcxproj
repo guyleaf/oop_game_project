@@ -301,6 +301,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ObjectFileName>
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ProgramDataBaseFileName>
     </ClCompile>
+    <ClCompile Include="Source\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\audio.h" />
@@ -320,6 +321,7 @@
     <ClInclude Include="Source\Resource.h" />
     <ClInclude Include="Source\StdAfx.h" />
     <ClInclude Include="Source\gamelib.h" />
+    <ClInclude Include="Source\UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\game.rc">
@@ -336,6 +338,16 @@
     <Image Include="RES\map1.bmp" />
     <Image Include="RES\map2.bmp" />
     <Image Include="RES\map3.bmp" />
+    <Image Include="RES\UI\number\number (0).bmp" />
+    <Image Include="RES\UI\number\number (1).bmp" />
+    <Image Include="RES\UI\number\number (2).bmp" />
+    <Image Include="RES\UI\number\number (3).bmp" />
+    <Image Include="RES\UI\number\number (4).bmp" />
+    <Image Include="RES\UI\number\number (5).bmp" />
+    <Image Include="RES\UI\number\number (6).bmp" />
+    <Image Include="RES\UI\number\number (7).bmp" />
+    <Image Include="RES\UI\number\number (8).bmp" />
+    <Image Include="RES\UI\number\number (9).bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

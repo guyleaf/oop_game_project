@@ -45,6 +45,10 @@ namespace game_framework
         distance = 300;
     }
 
+    Man::~Man()
+    {
+    }
+
     void Man::OnMove()
     {
         if (status == ALIVE)
@@ -328,7 +332,7 @@ namespace game_framework
 
     bool Man::IsAlive()
     {
-        return this->status != DEAD && this->status != FOLLOW;
+        return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING;
     }
 
     bool Man::IsAlreadyDead()
@@ -453,6 +457,10 @@ namespace game_framework
     NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
     {
         HP = 800;
+    }
+
+    NormalMan::~NormalMan()
+    {
     }
 
     void NormalMan::LoadBitMap()
