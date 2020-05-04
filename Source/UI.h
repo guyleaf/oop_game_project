@@ -32,6 +32,7 @@ namespace game_framework
         CPoint clock_center;
         CBitmap pointer;
         BITMAP pointer_size;
+        XFORM xform;
     };
 }
 

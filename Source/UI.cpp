@@ -21,6 +21,7 @@ namespace game_framework
         score.SetInteger(0);
         clock_radius = 30;
         angle = 0;
+        xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
     }
 
     void UI::LoadBitmap()
@@ -66,6 +67,13 @@ namespace game_framework
                     float distanceY = (float)(cos((-angle + 132.3) * 3.14159 / 180) * clock_center.y - sin((-angle + 132.3) * 3.14159 / 180) * clock_center.x);
                     time_start.SetPoint(cx, cy);
                     time_end.SetPoint(int(clock_center.x + distanceX), int(clock_center.x + distanceY));
+                    float radian = (float)(angle * 3.14159 / 180);
+                    xform.eM11 = (float)cos(radian);
+                    xform.eM12 = (float)sin(radian);
+                    xform.eM21 = (float) - sin(radian);
+                    xform.eM22 = (float)cos(radian);
+                    xform.eDx = (float)(clock_center.x - cos(radian) * clock_center.x + sin(radian) * clock_center.y);
+                    xform.eDy = (float)(clock_center.y - cos(radian) * clock_center.y - sin(radian) * clock_center.x);
                 }
             }
             else
@@ -156,14 +164,6 @@ namespace game_framework
         //ImageDC select bitmap
         CBitmap* bmOldPointer = ImageDC.SelectObject(&pointer);
         //Rotate image
-        float radian = (float)(angle * (3.14159 / 180));
-        XFORM xform;
-        xform.eM11 = (float)cos(radian);
-        xform.eM12 = (float)sin(radian);
-        xform.eM21 = (float) - sin(radian);
-        xform.eM22 = (float)cos(radian);
-        xform.eDx = (float)(clock_center.x - cos(radian) * clock_center.x + sin(radian) * clock_center.y);
-        xform.eDy = (float)(clock_center.y - cos(radian) * clock_center.y - sin(radian) * clock_center.x);
         pDC->SetGraphicsMode(GM_ADVANCED);
         pDC->SetWorldTransform(&xform);
         //Make transparent with white color and paste to pDC
