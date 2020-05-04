@@ -332,6 +332,10 @@ namespace game_framework
     {
     }
 
+    NormalGirl::~NormalGirl()
+    {
+    }
+
     void NormalGirl::LoadBitMap()
     {
         char text[100] = { 0 };

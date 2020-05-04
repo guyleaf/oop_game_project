@@ -33,6 +33,7 @@ namespace game_framework
         CBitmap pointer;
         BITMAP pointer_size;
         XFORM xform;
+        DWORD originalValue;
     };
 }
 

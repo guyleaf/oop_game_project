@@ -83,6 +83,7 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
         CAudio::Instance()->Load(AUDIO_FLYING, "sounds\\flying.mp3");
         CAudio::Instance()->Load(AUDIO_BELL, "sounds\\bell.mp3");
+        CAudio::Instance()->Load(AUDIO_SNATCH, "sounds\\snatch.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
@@ -311,6 +312,7 @@ namespace game_framework
                                 {
                                     man[0][i]->SetIsAttackedBy(Man::all);
                                     mainGirl.SetIsLocked(true);
+                                    CAudio::Instance()->Play(AUDIO_SNATCH, false);
                                 }
                             }
                         }
@@ -430,6 +432,7 @@ namespace game_framework
                                 {
                                     man[1][i]->SetIsAttackedBy(Man::all);
                                     mainGirl.SetIsLocked(true);
+                                    CAudio::Instance()->Play(AUDIO_SNATCH, false);
                                 }
                             }
                         }
@@ -535,10 +538,14 @@ namespace game_framework
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
+        //waveOutSetVolume(0, 0x0000);
+        //CAudio::Instance()->Pause();
     }
 
     void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
+        //waveOutSetVolume(0, 0x0FFF);
+        //CAudio::Instance()->Resume();
     }
 
     void CGameStateRun::OnShow()

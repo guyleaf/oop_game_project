@@ -92,25 +92,25 @@ IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
 
 IDB_INITSCREEN          BITMAP                  "..\\RES\\initScreen2.bmp"
 
-IDB_0                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (0).bmp"
+IDB_0                   BITMAP                  "..\\RES\\UI\\number\\number (0).bmp"
 
-IDB_1                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (1).bmp"
+IDB_1                   BITMAP                  "..\\RES\\UI\\number\\number (1).bmp"
 
-IDB_2                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (2).bmp"
+IDB_2                   BITMAP                  "..\\RES\\UI\\number\\number (2).bmp"
 
-IDB_3                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (3).bmp"
+IDB_3                   BITMAP                  "..\\RES\\UI\\number\\number (3).bmp"
 
-IDB_4                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (4).bmp"
+IDB_4                   BITMAP                  "..\\RES\\UI\\number\\number (4).bmp"
 
-IDB_5                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (5).bmp"
+IDB_5                   BITMAP                  "..\\RES\\UI\\number\\number (5).bmp"
 
-IDB_6                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (6).bmp"
+IDB_6                   BITMAP                  "..\\RES\\UI\\number\\number (6).bmp"
 
-IDB_7                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (7).bmp"
+IDB_7                   BITMAP                  "..\\RES\\UI\\number\\number (7).bmp"
 
-IDB_8                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (8).bmp"
+IDB_8                   BITMAP                  "..\\RES\\UI\\number\\number (8).bmp"
 
-IDB_9                   BITMAP                  "C:\\Users\\ychhu\\Desktop\\game\\RES\\UI\\number\\number (9).bmp"
+IDB_9                   BITMAP                  "..\\RES\\UI\\number\\number (9).bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

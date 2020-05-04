@@ -444,9 +444,9 @@ namespace game_framework
         beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
 
         if (!is_locked)
-            man->LoseHP(20);
+            man->LoseHP(15);
         else
-            man->LoseHP(80);
+            man->LoseHP(70);
 
         if (is_locked)
             is_clicked = false;

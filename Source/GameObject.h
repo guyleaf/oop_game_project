@@ -11,7 +11,8 @@ namespace game_framework
         AUDIO_LASER,			// 1
         AUDIO_EAT_HEART,		// 2
         AUDIO_FLYING,			// 3
-        AUDIO_BELL				// 4
+        AUDIO_BELL,				// 4
+        AUDIO_SNATCH			// 5
     };
 
     class CGameMap;
