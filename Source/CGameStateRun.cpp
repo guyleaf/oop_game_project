@@ -214,9 +214,11 @@ namespace game_framework
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             for (size_t i = 0; i < man[0].size(); i++)
             {
+                int HP = int(man[0][i]->GetHP());
+
                 if (man[0][i]->IsAlreadyDead())
                 {
-                    if (man[0][i]->GetHP() == 0)
+                    if (HP == 0)
                     {
                         mainGirl.AddSlave(man[0][i]);
                         man[0].erase(man[0].begin() + i);
@@ -226,14 +228,14 @@ namespace game_framework
 
                 if (man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl.IsAttacking())
                 {
-                    if (man[0][i]->GetHP() == 800 || man[0][i]->GetHP() == 0)
+                    if (HP == 800 || HP == 0)
                     {
                         man[0][i]->SetIsAlive(false);
                         mainGirl.SetIsFocusing(false);
                         mainGirl.SetIsAttacking(false);
                         mainGirl.SetIsLocked(false);
 
-                        if (man[0][i]->GetHP() == 0)
+                        if (HP == 0)
                         {
                             hearts.push_back(new Heart(0, 1, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), girlsOnScreen.size()));
 
@@ -244,7 +246,7 @@ namespace game_framework
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
-                        else if (man[0][i]->GetHP() == 800)
+                        else if (HP == 800)
                         {
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Win();
@@ -273,7 +275,7 @@ namespace game_framework
                 {
                     if (man[0][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[0][i]))
                     {
-                        if (man[0][i]->GetHP() == 0)
+                        if (HP == 0)
                         {
                             man[0][i]->SetIsAlive(false);
                             man[0][i]->SetIsKilledBy(Man::mainGirl);
@@ -334,9 +336,11 @@ namespace game_framework
 
             for (size_t i = 0; i < man[1].size(); i++)
             {
+                int HP = int(man[1][i]->GetHP());
+
                 if (man[1][i]->IsAlreadyDead())
                 {
-                    if (man[1][i]->GetHP() == 0)
+                    if (HP == 0)
                     {
                         mainGirl.AddSlave(man[1][i]);
                         man[1].erase(man[1].begin() + i);
@@ -346,14 +350,14 @@ namespace game_framework
 
                 if (man[1][i]->IsAttackedBy(Man::all) && man[1][i]->IsAlive() && mainGirl.IsAttacking())
                 {
-                    if (man[1][i]->GetHP() == 800 || man[1][i]->GetHP() == 0)
+                    if (HP == 800 || HP == 0)
                     {
                         man[1][i]->SetIsAlive(false);
                         mainGirl.SetIsFocusing(false);
                         mainGirl.SetIsAttacking(false);
                         mainGirl.SetIsLocked(false);
 
-                        if (man[1][i]->GetHP() == 0)
+                        if (HP == 0)
                         {
                             hearts.push_back(new Heart(1, 1, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, girlsOnScreen.size()));
 
@@ -364,7 +368,7 @@ namespace game_framework
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
-                        else if (man[1][i]->GetHP() == 800)
+                        else if (HP == 800)
                         {
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Win();
@@ -393,7 +397,7 @@ namespace game_framework
                 {
                     if (man[1][i]->IsAlive() && mainGirl.IsFocusing() && mainGirl.IsFocusPerson(man[1][i]))
                     {
-                        if (man[1][i]->GetHP() == 0)
+                        if (HP == 0)
                         {
                             man[1][i]->SetIsAlive(false);
                             man[1][i]->SetIsKilledBy(Man::mainGirl);
