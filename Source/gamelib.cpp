@@ -274,7 +274,7 @@ namespace game_framework
             int d[11] = {IDB_0, IDB_1, IDB_2, IDB_3, IDB_4, IDB_5, IDB_6, IDB_7, IDB_8, IDB_9, IDB_MINUS};
 
             for (int i = 0; i < 11; i++)
-                digit[i].LoadBitmap(d[i], RGB(255, 255, 255));
+                digit[i].LoadBitmap(d[i], RGB(182, 185, 184));
 
             isBmpLoaded = true;
         }
@@ -550,7 +550,7 @@ namespace game_framework
             // 如果在暫停狀態，則顯示Ctrl-Q...
             //
             CMovingBitmap bmp;
-            bmp.LoadBitmap(IDB_CONTINUE);
+            bmp.LoadBitmap("RES/pause1.bmp", RGB(255, 255, 255));
             bmp.SetTopLeft(0, 0);
             bmp.ShowBitmap();
         }

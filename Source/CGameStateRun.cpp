@@ -8,9 +8,6 @@
 
 namespace game_framework
 {
-
-
-
     /////////////////////////////////////////////////////////////////////////////
     // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
     /////////////////////////////////////////////////////////////////////////////
@@ -75,6 +72,7 @@ namespace game_framework
             normalGirl[1][i]->LoadBitMap();
         }
 
+        ui.LoadBitmap();
         //
         // 完成部分Loading動作，提高進度
         //
@@ -84,6 +82,8 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
         CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
         CAudio::Instance()->Load(AUDIO_FLYING, "sounds\\flying.mp3");
+        CAudio::Instance()->Load(AUDIO_BELL, "sounds\\bell.mp3");
+        CAudio::Instance()->Load(AUDIO_SNATCH, "sounds\\snatch.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
@@ -105,9 +105,10 @@ namespace game_framework
         // 如果希望修改cursor的樣式，則將下面程式的commment取消即可
         //
         //SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
-
         //mainGirl.SetIsFocusing(false);
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ui.OnMove();
+
         if (!mainGirl.IsLoser())
         {
             for (size_t i = 0; i < man[0].size(); i++)
@@ -236,7 +237,7 @@ namespace game_framework
 
                         if (HP == 0)
                         {
-                            hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
+                            hearts.push_back(new Heart(0, 1, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), girlsOnScreen.size()));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -260,7 +261,10 @@ namespace game_framework
                     }
 
                     if (mainGirl.IsClicked())
+                    {
                         mainGirl.Attack(man[0][i], &map);
+                        ui.AddScore(3 * girlsOnScreen.size());
+                    }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
                     {
@@ -277,7 +281,7 @@ namespace game_framework
                             man[0][i]->SetIsKilledBy(Man::mainGirl);
                             mainGirl.SetIsFocusing(false);
                             mainGirl.SetIsAttacking(false);
-                            hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 500));
+                            hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 0));
                             CAudio::Instance()->Stop(AUDIO_LASER);
                         }
 
@@ -287,6 +291,7 @@ namespace game_framework
                             {
                                 man[0][i]->SetIsAttackedBy(Man::mainGirl);
                                 mainGirl.Attack(man[0][i], &map);
+                                ui.AddScore(1);
 
                                 if (girlsOnScreen.size() != 0)
                                 {
@@ -314,6 +319,7 @@ namespace game_framework
                                     {
                                         man[0][i]->SetIsAttackedBy(Man::all);
                                         mainGirl.SetIsLocked(true);
+                                        CAudio::Instance()->Play(AUDIO_SNATCH, false);
                                     }
                                 }
                             }
@@ -353,7 +359,7 @@ namespace game_framework
 
                         if (HP == 0)
                         {
-                            hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 500));
+                            hearts.push_back(new Heart(1, 1, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, girlsOnScreen.size()));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -377,7 +383,10 @@ namespace game_framework
                     }
 
                     if (mainGirl.IsClicked())
+                    {
                         mainGirl.Attack(man[1][i], &map);
+                        ui.AddScore(3 * girlsOnScreen.size());
+                    }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
                     {
@@ -394,7 +403,7 @@ namespace game_framework
                             man[1][i]->SetIsKilledBy(Man::mainGirl);
                             mainGirl.SetIsFocusing(false);
                             mainGirl.SetIsAttacking(false);
-                            hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 500));
+                            hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 0));
                             CAudio::Instance()->Stop(AUDIO_LASER);
                         }
 
@@ -404,6 +413,7 @@ namespace game_framework
                             {
                                 man[1][i]->SetIsAttackedBy(Man::mainGirl);
                                 mainGirl.Attack(man[1][i], &map);
+                                ui.AddScore(1);
 
                                 if (girlsOnScreen.size() != 0)
                                 {
@@ -431,6 +441,7 @@ namespace game_framework
                                     {
                                         man[1][i]->SetIsAttackedBy(Man::all);
                                         mainGirl.SetIsLocked(true);
+                                        CAudio::Instance()->Play(AUDIO_SNATCH, false);
                                     }
                                 }
                             }
@@ -477,6 +488,7 @@ namespace game_framework
             if (hearts[i]->HitMainGirl(&mainGirl))
             {
                 //do something like increasing score
+                ui.AddScore(hearts[i]->GetHP());
                 CAudio::Instance()->Play(AUDIO_EAT_HEART, false);
                 delete hearts[i];
                 hearts.erase(hearts.begin() + i);
@@ -536,10 +548,14 @@ namespace game_framework
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
+        //waveOutSetVolume(0, 0x0000);
+        //CAudio::Instance()->Pause();
     }
 
     void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
+        //waveOutSetVolume(0, 0x0FFF);
+        //CAudio::Instance()->Resume();
     }
 
     void CGameStateRun::OnShow()
@@ -553,6 +569,7 @@ namespace game_framework
         //  貼上背景圖、撞擊數、球、擦子、彈跳的球
         //
         map.OnShow();
+        ui.OnShow();
 
         for (size_t i = 0; i < man[0].size(); i++)
         {

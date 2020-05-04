@@ -4,7 +4,7 @@ namespace game_framework
     {
     public:
         Girl(int x, int y, int start, int end, bool direction);
-        ~Girl();
+        virtual ~Girl();
         virtual void LoadBitMap() = 0;
         void SetMoving(bool status);
         void SetDirection(bool direction);
@@ -49,6 +49,7 @@ namespace game_framework
     {
     public:
         NormalGirl(int x, int y, int start, int end, bool direction, int type);
+        ~NormalGirl();
         void LoadBitMap();
     private:
         const int type;

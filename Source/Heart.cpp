@@ -8,9 +8,32 @@
 
 namespace game_framework
 {
-    Heart::Heart(int pos, int size, int x, int y, int HP) : size(size), x(x), y(y), HP(HP), pos(pos)
+    Heart::Heart(int pos, int size, int x, int y, int numberOfPeople) : size(size), x(x), y(y), pos(pos)
     {
         LoadBitmap();
+
+        switch (numberOfPeople)
+        {
+            case 0:
+                HP = 500;
+                break;
+
+            case 1:
+                HP = 1500;
+                break;
+
+            case 2:
+                HP = 3000;
+                break;
+
+            case 3:
+                HP = 5000;
+                break;
+
+            default:
+                HP = 10000;
+                break;
+        }
     }
 
     void Heart::OnMove()
@@ -25,19 +48,33 @@ namespace game_framework
 
         if (pos == 0)
         {
-            for (int i = 1; i <= 15; i++)
-            {
-                strcpy(text, ("RES/Heart/heart_small_top (" + to_string(i) + ").bmp").c_str());
-                heart.AddBitmap(text, RGB(255, 255, 255));
-            }
+            if (size == 0)
+                for (int i = 1; i <= 15; i++)
+                {
+                    strcpy(text, ("RES/Heart/small/heart_small_top (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
+            else
+                for (int i = 1; i <= 15; i++)
+                {
+                    strcpy(text, ("RES/Heart/big/heart_big_top (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
         }
         else
         {
-            for (int i = 1; i <= 9; i++)
-            {
-                strcpy(text, ("RES/Heart/heart_small_bottom (" + to_string(i) + ").bmp").c_str());
-                heart.AddBitmap(text, RGB(255, 255, 255));
-            }
+            if (size == 0)
+                for (int i = 1; i <= 9; i++)
+                {
+                    strcpy(text, ("RES/Heart/small/heart_small_bottom (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
+            else
+                for (int i = 1; i <= 9; i++)
+                {
+                    strcpy(text, ("RES/Heart/big/heart_big_bottom (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
         }
 
         heart.SetDelayCount(1);
