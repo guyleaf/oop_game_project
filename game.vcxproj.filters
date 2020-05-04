@@ -261,5 +261,17 @@
     <Image Include="RES\UI\number\number (9).bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\button (1).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\button (2).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\button (3).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\button (4).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
