@@ -17,7 +17,7 @@ namespace game_framework
         bool IsLocked();
         void Win();
         void Lose();
-        bool IsWinner();
+        bool IsAlive();
         bool IsAlreadyDead();
         int GetX();
         int GetY();
