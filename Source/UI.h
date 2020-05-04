@@ -20,10 +20,11 @@ namespace game_framework
         const int MaxTime;
         int time_left;
         bool is_reinforced;
-        int heartPoints;
         int state;
         int clock_radius;
         float angle;
+        CHeartPoint heart;
+        CMovingBitmap heartPointBoard;
         CMovingBitmap scoreBoard;
         CInteger score;
         vector<CAnimation> hearts;

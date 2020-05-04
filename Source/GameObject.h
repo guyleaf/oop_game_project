@@ -20,6 +20,7 @@ namespace game_framework
     class Man;
     class Girl;
     class Heart;
+    class CHeartPoint;
     class UI;
 }
 #include "CGameMap.h"
@@ -27,4 +28,5 @@ namespace game_framework
 #include "Man.h"
 #include "Girl.h"
 #include "Heart.h"
+#include "CHeartPoint.h"
 #include "UI.h"
