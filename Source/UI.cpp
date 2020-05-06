@@ -14,11 +14,12 @@ namespace game_framework
         GAMEOVER
     };
 
-    UI::UI() : score(8), counter(10), time_left(89), is_reinforced(false), heartPoints(0), state(INPROGRESS), MaxTime(90)
+    UI::UI() : score(8), counter(10), time_left(89), is_reinforced(false), heart(500, 9), state(INPROGRESS), MaxTime(90)
     {
         time_start.SetPoint(0, 0);
         time_end.SetPoint(0, 0);
         score.SetInteger(0);
+        heart.SetPoint(2000);
         clock_radius = 30;
         angle = 0;
         xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
@@ -26,7 +27,10 @@ namespace game_framework
 
     void UI::LoadBitmap()
     {
+        heart.LoadBitmap();
         char text[100] = { 0 };
+        strcpy(text, "RES/UI/heartPointBoard.bmp");
+        heartPointBoard.LoadBitmap(text);
         strcpy(text, "RES/UI/scoreBoard.bmp");
         scoreBoard.LoadBitmap(text);
         strcpy(text, "RES/UI/clock_background.bmp");
@@ -34,7 +38,7 @@ namespace game_framework
         strcpy(text, "RES/UI/clock.bmp");
         clock.LoadBitmap(text, RGB(255, 255, 255));
         score.LoadBitmap();
-        clock_center.SetPoint(clock.Left() + clock.Width() / 2 + 1, clock.Top() + clock.Height() / 2 + 3);
+        clock_center.SetPoint(heartPointBoard.Width() + (clock.Width() / 2) + 1, clock.Height() / 2 + 3);
         HBITMAP hbitmap = (HBITMAP)LoadImage(NULL, "RES/UI/pointer.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
         //Add hbitmap to pointer CBitmap
         pointer.Attach(hbitmap);
@@ -44,8 +48,7 @@ namespace game_framework
 
     void UI::OnMove()
     {
-        waveOutGetVolume(0, &originalValue);
-
+        //waveOutGetVolume(0, &originalVolume);
         if (state == INPROGRESS)
         {
             if (is_reinforced)
@@ -65,10 +68,10 @@ namespace game_framework
                 {
                     int cx = clock_center.x;
                     int cy = clock_center.y - clock_radius;
-                    float distanceX = (float)(cos((-angle + 132.3) * 3.14159 / 180) * clock_center.x + sin((-angle + 132.3) * 3.14159 / 180) * clock_center.y);
-                    float distanceY = (float)(cos((-angle + 132.3) * 3.14159 / 180) * clock_center.y - sin((-angle + 132.3) * 3.14159 / 180) * clock_center.x);
+                    float distanceX = (float)(cos((-angle + 98) * 3.14159 / 180) * clock_center.x + sin((-angle + 98) * 3.14159 / 180) * clock_center.y);
+                    float distanceY = (float)(cos((-angle + 98) * 3.14159 / 180) * clock_center.y - sin((-angle + 98) * 3.14159 / 180) * clock_center.x);
                     time_start.SetPoint(cx, cy);
-                    time_end.SetPoint(int(clock_center.x + distanceX), int(clock_center.x + distanceY));
+                    time_end.SetPoint(int(clock_center.x + distanceX), int(clock_center.y + distanceY));
                     float radian = (float)(angle * 3.14159 / 180);
                     xform.eM11 = (float)cos(radian);
                     xform.eM12 = (float)sin(radian);
@@ -100,19 +103,23 @@ namespace game_framework
 
     void UI::OnShow()
     {
-        scoreBoard.SetTopLeft(clock.Width(), 0);
-        scoreBoard.ShowBitmap();
-        score.SetTopLeft(scoreBoard.Left() + 25, scoreBoard.Height() / 2);
-        score.ShowBitmap();
+        heartPointBoard.SetTopLeft(0, 0);
+        heartPointBoard.ShowBitmap();
+        heart.SetTopLeft(20, heartPointBoard.Height() / 2 - 5);
+        heart.ShowBitmap();
         clock_background.SetTopLeft(clock_center.x - clock_radius, clock_center.y - clock_radius);
         clock_background.ShowBitmap();
 
         if (angle > 0)
             DrawPie();
 
-        clock.SetTopLeft(0, 0);
+        clock.SetTopLeft(heartPointBoard.Width(), 0);
         clock.ShowBitmap();
         RotatePointer();
+        scoreBoard.SetTopLeft(clock.Left() + clock.Width(), 0);
+        scoreBoard.ShowBitmap();
+        score.SetTopLeft(scoreBoard.Left() + 25, scoreBoard.Height() / 2);
+        score.ShowBitmap();
     }
 
     void UI::AddScore(int num)
@@ -125,9 +132,9 @@ namespace game_framework
         return score.GetInteger();
     }
 
-    void UI::SetHeartPoints(int points)
+    void UI::AddHeartPoints(int points)
     {
-        heartPoints = points;
+        heart.Add(points);
     }
 
     void UI::SetIsReinforced(bool status)

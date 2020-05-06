@@ -9,7 +9,7 @@ namespace game_framework
         void OnShow();
         void AddScore(int num);
         int GetScore();
-        void SetHeartPoints(int points);
+        void AddHeartPoints(int points);
         void SetIsReinforced(bool status);
         bool IsReinforced();
         bool IsGameOver();
@@ -27,14 +27,13 @@ namespace game_framework
         CMovingBitmap heartPointBoard;
         CMovingBitmap scoreBoard;
         CInteger score;
-        vector<CAnimation> hearts;
         CMovingBitmap clock_background, clock;
         CPoint time_start, time_end;
         CPoint clock_center;
         CBitmap pointer;
         BITMAP pointer_size;
         XFORM xform;
-        DWORD originalValue;
+        DWORD originalVolume;
     };
 }
 

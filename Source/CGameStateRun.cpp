@@ -264,6 +264,7 @@ namespace game_framework
                     {
                         mainGirl.Attack(man[0][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
+                        ui.AddHeartPoints(-12 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
@@ -292,6 +293,7 @@ namespace game_framework
                                 man[0][i]->SetIsAttackedBy(Man::mainGirl);
                                 mainGirl.Attack(man[0][i], &map);
                                 ui.AddScore(1);
+                                ui.AddHeartPoints(-8);
 
                                 if (girlsOnScreen.size() != 0)
                                 {
@@ -386,6 +388,7 @@ namespace game_framework
                     {
                         mainGirl.Attack(man[1][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
+                        ui.AddHeartPoints(-12 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
@@ -414,6 +417,7 @@ namespace game_framework
                                 man[1][i]->SetIsAttackedBy(Man::mainGirl);
                                 mainGirl.Attack(man[1][i], &map);
                                 ui.AddScore(1);
+                                ui.AddHeartPoints(-8);
 
                                 if (girlsOnScreen.size() != 0)
                                 {
@@ -489,6 +493,7 @@ namespace game_framework
             {
                 //do something like increasing score
                 ui.AddScore(hearts[i]->GetHP());
+                ui.AddHeartPoints(hearts[i]->GetHP() / 2 + 200);
                 CAudio::Instance()->Play(AUDIO_EAT_HEART, false);
                 delete hearts[i];
                 hearts.erase(hearts.begin() + i);

@@ -3,7 +3,7 @@ namespace game_framework
     class CHeartPoint
     {
     public:
-        CHeartPoint(int = 5);		// default 5 Hearts
+        CHeartPoint(int, int = 5);		// default 5 Hearts
         void Add(int x);			// 增加Point值
         int  GetPoint();			// 回傳Point值
         void LoadBitmap();			// 載入愛心量條之圖形
@@ -12,7 +12,8 @@ namespace game_framework
         void ShowBitmap();			// 將動畫貼到螢幕
     private:
         const int NUMHEARTS;			// 共顯示NUMDIGITS個位數
-        CMovingBitmap hearts[19];		// 儲存愛心量條之圖形(bitmap)
+        const int NUMPOINTSPERHEART;
+        CMovingBitmap hearts[20];		// 儲存愛心量條之圖形(bitmap)
         int x, y;						// 顯示的座標
         int n;							// Point值
         bool isBmpLoaded;				// 是否已經載入圖形
