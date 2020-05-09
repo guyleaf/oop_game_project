@@ -1,8 +1,5 @@
-#include "CEraser.h"
-#include "CBall.h"
-#include "CBouncingBall.h"
-#include "CGameMap.h"
-#include "MainGirl.h"
+#include "GameObject.h"
+#include <vector>
 
 namespace game_framework
 {
@@ -31,9 +28,14 @@ namespace game_framework
     private:
         CMovingBitmap	background;	// 背景圖
         CMovingBitmap	help;		// 說明圖
-        CInteger		hits_left;	// 剩下的撞擊數
+        CInteger		score;	// 得分數
         CGameMap map;
-        MainGirl girl;
+        MainGirl mainGirl;
+        vector<Man*> man[2];
+        vector<Girl*> normalGirl[2];
+        vector<Heart*> hearts;
+        vector<Girl*> girlsOnScreen;
+        UI ui;
     };
 }
 
