@@ -10,6 +10,7 @@ namespace game_framework
         void AddScore(int num);
         int GetScore();
         void AddHeartPoints(int points);
+        int GetHeartPoints();
         void SetIsReinforced(bool status);
         bool IsReinforced();
         bool IsGameOver();
