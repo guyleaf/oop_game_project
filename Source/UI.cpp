@@ -137,6 +137,11 @@ namespace game_framework
         heart.Add(points);
     }
 
+    int UI::GetHeartPoints()
+    {
+        return heart.GetPoint();
+    }
+
     void UI::SetIsReinforced(bool status)
     {
         is_reinforced = status;
