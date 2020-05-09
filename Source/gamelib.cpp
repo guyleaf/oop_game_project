@@ -300,12 +300,12 @@ namespace game_framework
         if (n >= 0)
         {
             MSB = n;
-            nx = x + digit[0].Width() * (NUMDIGITS - 1);
+            nx = x + (digit[0].Width() + 3) * (NUMDIGITS - 1);
         }
         else
         {
             MSB = -n;
-            nx = x + digit[0].Width() * NUMDIGITS;
+            nx = x + (digit[0].Width() + 3) * NUMDIGITS;
         }
 
         for (int i = 0; i < NUMDIGITS; i++)
@@ -314,7 +314,7 @@ namespace game_framework
             MSB /= 10;
             digit[d].SetTopLeft(nx, y);
             digit[d].ShowBitmap();
-            nx -= digit[d].Width();
+            nx -= (digit[d].Width() + 3);
         }
 
         if (n < 0)   // 如果小於0，則顯示負號

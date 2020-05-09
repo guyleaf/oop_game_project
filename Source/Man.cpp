@@ -251,6 +251,10 @@ namespace game_framework
             color_point[0].y = clicking_bar.Top() + 3;
             color_point[1].x = int(clicking_bar.Left() + (abs(800 - HP) / 40) * 10.5);
             color_point[1].y = clicking_bar.Top() + clicking_bar.Height() - 3;
+
+            if (color_point[1].x < color_point[0].x)
+                color_point[1].x = color_point[0].x;
+
             DrawBeam(map);
             clicking.SetTopLeft(int(clicking_bar.Left() - clicking.Width() / 2 + (abs(800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
             clicking.OnShow();
