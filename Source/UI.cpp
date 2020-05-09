@@ -105,7 +105,7 @@ namespace game_framework
     {
         heartPointBoard.SetTopLeft(0, 0);
         heartPointBoard.ShowBitmap();
-        heart.SetTopLeft(20, heartPointBoard.Height() / 2 - 5);
+        heart.SetTopLeft(20, heartPointBoard.Height() / 2);
         heart.ShowBitmap();
         clock_background.SetTopLeft(clock_center.x - clock_radius, clock_center.y - clock_radius);
         clock_background.ShowBitmap();
