@@ -76,6 +76,7 @@ namespace game_framework
         {
             if (cursor_y1 >= 490 && cursor_y1 <= 540)
             {
+                CAudio::Instance()->Stop(AUDIO_INIT);
                 GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
             }
         }
