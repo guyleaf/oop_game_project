@@ -1,4 +1,3 @@
-#define MAP_W 2315
 #include <string>
 namespace game_framework
 {
@@ -7,16 +6,21 @@ namespace game_framework
     public:
         CGameMap();
         void LoadBitMap();
-        void OnShow(int level);
+        void OnShow();
         void Addsx(int val);
         void Addsy(int val);
+        int Height();
+        int Width();
         int ScreenX(int val);
         int ScreenY(int val);
-        bool IsEmpty(int x, int y);
+        void SetLevel(int level);
+        int GetLevel();
+        bool IsInScreen(int start_x, int end_x);
     private:
-        //void ParseCsv(std::string name, int array[][24]);
         CMovingBitmap firstFloor, secondFloor, ceiling;
         int sx, sy;
+        int level;
+        int height, width;
     };
 }
 

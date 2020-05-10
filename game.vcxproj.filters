@@ -135,6 +135,21 @@
     <ClCompile Include="Source\MainGirl.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Girl.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Man.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Heart.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CHeartPoint.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\audio.h">
@@ -176,6 +191,24 @@
     <ClInclude Include="Source\MainGirl.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Girl.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Man.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Heart.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CHeartPoint.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\game.rc">
@@ -202,6 +235,36 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="RES\initScreen2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (0).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (1).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (2).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (3).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (4).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (5).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (6).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (7).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (8).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\UI\number\number (9).bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="RES\button (1).bmp">

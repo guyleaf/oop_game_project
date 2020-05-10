@@ -240,7 +240,6 @@ namespace game_framework
         GAME_ASSERT(bmp.size() != 0, "CAnimation: Bitmaps must be loaded first.");
         return bmp_iter->Width();
     }
-
     /////////////////////////////////////////////////////////////////////////////
     // CInteger: 這個class提供顯示整數圖形的能力
     // 1. 要懂得怎麼呼叫(運用)其各種能力，但是可以不懂下列的程式是什麼意思
@@ -275,7 +274,7 @@ namespace game_framework
             int d[11] = {IDB_0, IDB_1, IDB_2, IDB_3, IDB_4, IDB_5, IDB_6, IDB_7, IDB_8, IDB_9, IDB_MINUS};
 
             for (int i = 0; i < 11; i++)
-                digit[i].LoadBitmap(d[i], RGB(255, 255, 255));
+                digit[i].LoadBitmap(d[i], RGB(182, 185, 184));
 
             isBmpLoaded = true;
         }
@@ -301,12 +300,12 @@ namespace game_framework
         if (n >= 0)
         {
             MSB = n;
-            nx = x + digit[0].Width() * (NUMDIGITS - 1);
+            nx = x + (digit[0].Width() + 3) * (NUMDIGITS - 1);
         }
         else
         {
             MSB = -n;
-            nx = x + digit[0].Width() * NUMDIGITS;
+            nx = x + (digit[0].Width() + 3) * NUMDIGITS;
         }
 
         for (int i = 0; i < NUMDIGITS; i++)
@@ -315,7 +314,7 @@ namespace game_framework
             MSB /= 10;
             digit[d].SetTopLeft(nx, y);
             digit[d].ShowBitmap();
-            nx -= digit[d].Width();
+            nx -= (digit[d].Width() + 3);
         }
 
         if (n < 0)   // 如果小於0，則顯示負號
@@ -551,7 +550,7 @@ namespace game_framework
             // 如果在暫停狀態，則顯示Ctrl-Q...
             //
             CMovingBitmap bmp;
-            bmp.LoadBitmap(IDB_CONTINUE);
+            bmp.LoadBitmap("RES/pause1.bmp", RGB(255, 255, 255));
             bmp.SetTopLeft(0, 0);
             bmp.ShowBitmap();
         }

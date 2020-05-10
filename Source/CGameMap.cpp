@@ -4,24 +4,15 @@
 #include <ddraw.h>
 #include "audio.h"
 #include "gamelib.h"
-#include "CGameMap.h"
+#include "GameObject.h"
 #include <fstream>
 #include <iostream>
 using namespace std;
 
 namespace game_framework
 {
-    CGameMap::CGameMap() : sx(300), sy(0)
+    CGameMap::CGameMap() : sx(300), sy(0), level(1), width(2894), height(600)
     {
-        /*ParseCsv("floor.csv", map[0]);
-
-        for (int i = 0; i < 17; i++)
-        {
-            for (int j = 0; j < 24; j++)
-                cout << map[0][i][j] + ",";
-
-            cout << endl;
-        }*/
     }
 
     void CGameMap::LoadBitMap()
@@ -31,7 +22,7 @@ namespace game_framework
         ceiling.LoadBitmap(IDB_CEILING);
     }
 
-    void CGameMap::OnShow(int level = 1)
+    void CGameMap::OnShow()
     {
         if (level == 1)
         {
@@ -54,7 +45,7 @@ namespace game_framework
     {
         if (value > 0)
         {
-            if (MAP_W - (sx + SIZE_X) > 0)
+            if (width - (sx + SIZE_X) > 0)
                 sx += value;
         }
         else
@@ -69,6 +60,16 @@ namespace game_framework
         sy += value;
     }
 
+    int CGameMap::Height()
+    {
+        return height;
+    }
+
+    int CGameMap::Width()
+    {
+        return width;
+    }
+
     int CGameMap::ScreenX(int val)
     {
         return val - sx;
@@ -79,36 +80,21 @@ namespace game_framework
         return val - sy;
     }
 
-    bool CGameMap::IsEmpty(int x, int y)
+    bool CGameMap::IsInScreen(int start_x, int end_x)
     {
-        return false;
+        if (sx <= start_x && end_x <= sx + SIZE_X)
+            return true;
+        else
+            return false;
     }
 
-    /*void CGameMap::ParseCsv(std::string name, int array[][24])
+    int CGameMap::GetLevel()
     {
-        fstream data;
-        data.open(name);
-        string test;
-        getline(data, test);
+        return level;
+    }
 
-        if (data.is_open())
-        {
-            for (int i = 0; i < 17; i++)
-            {
-                for (int j = 0; j < 24; j++)
-                {
-                    string p;
-
-                    if (j != 23)
-                        getline(data, p, ',');
-                    else
-                        getline(data, p, '\n');
-
-                    array[i][j] = stoi(p);
-                }
-            }
-        }
-        else
-            ASSERT(0);
-    }*/
+    void CGameMap::SetLevel(int level)
+    {
+        this->level = level;
+    }
 }

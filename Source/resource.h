@@ -16,16 +16,6 @@
 #define IDB_BALL2                       135
 #define IDB_BALL3                       136
 #define IDB_BALL4                       137
-#define IDB_0                           138
-#define IDB_1                           139
-#define IDB_2                           140
-#define IDB_3                           141
-#define IDB_4                           142
-#define IDB_5                           143
-#define IDB_6                           144
-#define IDB_7                           145
-#define IDB_8                           146
-#define IDB_9                           147
 #define IDB_MINUS                       148
 #define IDB_CENTER                      149
 #define IDB_ERASER2                     150
@@ -39,18 +29,26 @@
 #define IDB_FIRSTFLOOR                  168
 #define IDB_SECONDFLOOR                 169
 #define IDB_CEILING                     170
-#define IDB_BITMAP2                     175
-#define IDB_INITSCREEN                  175
-#define IDB_BUTTON1_2                   177
-#define IDB_BUTTON1_1                   178
-#define IDB_BUTTON2_1                   179
-#define IDB_BITMAP4                     180
-#define IDB_BUTTON2_2                   180
-#define IDB_VOICE1                      181
-#define IDB_VOICE2                      182
-#define IDB_VOICE3                      183
-#define IDB_BITMAP5                     184
-#define IDB_VOICE4                      184
+#define IDB_INITSCREEN                  171
+#define IDB_BUTTON1_2                   172
+#define IDB_BUTTON1_1                   173
+#define IDB_BUTTON2_1                   174
+#define IDB_BUTTON2_2                   175
+#define IDB_VOICE1                      176
+#define IDB_VOICE2                      177
+#define IDB_VOICE3                      178
+#define IDB_BITMAP5                     179
+#define IDB_VOICE4                      180
+#define IDB_0                           181
+#define IDB_1                           182
+#define IDB_2                           183
+#define IDB_3                           184
+#define IDB_4                           185
+#define IDB_5                           186
+#define IDB_6                           187
+#define IDB_7                           188
+#define IDB_8                           189
+#define IDB_9                           190
 #define IDC_README                      1001
 #define ID_FILE_PAUSE                   32771
 #define ID_TOGGLE_FULLSCREEN            32772
@@ -59,11 +57,11 @@
 #define ID_BUTTON_UNITTEST              32775
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        185
+#define _APS_NEXT_RESOURCE_VALUE        186
 #define _APS_NEXT_COMMAND_VALUE         32776
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           101
