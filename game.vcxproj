@@ -279,6 +279,7 @@
     </ClCompile>
     <ClCompile Include="Source\Girl.cpp" />
     <ClCompile Include="Source\Heart.cpp" />
+    <ClCompile Include="Source\CHeartPoint.cpp" />
     <ClCompile Include="Source\MainFrm.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -315,6 +316,7 @@
     <ClInclude Include="Source\gameView.h" />
     <ClInclude Include="Source\Girl.h" />
     <ClInclude Include="Source\Heart.h" />
+    <ClInclude Include="Source\CHeartPoint.h" />
     <ClInclude Include="Source\MainFrm.h" />
     <ClInclude Include="Source\MainGirl.h" />
     <ClInclude Include="Source\Man.h" />
@@ -352,6 +354,10 @@
     <Image Include="RES\UI\number\number (7).bmp" />
     <Image Include="RES\UI\number\number (8).bmp" />
     <Image Include="RES\UI\number\number (9).bmp" />
+    <Image Include="RES\voice1.bmp" />
+    <Image Include="RES\voice2.bmp" />
+    <Image Include="RES\voice3.bmp" />
+    <Image Include="RES\voice4.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
