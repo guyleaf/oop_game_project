@@ -354,6 +354,10 @@
     <Image Include="RES\UI\number\number (7).bmp" />
     <Image Include="RES\UI\number\number (8).bmp" />
     <Image Include="RES\UI\number\number (9).bmp" />
+    <Image Include="RES\voice1.bmp" />
+    <Image Include="RES\voice2.bmp" />
+    <Image Include="RES\voice3.bmp" />
+    <Image Include="RES\voice4.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

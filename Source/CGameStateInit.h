@@ -1,5 +1,6 @@
 namespace game_framework
 {
+
     class CGameStateInit : public CGameState
     {
     public:
@@ -19,9 +20,12 @@ namespace game_framework
 		void OnMove();
         void OnShow();									// 顯示這個狀態的遊戲畫面
 		int cursor_x1, cursor_y1, cursor_x2, cursor_y2;
+		bool change;
+		DWORD volume;
     private:
         CMovingBitmap logo;								// csie的logo
 		CMovingBitmap button1_1, button1_2, button2_1, button2_2;
+		CMovingBitmap voice1, voice2, voice3, voice4;
     };
 }
 
