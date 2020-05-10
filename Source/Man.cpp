@@ -146,12 +146,12 @@ namespace game_framework
                 direction = fdirection;
                 is_positioned = false;
             }
-            else if (!is_positioned && fx - x >= 10)
+            else if (!is_positioned && fx - x >= 15)
             {
                 direction = fdirection;
                 x += velocity;
             }
-            else if (!is_positioned && x - fx >= 10)
+            else if (!is_positioned && x - fx >= 15)
             {
                 direction = fdirection;
                 x -= velocity;
