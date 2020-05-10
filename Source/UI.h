@@ -4,15 +4,19 @@ namespace game_framework
     {
     public:
         UI();
+        void LoadVolume();
         void LoadBitmap();
         void OnMove();
         void OnShow();
+        void OnMouseMove(CPoint point);
         void AddScore(int num);
+        void Toggle();
+        bool IsAudioButtonHoverd();
         int GetScore();
         void AddHeartPoints(int points);
+        void SetHeartPoints(int points);
         int GetHeartPoints();
-        void SetIsReinforced(bool status);
-        bool IsReinforced();
+        void GotoHRState(int state);
         bool IsGameOver();
     private:
         void DrawPie();
@@ -34,7 +38,10 @@ namespace game_framework
         CBitmap pointer;
         BITMAP pointer_size;
         XFORM xform;
-        DWORD originalVolume;
+        CMovingBitmap audio_button_on, audio_button_on_hovered, audio_button_off, audio_button_off_hovered;
+        int cursor_x, cursor_y;
+        bool is_muted;
+        DWORD volume;
     };
 }
 

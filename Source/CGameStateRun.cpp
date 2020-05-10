@@ -84,6 +84,8 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_FLYING, "sounds\\flying.mp3");
         CAudio::Instance()->Load(AUDIO_BELL, "sounds\\bell.mp3");
         CAudio::Instance()->Load(AUDIO_SNATCH, "sounds\\snatch.mp3");
+        CAudio::Instance()->Load(AUDIO_REINFORCING, "sounds\\reinforcing.mp3");
+        CAudio::Instance()->Load(AUDIO_BLINK, "sounds\\blink.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
@@ -96,6 +98,7 @@ namespace game_framework
         const int HITS_LEFT_Y = 0;
         /*hits_left.SetInteger(HITS_LEFT);					// 指定剩下的撞擊數
         hits_left.SetTopLeft(HITS_LEFT_X, HITS_LEFT_Y);		// 指定剩下撞擊數的座標*/
+        ui.LoadVolume();
         CAudio::Instance()->Play(AUDIO_GAME, true);			// 撥放 GAME
     }
 
@@ -108,6 +111,9 @@ namespace game_framework
         //mainGirl.SetIsFocusing(false);
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ui.OnMove();
+
+        if (!mainGirl.IsInAnimation() && mainGirl.IsReinforced())
+            ui.GotoHRState(CHeartPoint::reinforced);
 
         if (!mainGirl.IsInAnimation())
         {
@@ -499,11 +505,16 @@ namespace game_framework
             {
                 //do something like increasing score
                 ui.AddScore(hearts[i]->GetHP());
-                ui.AddHeartPoints(hearts[i]->GetHP() / 2 + 300);
 
+                if (!mainGirl.IsReinforced())
+                    ui.AddHeartPoints(hearts[i]->GetHP() / 2 + 300);
+
+                // special mode
                 if (ui.GetHeartPoints() == 4500)
                 {
-                    ui.SetIsReinforced(true);
+                    CAudio::Instance()->Pause();
+                    CAudio::Instance()->Play(AUDIO_REINFORCING, false);
+                    ui.GotoHRState(CHeartPoint::reinforcing);
                     mainGirl.SetIsReinforced(true);
                     mainGirl.SetIsFocusing(false);
                     mainGirl.SetIsAttacking(false);
@@ -519,6 +530,13 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (mainGirl.IsReinforced() && ui.GetHeartPoints() == 0)
+        {
+            ui.GotoHRState(CHeartPoint::normal);
+            ui.SetHeartPoints(2000);
+            mainGirl.SetIsReinforced(false);
+        }
+
         mainGirl.OnMove(&map);
     }
 
@@ -549,6 +567,9 @@ namespace game_framework
             else
                 CAudio::Instance()->Play(AUDIO_LASER, true);
         }
+
+        if (ui.IsAudioButtonHoverd())
+            ui.Toggle();
     }
 
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -563,7 +584,8 @@ namespace game_framework
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
-        mainGirl.OnMouseMove(&map, point);
+        mainGirl.OnMouseMove(point);
+        ui.OnMouseMove(point);
     }
 
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
