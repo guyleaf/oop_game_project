@@ -14,6 +14,7 @@ namespace game_framework
 
     CGameStateInit::CGameStateInit(CGame* g) : CGameState(g)
     {
+		change = false;
     }
 
     void CGameStateInit::OnInit()
@@ -26,19 +27,26 @@ namespace game_framework
         //
         // 開始載入資料
         //
+		//CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
         logo.LoadBitmap(IDB_INITSCREEN);
 		button1_1.LoadBitmap(IDB_BUTTON1_1);
 		button1_2.LoadBitmap(IDB_BUTTON1_2);
 		button2_1.LoadBitmap(IDB_BUTTON2_1);
 		button2_2.LoadBitmap(IDB_BUTTON2_2);
+		voice1.LoadBitmap(IDB_VOICE1);
+		voice2.LoadBitmap(IDB_VOICE2);
+		voice3.LoadBitmap(IDB_VOICE3);
+		voice4.LoadBitmap(IDB_VOICE4);
+		
         Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         //
         // 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
         //
     }
-
+	
     void CGameStateInit::OnBeginState()
     {
+		//CAudio::Instance()->Play(AUDIO_INIT, true);
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -72,7 +80,7 @@ namespace game_framework
 				GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
 			}
 		}
-
+		
 		if (cursor_x1 >= 420 && cursor_x1 <= 615)
 		{
 			if (cursor_y1 >= 490 && cursor_y1 <= 540)
@@ -80,6 +88,36 @@ namespace game_framework
 				PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
 			}
 		}
+		if (change == false)
+		{
+			if (cursor_x1 >= 630 && cursor_x1 <= 690)
+			{
+				if (cursor_y1 >= 450 && cursor_y1 <= 510)
+				{
+					change = true;
+					waveOutGetVolume(0, &volume);
+					waveOutSetVolume(0, 0);
+					cursor_x1 = -1;
+					cursor_y1 = -1;
+				}
+			}
+		}
+		else
+		{
+			if (cursor_x1 >= 630 && cursor_x1 <= 690)
+			{
+				if (cursor_y1 >= 450 && cursor_y1 <= 510)
+				{
+					change = false;
+					waveOutSetVolume(0,volume);
+					cursor_x1 = -1;
+					cursor_y1 = -1;
+				}
+			}
+		}
+
+
+		
 
 	}
 	void CGameStateInit::OnMouseMove(UINT nFlags, CPoint point)
@@ -94,12 +132,15 @@ namespace game_framework
         //
         // 貼上logo
         //
+		//i = false;
         logo.SetTopLeft((SIZE_X - logo.Width()) / 2, (SIZE_Y - logo.Height()) / 8);
         logo.ShowBitmap();
 		button1_1.SetTopLeft(180,490);
 		button1_1.ShowBitmap();
 		button2_1.SetTopLeft(420, 490);
 		button2_1.ShowBitmap();
+		voice1.SetTopLeft(630, 450);
+		voice1.ShowBitmap();
 		if (cursor_x2 >= 180 && cursor_x2 <= 375)
 		{
 			if (cursor_y2 >= 490 && cursor_y2 <= 540)
@@ -117,6 +158,39 @@ namespace game_framework
 				button2_2.ShowBitmap();
 			}
 		}
+		////////////////////////////////////////////////////////////////////
+		
+		if (change == false)
+		{
+			voice1.SetTopLeft(630, 450);
+			voice1.ShowBitmap();
+			if (cursor_x2 >= 630 && cursor_x2 <= 690)
+			{
+				if (cursor_y2 >= 450 && cursor_y2 <= 510)
+				{
+					voice2.SetTopLeft(630, 450);
+					voice2.ShowBitmap();
+				}
+			}
+				
+		}
+		if (change == true)
+		{
+			
+			voice4.SetTopLeft(630, 450);
+			voice4.ShowBitmap();
+			if (cursor_x2 >= 630 && cursor_x2 <= 690)
+			{
+				if (cursor_y2 >= 450 && cursor_y2 <= 510)
+				{
+					voice3.SetTopLeft(630, 450);
+					voice3.ShowBitmap();
+				}
+			}
+
+			
+		}
+
         //
         // Demo螢幕字型的使用，不過開發時請盡量避免直接使用字型，改用CMovingBitmap比較好
         //
@@ -135,7 +209,7 @@ namespace game_framework
         CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
     }
 
-	int CGameStateInit::GetCursorX1()
+	/*int CGameStateInit::GetCursorX1()
 	{
 		return cursor_x1;
 	}
@@ -150,5 +224,5 @@ namespace game_framework
 	int CGameStateInit::GetCursorY2()
 	{
 		return cursor_y2;
-	}
+	}*/
 }

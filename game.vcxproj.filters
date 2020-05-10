@@ -216,5 +216,17 @@
     <Image Include="RES\button (4).bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\voice1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\voice2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\voice3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\voice4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

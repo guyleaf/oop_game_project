@@ -120,6 +120,14 @@ IDB_BUTTON2_1           BITMAP                  "..\\RES\\button (3).bmp"
 
 IDB_BUTTON2_2           BITMAP                  "..\\RES\\button (4).bmp"
 
+IDB_VOICE1              BITMAP                  "..\\RES\\voice1.bmp"
+
+IDB_VOICE2              BITMAP                  "..\\RES\\voice2.bmp"
+
+IDB_VOICE3              BITMAP                  "..\\RES\\voice3.bmp"
+
+IDB_VOICE4              BITMAP                  "..\\RES\\voice4.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
