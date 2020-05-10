@@ -96,6 +96,14 @@ namespace game_framework
         }
 
         girl_right_reinforcing.SetDelayCount(5);
+
+        for (int i = 1; i <= 19; i++)
+        {
+            strcpy(text, ("RES/mainGirl/reinforced (" + to_string(i) + ").bmp").c_str());
+            reinforced.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        reinforced.SetDelayCount(5);
     }
 
     void MainGirl::OnMove(CGameMap* map)
@@ -148,9 +156,18 @@ namespace game_framework
             else if (is_reinforced)
             {
                 if (!girl_right_reinforcing.IsFinalBitmap())
+                {
                     girl_right_reinforcing.OnMove();
+
+                    if (girl_right_reinforcing.GetCurrentBitmapNumber() == 20)
+                        CAudio::Instance()->Play(AUDIO_BLINK, false);
+                }
                 else
+                {
                     state = INNORMAL;
+                    CAudio::Instance()->Stop(AUDIO_FLYING);
+                    CAudio::Instance()->Resume();
+                }
             }
             else
             {
@@ -159,6 +176,11 @@ namespace game_framework
         }
         else if (state == INNORMAL)
         {
+            if (is_reinforced)
+            {
+                reinforced.OnMove();
+            }
+
             if (!is_attacking)
                 if (is_focusing)
                 {
@@ -278,7 +300,7 @@ namespace game_framework
         }
     }
 
-    void MainGirl::OnMouseMove(CGameMap* map, CPoint point)
+    void MainGirl::OnMouseMove(CPoint point)
     {
         cursor_x = point.x;
         cursor_y = point.y;
@@ -334,7 +356,7 @@ namespace game_framework
             }
             else if (is_reinforced)
             {
-                if (girl_right_reinforcing.GetCurrentBitmapNumber() < 23)
+                if (girl_right_reinforcing.GetCurrentBitmapNumber() < 20)
                 {
                     CDC* pDC = CDDraw::GetBackCDC();			// ¨ú±o Back Plain ªº CDC
                     CPen pen(PS_SOLID, 3, RGB(255, 0, 255));
@@ -366,6 +388,12 @@ namespace game_framework
         }
         else if (state == INNORMAL)
         {
+            if (is_reinforced)
+            {
+                reinforced.SetTopLeft(map->ScreenX(x) - reinforced.Width() / 4, y - 50);
+                reinforced.OnShow();
+            }
+
             if (is_locked)
             {
                 if (direction)
@@ -510,9 +538,19 @@ namespace game_framework
         beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
 
         if (!is_locked)
-            man->LoseHP(15);
+        {
+            if (is_reinforced)
+                man->LoseHP(30);
+            else
+                man->LoseHP(15);
+        }
         else
-            man->LoseHP(70);
+        {
+            if (is_reinforced)
+                man->LoseHP(90);
+            else
+                man->LoseHP(70);
+        }
 
         if (is_locked)
             is_clicked = false;

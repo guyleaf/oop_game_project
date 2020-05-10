@@ -6,7 +6,7 @@ namespace game_framework
     public:
         MainGirl();
         void LoadBitMap();
-        void OnMouseMove(CGameMap* map, CPoint point);
+        void OnMouseMove(CPoint point);
         int GetCursorX();
         int GetCursorY();
         int GetPositionX();
@@ -54,6 +54,7 @@ namespace game_framework
         CMovingBitmap girl_left_focusing_behind, girl_left_focusing_front;
         CMovingBitmap girl_right_focusing_behind, girl_right_focusing_front;
         CAnimation girl_right_reinforcing, girl_left_reinforcing;
+        CAnimation reinforced;
         CAnimation focus_point_on, focus_point_off;
         CAnimation bump_left, bump_right;
         CPoint beam_pos[4];
