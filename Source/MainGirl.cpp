@@ -8,10 +8,17 @@
 
 namespace game_framework
 {
+    enum state
+    {
+        INNORMAL,
+        INANIMATION
+    };
+
     MainGirl::MainGirl() : x(450), y(MIDDLE), moving(false), velocity(5), is_focusing(false), is_attacking(false), is_locked(false), is_clicked(false)
     {
         is_bump = false;
-        heartPoints = 0;
+        is_reinforced = false;
+        state = INNORMAL;
     }
 
     void MainGirl::LoadBitMap()
@@ -81,76 +88,98 @@ namespace game_framework
 
         bump_left.SetDelayCount(6);
         bump_right.SetDelayCount(6);
+
+        for (int i = 1; i <= 32; i++)
+        {
+            strcpy(text, ("RES/mainGirl/right/reinforcing (" + to_string(i) + ").bmp").c_str());
+            girl_right_reinforcing.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        girl_right_reinforcing.SetDelayCount(5);
     }
 
     void MainGirl::OnMove(CGameMap* map)
     {
-        if (!is_attacking)
-            if (is_focusing)
+        if (state == INANIMATION)
+        {
+            if (is_bump)
             {
-                focus_point_off.Reset();
+                if (direction)
+                {
+                    if (bump_right.GetCurrentBitmapNumber() <= 3)
+                    {
+                        map->Addsx(-(9 - bump_right.GetCurrentBitmapNumber()));
+                        x -= (9 - bump_right.GetCurrentBitmapNumber());
+                        y += bump_right.GetCurrentBitmapNumber() + 1;
+                    }
+                    else if (bump_right.GetCurrentBitmapNumber() >= 11)
+                    {
+                        map->Addsx((bump_right.GetCurrentBitmapNumber() - 5));
+                        x += (bump_right.GetCurrentBitmapNumber() - 5);
+                        y -= 15 - bump_right.GetCurrentBitmapNumber();
+                    }
 
-                if (!focus_point_on.IsFinalBitmap())
-                    focus_point_on.OnMove();
+                    if (!bump_right.IsFinalBitmap())
+                        bump_right.OnMove();
+                    else
+                        is_bump = false;
+                }
+                else
+                {
+                    if (bump_left.GetCurrentBitmapNumber() <= 3)
+                    {
+                        map->Addsx((9 - bump_left.GetCurrentBitmapNumber()));
+                        x += (9 - bump_left.GetCurrentBitmapNumber());
+                        y += bump_left.GetCurrentBitmapNumber() + 1;
+                    }
+                    else if (bump_left.GetCurrentBitmapNumber() >= 11)
+                    {
+                        map->Addsx(-(bump_left.GetCurrentBitmapNumber() - 5));
+                        x -= (bump_left.GetCurrentBitmapNumber() - 5);
+                        y -= 15 - bump_left.GetCurrentBitmapNumber();
+                    }
+
+                    if (!bump_left.IsFinalBitmap())
+                        bump_left.OnMove();
+                    else
+                        is_bump = false;
+                }
             }
+            else if (is_reinforced)
+            {
+                if (!girl_right_reinforcing.IsFinalBitmap())
+                    girl_right_reinforcing.OnMove();
+                else
+                    state = INNORMAL;
+            }
+            else
+            {
+                state = INNORMAL;
+            }
+        }
+        else if (state == INNORMAL)
+        {
+            if (!is_attacking)
+                if (is_focusing)
+                {
+                    focus_point_off.Reset();
+
+                    if (!focus_point_on.IsFinalBitmap())
+                        focus_point_on.OnMove();
+                }
+                else
+                {
+                    focus_point_on.Reset();
+
+                    if (!focus_point_off.IsFinalBitmap())
+                        focus_point_off.OnMove();
+                }
             else
             {
                 focus_point_on.Reset();
-
-                if (!focus_point_off.IsFinalBitmap())
-                    focus_point_off.OnMove();
+                focus_point_off.Reset();
             }
-        else
-        {
-            focus_point_on.Reset();
-            focus_point_off.Reset();
-        }
 
-        if (is_bump)
-        {
-            if (direction)
-            {
-                if (bump_right.GetCurrentBitmapNumber() <= 3)
-                {
-                    map->Addsx(-(9 - bump_right.GetCurrentBitmapNumber()));
-                    x -= (9 - bump_right.GetCurrentBitmapNumber());
-                    y += bump_right.GetCurrentBitmapNumber() + 1;
-                }
-                else if (bump_right.GetCurrentBitmapNumber() >= 11)
-                {
-                    map->Addsx((bump_right.GetCurrentBitmapNumber() - 5));
-                    x += (bump_right.GetCurrentBitmapNumber() - 5);
-                    y -= 15 - bump_right.GetCurrentBitmapNumber();
-                }
-
-                if (!bump_right.IsFinalBitmap())
-                    bump_right.OnMove();
-                else
-                    is_bump = false;
-            }
-            else
-            {
-                if (bump_left.GetCurrentBitmapNumber() <= 3)
-                {
-                    map->Addsx((9 - bump_left.GetCurrentBitmapNumber()));
-                    x += (9 - bump_left.GetCurrentBitmapNumber());
-                    y += bump_left.GetCurrentBitmapNumber() + 1;
-                }
-                else if (bump_left.GetCurrentBitmapNumber() >= 11)
-                {
-                    map->Addsx(-(bump_left.GetCurrentBitmapNumber() - 5));
-                    x -= (bump_left.GetCurrentBitmapNumber() - 5);
-                    y -= 15 - bump_left.GetCurrentBitmapNumber();
-                }
-
-                if (!bump_left.IsFinalBitmap())
-                    bump_left.OnMove();
-                else
-                    is_bump = false;
-            }
-        }
-        else
-        {
             bump_left.Reset();
             bump_right.Reset();
 
@@ -185,7 +214,7 @@ namespace game_framework
                 }
             }
 
-            if (!is_focusing && moving) //檢查是否正在移動
+            if (moving)  //檢查是否正在移動
             {
                 if (direction)
                 {
@@ -288,147 +317,184 @@ namespace game_framework
 
     void MainGirl::OnShow(CGameMap* map)
     {
-        if (is_bump)
+        if (state == INANIMATION)
         {
-            if (direction)
+            if (is_bump)
             {
-                bump_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                bump_right.OnShow();
+                if (direction)
+                {
+                    bump_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    bump_right.OnShow();
+                }
+                else
+                {
+                    bump_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    bump_left.OnShow();
+                }
             }
-            else
+            else if (is_reinforced)
             {
-                bump_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                bump_left.OnShow();
+                if (girl_right_reinforcing.GetCurrentBitmapNumber() < 23)
+                {
+                    CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+                    CPen pen(PS_SOLID, 3, RGB(255, 0, 255));
+                    CPen* pOldPen = pDC->SelectObject(&pen);
+                    CBrush brush(RGB(255, 214, 255));
+                    CBrush* pOldBrush = pDC->SelectObject(&brush);
+                    CPoint coordinates[2];
+                    coordinates[0].SetPoint(map->ScreenX(x - 10), -50);
+                    coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 50), map->ScreenY(y + girl_left_stand.Height() + 5));
+                    CRect rect;
+                    rect.SetRect(coordinates[0].x, coordinates[1].y - 5, coordinates[1].x, coordinates[1].y + 10);
+                    pDC->Ellipse(&rect);
+                    rect.SetRect(coordinates[0], coordinates[1]);
+                    pDC->Rectangle(&rect);
+                    pDC->SelectObject(pOldPen);
+                    pDC->SelectObject(pOldBrush);
+                    // cover rectangle border
+                    CPen linePen(PS_SOLID, 3, RGB(255, 214, 255));
+                    pOldPen = pDC->SelectObject(&linePen);
+                    pDC->MoveTo(coordinates[0].x + 4, coordinates[1].y - 1);
+                    pDC->LineTo(coordinates[1].x - 4, coordinates[1].y - 1);
+                    pDC->SelectObject(pOldPen);
+                    CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
+                }
+
+                girl_right_reinforcing.SetTopLeft(map->ScreenX(x), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
+                girl_right_reinforcing.OnShow();
             }
         }
-        else if (is_locked)
+        else if (state == INNORMAL)
         {
-            if (direction)
+            if (is_locked)
             {
-                if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
+                if (direction)
                 {
-                    girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_right_focusing_front.ShowBitmap();
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
+                    {
+                        girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_right_focusing_front.ShowBitmap();
 
-                    if (is_attacking)
-                        DrawBeam(map);
+                        if (is_attacking)
+                            DrawBeam(map);
+                    }
+                    else
+                    {
+                        if (is_attacking)
+                            DrawBeam(map);
+
+                        girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_right_focusing_behind.ShowBitmap();
+                    }
                 }
                 else
                 {
-                    if (is_attacking)
-                        DrawBeam(map);
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
+                    {
+                        girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_left_focusing_front.ShowBitmap();
 
-                    girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_right_focusing_behind.ShowBitmap();
+                        if (is_attacking)
+                            DrawBeam(map);
+                    }
+                    else
+                    {
+                        if (is_attacking)
+                            DrawBeam(map);
+
+                        girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_left_focusing_behind.ShowBitmap();
+                    }
+                }
+            }
+            else if (is_focusing)
+            {
+                if (direction)
+                {
+                    beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 40, map->ScreenY(y) + girl_left_stand.Height() / 5);
+                    beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2, map->ScreenY(y) + girl_left_stand.Height() / 5);
+
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
+                    {
+                        girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_right_focusing_front.ShowBitmap();
+
+                        if (is_attacking)
+                            DrawBeam(map);
+                    }
+                    else
+                    {
+                        if (is_attacking)
+                            DrawBeam(map);
+
+                        girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_right_focusing_behind.ShowBitmap();
+                    }
+                }
+                else
+                {
+                    beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
+                    beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 20, map->ScreenY(y) + girl_left_stand.Height() / 5);
+
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
+                    {
+                        girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_left_focusing_front.ShowBitmap();
+
+                        if (is_attacking)
+                            DrawBeam(map);
+                    }
+                    else
+                    {
+                        if (is_attacking)
+                            DrawBeam(map);
+
+                        girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_left_focusing_behind.ShowBitmap();
+                    }
+                }
+            }
+            else if (moving) //是否正在移動
+            {
+                if (direction) //false => 往左, true => 往右
+                {
+                    if (velocity != 12)
+                    {
+                        girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_walk_right.OnShow();
+                    }
+                    else
+                    {
+                        girl_run_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_run_right.OnShow();
+                    }
+                }
+                else
+                {
+                    if (velocity != 12)
+                    {
+                        girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_walk_left.OnShow();
+                    }
+                    else
+                    {
+                        girl_run_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_run_left.OnShow();
+                    }
                 }
             }
             else
             {
-                if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
+                if (direction) //false => 往左, true => 往右
                 {
-                    girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_left_focusing_front.ShowBitmap();
-
-                    if (is_attacking)
-                        DrawBeam(map);
+                    girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_right_stand.ShowBitmap();
                 }
                 else
                 {
-                    if (is_attacking)
-                        DrawBeam(map);
-
-                    girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_left_focusing_behind.ShowBitmap();
+                    girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    girl_left_stand.ShowBitmap();
                 }
-            }
-        }
-        else if (is_focusing)
-        {
-            if (direction)
-            {
-                beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 40, map->ScreenY(y) + girl_left_stand.Height() / 5);
-                beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2, map->ScreenY(y) + girl_left_stand.Height() / 5);
-
-                if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
-                {
-                    girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_right_focusing_front.ShowBitmap();
-
-                    if (is_attacking)
-                        DrawBeam(map);
-                }
-                else
-                {
-                    if (is_attacking)
-                        DrawBeam(map);
-
-                    girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_right_focusing_behind.ShowBitmap();
-                }
-            }
-            else
-            {
-                beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
-                beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 20, map->ScreenY(y) + girl_left_stand.Height() / 5);
-
-                if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
-                {
-                    girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_left_focusing_front.ShowBitmap();
-
-                    if (is_attacking)
-                        DrawBeam(map);
-                }
-                else
-                {
-                    if (is_attacking)
-                        DrawBeam(map);
-
-                    girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_left_focusing_behind.ShowBitmap();
-                }
-            }
-        }
-        else if (moving) //是否正在移動
-        {
-            if (direction) //false => 往左, true => 往右
-            {
-                if (velocity != 12)
-                {
-                    girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_walk_right.OnShow();
-                }
-                else
-                {
-                    girl_run_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_run_right.OnShow();
-                }
-            }
-            else
-            {
-                if (velocity != 12)
-                {
-                    girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_walk_left.OnShow();
-                }
-                else
-                {
-                    girl_run_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    girl_run_left.OnShow();
-                }
-            }
-        }
-        else
-        {
-            if (direction) //false => 往左, true => 往右
-            {
-                girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                girl_right_stand.ShowBitmap();
-            }
-            else
-            {
-                girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                girl_left_stand.ShowBitmap();
             }
         }
 
@@ -511,6 +577,24 @@ namespace game_framework
         is_locked = status;
     }
 
+    void MainGirl::SetIsReinforced(bool status)
+    {
+        is_reinforced = status;
+
+        if (status == true)
+            state = INANIMATION;
+    }
+
+    bool MainGirl::IsInAnimation()
+    {
+        return state == INANIMATION;
+    }
+
+    bool MainGirl::IsReinforced()
+    {
+        return is_reinforced;
+    }
+
     bool MainGirl::IsLocked()
     {
         return is_locked;
@@ -523,11 +607,7 @@ namespace game_framework
     void MainGirl::Lose()
     {
         is_bump = true;
-    }
-
-    bool MainGirl::IsLoser()
-    {
-        return is_bump;
+        state = INANIMATION;
     }
 
     void MainGirl::Click()
@@ -543,11 +623,6 @@ namespace game_framework
     void MainGirl::AddSlave(Man* man)
     {
         slaves.insert(slaves.begin(), man);
-    }
-
-    int MainGirl::GetHeartPoints()
-    {
-        return heartPoints;
     }
 
     void MainGirl::DrawBeam(CGameMap* map)
