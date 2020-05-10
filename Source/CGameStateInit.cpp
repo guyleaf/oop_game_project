@@ -49,12 +49,10 @@ namespace game_framework
     {
         waveOutGetVolume(0, &volume);
 
-        if (volume != 0)
-            change = false;
-        else
+        if (volume == 0)
         {
-            change = true;
             volume = 0xFFFF;
+            waveOutSetVolume(0, volume);
         }
     }
 
