@@ -47,6 +47,15 @@ namespace game_framework
 
     void CGameStateInit::OnBeginState()
     {
+        waveOutGetVolume(0, &volume);
+
+        if (volume != 0)
+            change = false;
+        else
+        {
+            change = true;
+            volume = 0xFFFF;
+        }
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
