@@ -180,6 +180,8 @@ namespace game_framework
             {
                 reinforced.OnMove();
             }
+            else
+                girl_right_reinforcing.Reset();
 
             if (!is_attacking)
                 if (is_focusing)
@@ -358,27 +360,42 @@ namespace game_framework
             {
                 if (girl_right_reinforcing.GetCurrentBitmapNumber() < 20)
                 {
+                    CBitmap m_memBitmap;
                     CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+                    CDC ImageDC;
+                    ImageDC.CreateCompatibleDC(pDC);
+                    m_memBitmap.CreateCompatibleBitmap(pDC, 140, 500);
+                    ImageDC.SetBkMode(TRANSPARENT);
+                    CBitmap* pOldBitmap = ImageDC.SelectObject(&m_memBitmap);
                     CPen pen(PS_SOLID, 3, RGB(255, 0, 255));
-                    CPen* pOldPen = pDC->SelectObject(&pen);
                     CBrush brush(RGB(255, 214, 255));
-                    CBrush* pOldBrush = pDC->SelectObject(&brush);
+                    CPen linePen(PS_SOLID, 4, RGB(255, 214, 255));
+                    CPen* pOldPen = ImageDC.SelectObject(&pen);
+                    CBrush* pOldBrush = ImageDC.SelectObject(&brush);
                     CPoint coordinates[2];
-                    coordinates[0].SetPoint(map->ScreenX(x - 10), -50);
+                    coordinates[0].SetPoint(map->ScreenX(x - 10), 0);
                     coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 50), map->ScreenY(y + girl_left_stand.Height() + 5));
-                    CRect rect;
-                    rect.SetRect(coordinates[0].x, coordinates[1].y - 5, coordinates[1].x, coordinates[1].y + 10);
-                    pDC->Ellipse(&rect);
-                    rect.SetRect(coordinates[0], coordinates[1]);
-                    pDC->Rectangle(&rect);
-                    pDC->SelectObject(pOldPen);
-                    pDC->SelectObject(pOldBrush);
+                    CRect Erect, Rrect;
+                    Erect.SetRect(0, 452, 135, 467);
+                    ImageDC.Ellipse(&Erect);
+                    Rrect.SetRect(0, 0, 135, 457);
+                    ImageDC.Rectangle(&Rrect);
+                    ImageDC.SelectObject(pOldPen);
+                    ImageDC.SelectObject(pOldBrush);
                     // cover rectangle border
-                    CPen linePen(PS_SOLID, 3, RGB(255, 214, 255));
-                    pOldPen = pDC->SelectObject(&linePen);
-                    pDC->MoveTo(coordinates[0].x + 4, coordinates[1].y - 1);
-                    pDC->LineTo(coordinates[1].x - 4, coordinates[1].y - 1);
-                    pDC->SelectObject(pOldPen);
+                    CPen* pOldLinePen = ImageDC.SelectObject(&linePen);
+                    ImageDC.MoveTo(4, 456);
+                    ImageDC.LineTo(131, 456);
+                    BLENDFUNCTION bf;
+                    bf.AlphaFormat = 0;
+                    bf.BlendFlags = 0;
+                    bf.BlendOp = 0;
+                    bf.SourceConstantAlpha = 200;
+                    pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 4, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 4, bf);
+                    ImageDC.SelectObject(pOldLinePen);
+                    ImageDC.SelectObject(pOldBitmap);
+                    m_memBitmap.DeleteObject();
+                    ImageDC.DeleteDC();
                     CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
                 }
 
