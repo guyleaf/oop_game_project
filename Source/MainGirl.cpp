@@ -378,7 +378,7 @@ namespace game_framework
                     CRect Erect, Rrect;
                     Erect.SetRect(0, 452, 135, 467);
                     ImageDC.Ellipse(&Erect);
-                    Rrect.SetRect(0, 0, 135, 457);
+                    Rrect.SetRect(0, -10, 135, 457);
                     ImageDC.Rectangle(&Rrect);
                     ImageDC.SelectObject(pOldPen);
                     ImageDC.SelectObject(pOldBrush);
@@ -390,8 +390,8 @@ namespace game_framework
                     bf.AlphaFormat = 0;
                     bf.BlendFlags = 0;
                     bf.BlendOp = 0;
-                    bf.SourceConstantAlpha = 200;
-                    pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 4, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 4, bf);
+                    bf.SourceConstantAlpha = 220;
+                    pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, bf);
                     ImageDC.SelectObject(pOldLinePen);
                     ImageDC.SelectObject(pOldBitmap);
                     m_memBitmap.DeleteObject();
@@ -607,7 +607,7 @@ namespace game_framework
 
     void MainGirl::ShowFocus()
     {
-        if (!is_attacking && !is_bump)
+        if (!is_attacking && !is_bump && state != INANIMATION)
         {
             if (is_focusing)
             {
