@@ -33,7 +33,7 @@ namespace game_framework
 
         if (volume == 0)
         {
-            volume = 0xFFFF;
+            volume = 0xFFFFFFFF;
             is_muted = true;
         }
         else
