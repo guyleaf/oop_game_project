@@ -15,7 +15,7 @@ namespace game_framework
         GAMEOVER
     };
 
-    UI::UI() : score(8), counter(10), time_left(89), is_reinforced(false), heart(500, 9), state(INPROGRESS), MaxTime(90)
+    UI::UI() : score(8), counter(10), time_left(90), is_reinforced(false), heart(500, 9), state(INPROGRESS), MaxTime(90)
     {
         time_start.SetPoint(0, 0);
         time_end.SetPoint(0, 0);

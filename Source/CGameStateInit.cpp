@@ -16,7 +16,7 @@ namespace game_framework
     {
         change = false;
         changeState = false;
-        delay_counter = 20;
+        delay_counter = 72;
     }
 
     void CGameStateInit::OnInit()
@@ -41,6 +41,7 @@ namespace game_framework
         voice4.LoadBitmap(IDB_VOICE4);
         CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
         CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
+        CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
         CAudio::Instance()->Play(AUDIO_INIT, true);
         //Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         //
@@ -93,6 +94,7 @@ namespace game_framework
                 {
                     CAudio::Instance()->Play(AUDIO_PRESS, false);
                     CAudio::Instance()->Stop(AUDIO_INIT);
+                    CAudio::Instance()->Play(AUDIO_GAME, false);
                 }
 
                 changeState = true;
