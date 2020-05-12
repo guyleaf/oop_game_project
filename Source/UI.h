@@ -11,6 +11,8 @@ namespace game_framework
         void OnMouseMove(CPoint point);
         void AddScore(int num);
         void Toggle();
+        void Pause();
+        void Resume();
         bool IsAudioButtonHoverd();
         int GetScore();
         void AddHeartPoints(int points);
