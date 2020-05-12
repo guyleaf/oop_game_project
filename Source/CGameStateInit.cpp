@@ -39,6 +39,7 @@ namespace game_framework
         voice4.LoadBitmap(IDB_VOICE4);
         CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
         CAudio::Instance()->Play(AUDIO_INIT, true);
+		CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
         Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         //
         // 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
@@ -84,6 +85,7 @@ namespace game_framework
             if (cursor_y1 >= 490 && cursor_y1 <= 540)
             {
                 CAudio::Instance()->Stop(AUDIO_INIT);
+				CAudio::Instance()->Play(AUDIO_PRESS, false);
                 GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
             }
         }
