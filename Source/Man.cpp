@@ -512,7 +512,7 @@ namespace game_framework
         for (int i = 1; i <= 14; i++)
         {
             strcpy(text, ("RES/Man/blood (" + to_string(i) + ").bmp").c_str());
-            blood.AddBitmap(text, RGB(255, 255, 255));
+            blood.AddBitmap(text, RGB(0, 0, 0));
         }
 
         blood.SetDelayCount(1);
