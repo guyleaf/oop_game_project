@@ -146,12 +146,12 @@ namespace game_framework
                 direction = fdirection;
                 is_positioned = false;
             }
-            else if (!is_positioned && fx - x >= 10)
+            else if (!is_positioned && fx - x >= 15)
             {
                 direction = fdirection;
                 x += velocity;
             }
-            else if (!is_positioned && x - fx >= 10)
+            else if (!is_positioned && x - fx >= 15)
             {
                 direction = fdirection;
                 x -= velocity;
@@ -512,7 +512,7 @@ namespace game_framework
         for (int i = 1; i <= 14; i++)
         {
             strcpy(text, ("RES/Man/blood (" + to_string(i) + ").bmp").c_str());
-            blood.AddBitmap(text, RGB(255, 255, 255));
+            blood.AddBitmap(text, RGB(0, 0, 0));
         }
 
         blood.SetDelayCount(1);

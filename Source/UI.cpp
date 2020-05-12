@@ -10,11 +10,12 @@ namespace game_framework
 {
     enum State
     {
+        PAUSE,
         INPROGRESS,
         GAMEOVER
     };
 
-    UI::UI() : score(8), counter(10), time_left(89), is_reinforced(false), heart(500, 9), state(INPROGRESS), MaxTime(90)
+    UI::UI() : score(8), counter(10), time_left(90), is_reinforced(false), heart(500, 9), state(INPROGRESS), MaxTime(90)
     {
         time_start.SetPoint(0, 0);
         time_end.SetPoint(0, 0);
@@ -23,6 +24,20 @@ namespace game_framework
         clock_radius = 30;
         angle = 0;
         xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
+        cursor_x = cursor_y = 0;
+    }
+
+    void UI::LoadVolume()
+    {
+        waveOutGetVolume(0, &volume);
+
+        if (volume == 0)
+        {
+            volume = 0xFFFFFFFF;
+            is_muted = true;
+        }
+        else
+            is_muted = false;
     }
 
     void UI::LoadBitmap()
@@ -44,21 +59,28 @@ namespace game_framework
         pointer.Attach(hbitmap);
         //Get pointer size
         pointer.GetBitmap(&pointer_size);
+        audio_button_on.LoadBitmap("RES/UI/audio_button_on.bmp", RGB(0, 0, 0));
+        audio_button_on_hovered.LoadBitmap("RES/UI/audio_button_on_hovered.bmp", RGB(0, 0, 0));
+        audio_button_off.LoadBitmap("RES/UI/audio_button_off.bmp", RGB(0, 0, 0));
+        audio_button_off_hovered.LoadBitmap("RES/UI/audio_button_off_hovered.bmp", RGB(0, 0, 0));
     }
 
     void UI::OnMove()
     {
-        //waveOutGetVolume(0, &originalVolume);
+        if (is_muted)
+            waveOutSetVolume(0, 0);
+        else
+            waveOutSetVolume(0, volume);
+
         if (state == INPROGRESS)
         {
             if (is_reinforced)
             {
                 //Special mode
+                heart.Add(-3);
             }
-            else
-            {
-                //heartPoint board
-            }
+
+            heart.OnMove();
 
             if (time_left >= 0)
             {
@@ -87,18 +109,18 @@ namespace game_framework
                 CAudio::Instance()->Play(AUDIO_BELL, false);
                 state = GAMEOVER;
             }
+
+            if (counter == 29)
+            {
+                counter = 0;
+                time_left--;
+            }
+            else
+                counter++;
         }
         else if (state == GAMEOVER)
         {
         }
-
-        if (counter == 29)
-        {
-            counter = 0;
-            time_left--;
-        }
-        else
-            counter++;
     }
 
     void UI::OnShow()
@@ -106,7 +128,7 @@ namespace game_framework
         heartPointBoard.SetTopLeft(0, 0);
         heartPointBoard.ShowBitmap();
         heart.SetTopLeft(20, heartPointBoard.Height() / 2);
-        heart.ShowBitmap();
+        heart.OnShow(counter);
         clock_background.SetTopLeft(clock_center.x - clock_radius, clock_center.y - clock_radius);
         clock_background.ShowBitmap();
 
@@ -120,11 +142,67 @@ namespace game_framework
         scoreBoard.ShowBitmap();
         score.SetTopLeft(scoreBoard.Left() + 25, scoreBoard.Height() / 2);
         score.ShowBitmap();
+
+        if (is_muted)
+        {
+            if (IsAudioButtonHoverd())
+            {
+                audio_button_off_hovered.SetTopLeft(scoreBoard.Left() + scoreBoard.Width() - audio_button_off_hovered.Width() - 10, 8);
+                audio_button_off_hovered.ShowBitmap();
+            }
+            else
+            {
+                audio_button_off.SetTopLeft(scoreBoard.Left() + scoreBoard.Width() - audio_button_off.Width() - 10, 8);
+                audio_button_off.ShowBitmap();
+            }
+        }
+        else
+        {
+            if (IsAudioButtonHoverd())
+            {
+                audio_button_on_hovered.SetTopLeft(scoreBoard.Left() + scoreBoard.Width() - audio_button_on_hovered.Width() - 10, 8);
+                audio_button_on_hovered.ShowBitmap();
+            }
+            else
+            {
+                audio_button_on.SetTopLeft(scoreBoard.Left() + scoreBoard.Width() - audio_button_on.Width() - 10, 8);
+                audio_button_on.ShowBitmap();
+            }
+        }
+    }
+
+    void UI::OnMouseMove(CPoint point)
+    {
+        cursor_x = point.x;
+        cursor_y = point.y;
     }
 
     void UI::AddScore(int num)
     {
         score.Add(num);
+    }
+
+    void UI::Toggle()
+    {
+        is_muted = !is_muted;
+    }
+
+    void UI::Pause()
+    {
+        state = PAUSE;
+    }
+
+    void UI::Resume()
+    {
+        state = INPROGRESS;
+    }
+
+    bool UI::IsAudioButtonHoverd()
+    {
+        if (is_muted)
+            return (audio_button_off.Left() <= cursor_x && cursor_x <= audio_button_off.Left() + audio_button_off.Width()) && (audio_button_off.Top() <= cursor_y && cursor_y <= audio_button_off.Top() + audio_button_off.Height());
+        else
+            return (audio_button_on.Left() <= cursor_x && cursor_x <= audio_button_on.Left() + audio_button_on.Width()) && (audio_button_on.Top() <= cursor_y && cursor_y <= audio_button_on.Top() + audio_button_on.Height());
     }
 
     int UI::GetScore()
@@ -137,19 +215,24 @@ namespace game_framework
         heart.Add(points);
     }
 
+    void UI::SetHeartPoints(int points)
+    {
+        heart.SetPoint(points);
+    }
+
     int UI::GetHeartPoints()
     {
         return heart.GetPoint();
     }
 
-    void UI::SetIsReinforced(bool status)
+    void UI::GotoHRState(int state)
     {
-        is_reinforced = status;
-    }
+        heart.GotoHRState(state);
 
-    bool UI::IsReinforced()
-    {
-        return is_reinforced;
+        if (state == CHeartPoint::reinforced)
+            is_reinforced = true;
+        else if (state == CHeartPoint::normal)
+            is_reinforced = false;
     }
 
     bool UI::IsGameOver()
