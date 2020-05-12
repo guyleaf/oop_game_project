@@ -421,8 +421,8 @@ namespace game_framework
                     CPen* pOldPen = ImageDC.SelectObject(&pen);
                     CBrush* pOldBrush = ImageDC.SelectObject(&brush);
                     CPoint coordinates[2];
-                    coordinates[0].SetPoint(map->ScreenX(x - 10), 0);
-                    coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 50), map->ScreenY(y + girl_left_stand.Height() + 5));
+                    coordinates[0].SetPoint(map->ScreenX(x - 30), 0);
+                    coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 30), map->ScreenY(y + girl_left_stand.Height() + 5));
                     CRect Erect, Rrect;
                     Erect.SetRect(0, 452, 135, 467);
                     ImageDC.Ellipse(&Erect);
@@ -449,12 +449,12 @@ namespace game_framework
 
                 if (direction)
                 {
-                    girl_right_reinforcing.SetTopLeft(map->ScreenX(x - 150), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
+                    girl_right_reinforcing.SetTopLeft(map->ScreenX(x - 170), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
                     girl_right_reinforcing.OnShow();
                 }
                 else
                 {
-                    girl_left_reinforcing.SetTopLeft(map->ScreenX(x - 150), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
+                    girl_left_reinforcing.SetTopLeft(map->ScreenX(x - 170), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
                     girl_left_reinforcing.OnShow();
                 }
             }
