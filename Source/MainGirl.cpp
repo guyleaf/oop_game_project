@@ -619,14 +619,14 @@ namespace game_framework
         if (!is_locked)
         {
             if (is_reinforced)
-                man->LoseHP(30);
+                man->LoseHP(50);
             else
                 man->LoseHP(15);
         }
         else
         {
             if (is_reinforced)
-                man->LoseHP(90);
+                man->LoseHP(100);
             else
                 man->LoseHP(70);
         }
