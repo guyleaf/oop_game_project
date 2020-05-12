@@ -594,12 +594,12 @@ namespace game_framework
 
             if (is_reinforced)
             {
-                reinforcing[0].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 20));
+                reinforcing[0].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 80));
                 reinforcing[0].OnShow();
 
                 if (delay_counter < 0)
                 {
-                    reinforcing[1].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 60));
+                    reinforcing[1].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 20));
                     reinforcing[1].OnShow();
                 }
             }

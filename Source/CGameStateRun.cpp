@@ -115,8 +115,11 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ui.OnMove();
 
-        if (!mainGirl->IsInAnimation() && mainGirl->IsReinforced())
+        if (!mainGirl->IsInAnimation() && mainGirl->IsReinforced() && !ui.IsGameOver())
+        {
             ui.GotoHRState(CHeartPoint::reinforced);
+            ui.Resume();
+        }
 
         if (!mainGirl->IsInAnimation())
         {
@@ -526,6 +529,7 @@ namespace game_framework
         // special mode
         if (!mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
         {
+            ui.Pause();
             CAudio::Instance()->Pause();
             CAudio::Instance()->Play(AUDIO_REINFORCING, false);
             ui.GotoHRState(CHeartPoint::reinforcing);

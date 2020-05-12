@@ -122,6 +122,7 @@ namespace game_framework
         {
         }
     }
+
     void UI::OnShow()
     {
         heartPointBoard.SetTopLeft(0, 0);
