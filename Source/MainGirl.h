@@ -48,15 +48,16 @@ namespace game_framework
         bool is_bump;
         bool is_reinforced;
         int state;
+        int delay_counter;
         CAnimation girl_walk_left, girl_walk_right;
         CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
         CMovingBitmap girl_left_focusing_behind, girl_left_focusing_front;
         CMovingBitmap girl_right_focusing_behind, girl_right_focusing_front;
         CAnimation girl_right_reinforcing, girl_left_reinforcing;
-        CAnimation reinforced;
         CAnimation focus_point_on, focus_point_off;
         CAnimation bump_left, bump_right;
+        CAnimation reinforcing[3];
         CPoint beam_pos[4];
         vector<Man*> slaves;
     };
