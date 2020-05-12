@@ -81,7 +81,7 @@ namespace game_framework
         //
         ShowInitProgress(50);
         Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
-        CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
+        //CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
         CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
         CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
         CAudio::Instance()->Load(AUDIO_FLYING, "sounds\\flying.mp3");
@@ -102,7 +102,7 @@ namespace game_framework
         /*hits_left.SetInteger(HITS_LEFT);					// 指定剩下的撞擊數
         hits_left.SetTopLeft(HITS_LEFT_X, HITS_LEFT_Y);		// 指定剩下撞擊數的座標*/
         ui.LoadVolume();
-        CAudio::Instance()->Play(AUDIO_GAME, true);			// 撥放 GAME
+        //CAudio::Instance()->Play(AUDIO_GAME, true);			// 撥放 GAME
     }
 
     void CGameStateRun::OnMove()							// 移動遊戲元素

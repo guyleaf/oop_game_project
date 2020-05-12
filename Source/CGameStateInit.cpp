@@ -15,6 +15,8 @@ namespace game_framework
     CGameStateInit::CGameStateInit(CGame* g) : CGameState(g)
     {
         change = false;
+        changeState = false;
+        delay_counter = 72;
     }
 
     void CGameStateInit::OnInit()
@@ -38,8 +40,10 @@ namespace game_framework
         voice3.LoadBitmap(IDB_VOICE3);
         voice4.LoadBitmap(IDB_VOICE4);
         CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
+        CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
+        CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
         CAudio::Instance()->Play(AUDIO_INIT, true);
-        Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
+        //Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         //
         // 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
         //
@@ -51,7 +55,7 @@ namespace game_framework
 
         if (volume == 0)
         {
-            volume = 0xFFFF;
+            volume = 0xFFFFFFFF;
             waveOutSetVolume(0, volume);
         }
     }
@@ -79,12 +83,21 @@ namespace game_framework
 
     void CGameStateInit::OnMove()
     {
+        if (changeState && --delay_counter <= 0)
+            GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
+
         if (cursor_x1 >= 180 && cursor_x1 <= 375)
         {
             if (cursor_y1 >= 490 && cursor_y1 <= 540)
             {
-                CAudio::Instance()->Stop(AUDIO_INIT);
-                GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
+                if (!changeState)
+                {
+                    CAudio::Instance()->Play(AUDIO_PRESS, false);
+                    CAudio::Instance()->Stop(AUDIO_INIT);
+                    CAudio::Instance()->Play(AUDIO_GAME, false);
+                }
+
+                changeState = true;
             }
         }
 
@@ -133,6 +146,12 @@ namespace game_framework
 
     void CGameStateInit::OnShow()
     {
+        if (changeState)
+        {
+            CDDraw::BltBackColor(RGB(0, 0, 0));
+            return;
+        }
+
         //
         // 貼上logo
         //
@@ -199,7 +218,7 @@ namespace game_framework
         //
         // Demo螢幕字型的使用，不過開發時請盡量避免直接使用字型，改用CMovingBitmap比較好
         //
-        CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+        /*CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CFont f, *fp;
         f.CreatePointFont(140, "Consolas");	// 產生 font f; 160表示16 point的字
         fp = pDC->SelectObject(&f);					// 選用 font f
@@ -210,8 +229,8 @@ namespace game_framework
           if (ENABLE_GAME_PAUSE)
               pDC->TextOut(295, 525, "按下 Ctrl-Q 暫停");*/
         //  pDC->TextOut(5, 455, "Press Alt-F4 or ESC to Quit.");
-        pDC->SelectObject(fp);						// 放掉 font f (千萬不要漏了放掉)
-        CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
+        //pDC->SelectObject(fp);						// 放掉 font f (千萬不要漏了放掉)
+        //CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
     }
 
     /*int CGameStateInit::GetCursorX1()
