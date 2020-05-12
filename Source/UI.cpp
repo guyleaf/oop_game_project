@@ -10,6 +10,7 @@ namespace game_framework
 {
     enum State
     {
+        PAUSE,
         INPROGRESS,
         GAMEOVER
     };
@@ -108,18 +109,18 @@ namespace game_framework
                 CAudio::Instance()->Play(AUDIO_BELL, false);
                 state = GAMEOVER;
             }
+
+            if (counter == 29)
+            {
+                counter = 0;
+                time_left--;
+            }
+            else
+                counter++;
         }
         else if (state == GAMEOVER)
         {
         }
-
-        if (counter == 29)
-        {
-            counter = 0;
-            time_left--;
-        }
-        else
-            counter++;
     }
     void UI::OnShow()
     {
@@ -183,6 +184,16 @@ namespace game_framework
     void UI::Toggle()
     {
         is_muted = !is_muted;
+    }
+
+    void UI::Pause()
+    {
+        state = PAUSE;
+    }
+
+    void UI::Resume()
+    {
+        state = INPROGRESS;
     }
 
     bool UI::IsAudioButtonHoverd()

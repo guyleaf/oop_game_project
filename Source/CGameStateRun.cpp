@@ -259,6 +259,7 @@ namespace game_framework
                                 girlsOnScreen[j]->Win();
 
                             mainGirl.Lose();
+                            ui.AddHeartPoints(-750);
                             man[0][i]->SetIsKilledBy(Man::girl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
@@ -387,6 +388,7 @@ namespace game_framework
                                 girlsOnScreen[j]->Win();
 
                             mainGirl.Lose();
+                            ui.AddHeartPoints(-750);
                             man[1][i]->SetIsKilledBy(Man::girl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
