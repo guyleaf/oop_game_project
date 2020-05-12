@@ -88,6 +88,11 @@ namespace game_framework
             else
                 star.OnMove();
         }
+        else
+        {
+            star.Reset();
+            reinforced_bar.Reset();
+        }
     }
 
     void CHeartPoint::OnShow(int counter)
