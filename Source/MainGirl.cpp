@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -19,6 +19,7 @@ namespace game_framework
         is_bump = false;
         is_reinforced = false;
         state = INNORMAL;
+        delay_counter = 30;
     }
 
     void MainGirl::LoadBitMap()
@@ -97,13 +98,30 @@ namespace game_framework
 
         girl_right_reinforcing.SetDelayCount(5);
 
-        for (int i = 1; i <= 19; i++)
+        for (int i = 1; i <= 32; i++)
         {
-            strcpy(text, ("RES/mainGirl/reinforced (" + to_string(i) + ").bmp").c_str());
-            reinforced.AddBitmap(text, RGB(0, 0, 0));
+            strcpy(text, ("RES/mainGirl/left/reinforcing (" + to_string(i) + ").bmp").c_str());
+            girl_left_reinforcing.AddBitmap(text, RGB(0, 0, 0));
         }
 
-        reinforced.SetDelayCount(5);
+        girl_left_reinforcing.SetDelayCount(5);
+
+        for (int i = 1; i <= 13; i++)
+        {
+            strcpy(text, ("RES/mainGirl/reinforcing (" + to_string(i) + ").bmp").c_str());
+            reinforcing[0].AddBitmap(text, RGB(230, 230, 196));
+            reinforcing[1].AddBitmap(text, RGB(230, 230, 196));
+            reinforcing[2].AddBitmap(text, RGB(230, 230, 196));
+        }
+
+        reinforcing[0].SetDelayCount(5);
+        reinforcing[1].SetDelayCount(5);
+        reinforcing[2].SetDelayCount(5);
+        /*for (int i = 1; i <= 6; i++)
+        {
+            strcpy(text, ("RES/mainGirl/floor (" + to_string(i) + ").bmp").c_str());
+            floor[i - 1].Attach((HBITMAP)LoadImage(NULL, text, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE));
+        }*/
     }
 
     void MainGirl::OnMove(CGameMap* map)
@@ -155,18 +173,37 @@ namespace game_framework
             }
             else if (is_reinforced)
             {
-                if (!girl_right_reinforcing.IsFinalBitmap())
+                if (direction)
                 {
-                    girl_right_reinforcing.OnMove();
+                    if (!girl_right_reinforcing.IsFinalBitmap())
+                    {
+                        girl_right_reinforcing.OnMove();
 
-                    if (girl_right_reinforcing.GetCurrentBitmapNumber() == 20)
-                        CAudio::Instance()->Play(AUDIO_BLINK, false);
+                        if (girl_right_reinforcing.GetCurrentBitmapNumber() == 20)
+                            CAudio::Instance()->Play(AUDIO_BLINK, false);
+                    }
+                    else
+                    {
+                        state = INNORMAL;
+                        CAudio::Instance()->Stop(AUDIO_FLYING);
+                        CAudio::Instance()->Resume();
+                    }
                 }
                 else
                 {
-                    state = INNORMAL;
-                    CAudio::Instance()->Stop(AUDIO_FLYING);
-                    CAudio::Instance()->Resume();
+                    if (!girl_left_reinforcing.IsFinalBitmap())
+                    {
+                        girl_left_reinforcing.OnMove();
+
+                        if (girl_left_reinforcing.GetCurrentBitmapNumber() == 20)
+                            CAudio::Instance()->Play(AUDIO_BLINK, false);
+                    }
+                    else
+                    {
+                        state = INNORMAL;
+                        CAudio::Instance()->Stop(AUDIO_FLYING);
+                        CAudio::Instance()->Resume();
+                    }
                 }
             }
             else
@@ -178,7 +215,21 @@ namespace game_framework
         {
             if (is_reinforced)
             {
-                reinforced.OnMove();
+                reinforcing[0].OnMove();
+
+                if (delay_counter < 15)
+                    reinforcing[1].OnMove();
+
+                if (delay_counter < 0)
+                    reinforcing[2].OnMove();
+
+                if (delay_counter >= 0)
+                    delay_counter--;
+            }
+            else
+            {
+                girl_left_reinforcing.Reset();
+                girl_right_reinforcing.Reset();
             }
 
             if (!is_attacking)
@@ -207,7 +258,7 @@ namespace game_framework
 
             if (!is_focusing)
             {
-                if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) //∑∆π´Æyº–ªP§H™´≥Ã•k√‰™∫Æyº–¨€¥Ó(ø√πı™∫¬IÆyº–) ª›§j©Û0
+                if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) //ÊªëÈº†Â∫ßÊ®ôËàá‰∫∫Áâ©ÊúÄÂè≥ÈÇäÁöÑÂ∫ßÊ®ôÁõ∏Ê∏õ(Ëû¢ÂπïÁöÑÈªûÂ∫ßÊ®ô) ÈúÄÂ§ßÊñº0
                 {
                     moving = true;
                     direction = true;
@@ -228,7 +279,7 @@ namespace game_framework
 
                 if (!is_locked)
                 {
-                    //Ω’æ„¬Í©wÆ…™∫∫À∑«§Ë¶V
+                    //Ë™øÊï¥ÈéñÂÆöÊôÇÁöÑÁûÑÊ∫ñÊñπÂêë
                     if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
                         direction = true;
                     else
@@ -236,7 +287,7 @@ namespace game_framework
                 }
             }
 
-            if (moving)  //¿À¨d¨Oß_•ø¶b≤æ∞ 
+            if (moving)  //Ê™¢Êü•ÊòØÂê¶Ê≠£Âú®ÁßªÂãï
             {
                 if (direction)
                 {
@@ -308,17 +359,17 @@ namespace game_framework
 
     void MainGirl::SetVelocity(CGameMap* map)
     {
-        if (!moving) //®S¶≥•ø¶b≤æ∞ ´h∞h•X
+        if (!moving) //Ê≤íÊúâÊ≠£Âú®ÁßªÂãïÂâáÈÄÄÂá∫
             return;
 
-        int distance; //∑∆π´™∫ø√πı¬IÆyº–®Ï§H™´™∫∂Z¬˜
+        int distance; //ÊªëÈº†ÁöÑËû¢ÂπïÈªûÂ∫ßÊ®ôÂà∞‰∫∫Áâ©ÁöÑË∑ùÈõ¢
 
-        if (direction) //false => ©π•™, true => ©π•k
+        if (direction) //false => ÂæÄÂ∑¶, true => ÂæÄÂè≥
             distance = cursor_x - (map->ScreenX(x) + girl_right_stand.Width());
         else
             distance = map->ScreenX(x) - cursor_x;
 
-        if (distance > 300) //∂Z¬˜∂Vª∑≥t´◊∂Vß÷
+        if (distance > 300) //Ë∑ùÈõ¢Ë∂äÈÅ†ÈÄüÂ∫¶Ë∂äÂø´
         {
             velocity = 12;
         }
@@ -335,7 +386,6 @@ namespace game_framework
             girl_walk_right.SetDelayCount(5);
         }
     }
-
 
     void MainGirl::OnShow(CGameMap* map)
     {
@@ -356,44 +406,61 @@ namespace game_framework
             }
             else if (is_reinforced)
             {
-                if (girl_right_reinforcing.GetCurrentBitmapNumber() < 20)
+                if (girl_right_reinforcing.GetCurrentBitmapNumber() < 20 && girl_left_reinforcing.GetCurrentBitmapNumber() < 20)
                 {
-                    CDC* pDC = CDDraw::GetBackCDC();			// ®˙±o Back Plain ™∫ CDC
+                    CBitmap m_memBitmap;
+                    CDC* pDC = CDDraw::GetBackCDC();			// ÂèñÂæó Back Plain ÁöÑ CDC
+                    CDC ImageDC;
+                    ImageDC.CreateCompatibleDC(pDC);
+                    m_memBitmap.CreateCompatibleBitmap(pDC, 140, 500);
+                    ImageDC.SetBkMode(TRANSPARENT);
+                    CBitmap* pOldBitmap = ImageDC.SelectObject(&m_memBitmap);
                     CPen pen(PS_SOLID, 3, RGB(255, 0, 255));
-                    CPen* pOldPen = pDC->SelectObject(&pen);
                     CBrush brush(RGB(255, 214, 255));
-                    CBrush* pOldBrush = pDC->SelectObject(&brush);
+                    CPen linePen(PS_SOLID, 4, RGB(255, 214, 255));
+                    CPen* pOldPen = ImageDC.SelectObject(&pen);
+                    CBrush* pOldBrush = ImageDC.SelectObject(&brush);
                     CPoint coordinates[2];
-                    coordinates[0].SetPoint(map->ScreenX(x - 10), -50);
-                    coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 50), map->ScreenY(y + girl_left_stand.Height() + 5));
-                    CRect rect;
-                    rect.SetRect(coordinates[0].x, coordinates[1].y - 5, coordinates[1].x, coordinates[1].y + 10);
-                    pDC->Ellipse(&rect);
-                    rect.SetRect(coordinates[0], coordinates[1]);
-                    pDC->Rectangle(&rect);
-                    pDC->SelectObject(pOldPen);
-                    pDC->SelectObject(pOldBrush);
+                    coordinates[0].SetPoint(map->ScreenX(x - 30), 0);
+                    coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 30), map->ScreenY(y + girl_left_stand.Height() + 5));
+                    CRect Erect, Rrect;
+                    Erect.SetRect(0, 452, 135, 467);
+                    ImageDC.Ellipse(&Erect);
+                    Rrect.SetRect(0, -10, 135, 457);
+                    ImageDC.Rectangle(&Rrect);
+                    ImageDC.SelectObject(pOldPen);
+                    ImageDC.SelectObject(pOldBrush);
                     // cover rectangle border
-                    CPen linePen(PS_SOLID, 3, RGB(255, 214, 255));
-                    pOldPen = pDC->SelectObject(&linePen);
-                    pDC->MoveTo(coordinates[0].x + 4, coordinates[1].y - 1);
-                    pDC->LineTo(coordinates[1].x - 4, coordinates[1].y - 1);
-                    pDC->SelectObject(pOldPen);
-                    CDDraw::ReleaseBackCDC();					// ©Ò±º Back Plain ™∫ CDC
+                    CPen* pOldLinePen = ImageDC.SelectObject(&linePen);
+                    ImageDC.MoveTo(4, 456);
+                    ImageDC.LineTo(131, 456);
+                    BLENDFUNCTION bf;
+                    bf.AlphaFormat = 0;
+                    bf.BlendFlags = 0;
+                    bf.BlendOp = 0;
+                    bf.SourceConstantAlpha = 220;
+                    pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, bf);
+                    ImageDC.SelectObject(pOldLinePen);
+                    ImageDC.SelectObject(pOldBitmap);
+                    m_memBitmap.DeleteObject();
+                    ImageDC.DeleteDC();
+                    CDDraw::ReleaseBackCDC();					// ÊîæÊéâ Back Plain ÁöÑ CDC
                 }
 
-                girl_right_reinforcing.SetTopLeft(map->ScreenX(x), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
-                girl_right_reinforcing.OnShow();
+                if (direction)
+                {
+                    girl_right_reinforcing.SetTopLeft(map->ScreenX(x - 170), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
+                    girl_right_reinforcing.OnShow();
+                }
+                else
+                {
+                    girl_left_reinforcing.SetTopLeft(map->ScreenX(x - 170), map->ScreenY(y + girl_left_stand.Height() - girl_right_reinforcing.Height()));
+                    girl_left_reinforcing.OnShow();
+                }
             }
         }
         else if (state == INNORMAL)
         {
-            if (is_reinforced)
-            {
-                reinforced.SetTopLeft(map->ScreenX(x) - reinforced.Width() / 4, y - 50);
-                reinforced.OnShow();
-            }
-
             if (is_locked)
             {
                 if (direction)
@@ -482,9 +549,9 @@ namespace game_framework
                     }
                 }
             }
-            else if (moving) //¨Oß_•ø¶b≤æ∞ 
+            else if (moving) //ÊòØÂê¶Ê≠£Âú®ÁßªÂãï
             {
-                if (direction) //false => ©π•™, true => ©π•k
+                if (direction) //false => ÂæÄÂ∑¶, true => ÂæÄÂè≥
                 {
                     if (velocity != 12)
                     {
@@ -513,7 +580,7 @@ namespace game_framework
             }
             else
             {
-                if (direction) //false => ©π•™, true => ©π•k
+                if (direction) //false => ÂæÄÂ∑¶, true => ÂæÄÂè≥
                 {
                     girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     girl_right_stand.ShowBitmap();
@@ -522,6 +589,18 @@ namespace game_framework
                 {
                     girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     girl_left_stand.ShowBitmap();
+                }
+            }
+
+            if (is_reinforced)
+            {
+                reinforcing[0].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 80));
+                reinforcing[0].OnShow();
+
+                if (delay_counter < 0)
+                {
+                    reinforcing[1].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 20));
+                    reinforcing[1].OnShow();
                 }
             }
         }
@@ -540,14 +619,14 @@ namespace game_framework
         if (!is_locked)
         {
             if (is_reinforced)
-                man->LoseHP(30);
+                man->LoseHP(50);
             else
                 man->LoseHP(15);
         }
         else
         {
             if (is_reinforced)
-                man->LoseHP(90);
+                man->LoseHP(100);
             else
                 man->LoseHP(70);
         }
@@ -590,7 +669,7 @@ namespace game_framework
 
     void MainGirl::ShowFocus()
     {
-        if (!is_attacking && !is_bump)
+        if (!is_attacking && !is_bump && state != INANIMATION)
         {
             if (is_focusing)
             {
@@ -598,7 +677,7 @@ namespace game_framework
             }
             else
             {
-                //¡◊ßKπq¶∫®k•ÕÆ…°A∑«¨P•X≤{™∫±°™p
+                //ÈÅøÂÖçÈõªÊ≠ªÁî∑ÁîüÊôÇÔºåÊ∫ñÊòüÂá∫ÁèæÁöÑÊÉÖÊ≥Å
                 if (!focus_point_off.IsFinalBitmap() && (slaves.size() == 0 || (*(slaves.end() - 1))->GetId() != focus_id))
                     focus_point_off.OnShow();
             }
@@ -665,7 +744,7 @@ namespace game_framework
 
     void MainGirl::DrawBeam(CGameMap* map)
     {
-        CDC* pDC = CDDraw::GetBackCDC();			// ®˙±o Back Plain ™∫ CDC
+        CDC* pDC = CDDraw::GetBackCDC();			// ÂèñÂæó Back Plain ÁöÑ CDC
         CPen pen(PS_SOLID, 1, RGB(255, 0, 255));
         CPen* pOldPen = pDC->SelectObject(&pen);
         CBrush brush(RGB(255, 51, 255));
@@ -673,7 +752,7 @@ namespace game_framework
         pDC->Polygon(beam_pos, 4);
         pDC->SelectObject(pOldPen);
         pDC->SelectObject(pOldBrush);
-        CDDraw::ReleaseBackCDC();					// ©Ò±º Back Plain ™∫ CDC
+        CDDraw::ReleaseBackCDC();					// ÊîæÊéâ Back Plain ÁöÑ CDC
     }
 
     int MainGirl::GetPositionX()

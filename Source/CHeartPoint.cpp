@@ -88,6 +88,11 @@ namespace game_framework
             else
                 star.OnMove();
         }
+        else
+        {
+            star.Reset();
+            reinforced_bar.Reset();
+        }
     }
 
     void CHeartPoint::OnShow(int counter)
@@ -151,18 +156,30 @@ namespace game_framework
             if (reinforced_bar.IsFinalBitmap())
             {
                 CDC* pDC = CDDraw::GetBackCDC();
-                CPen pen(PS_SOLID, 0, RGB(253, 165, 253));
-                CBrush brush(RGB(253, 165, 253));
-                CPen* pOldPen = pDC->SelectObject(&pen);
-                CBrush* pOldBrush = pDC->SelectObject(&brush);
+                CPen ppen(PS_SOLID, 0, RGB(253, 165, 253));
+                CBrush pbrush(RGB(253, 165, 253));
+                CPen* pOldPen = pDC->SelectObject(&ppen);
+                CBrush* pOldBrush = pDC->SelectObject(&pbrush);
                 CRect rect;
                 rect.SetRect(x + 54, y + 5, int(x + 54 + n / 27.10), y + reinforced_bar.Height() - 20);
-                pDC->RoundRect(rect, CPoint(13, 13));
-                pDC->SelectObject(&pen);
-                pDC->SelectObject(&brush);
+                pDC->RoundRect(rect, CPoint(0, 0));
+                pDC->SelectObject(pOldPen);
+                pDC->SelectObject(pOldBrush);
                 CDDraw::ReleaseBackCDC();
-                star.SetTopLeft(x + 55, y + 4);
+                ////////////////////////////////////////////////////
+                star.SetTopLeft(x + 55, y + 5);
                 star.OnShow();
+                ////////////////////////////////////////////////////
+                pDC = CDDraw::GetBackCDC();
+                CPen gpen(PS_SOLID, 0, RGB(15, 84, 14));
+                CBrush gbrush(RGB(15, 84, 14));
+                pOldPen = pDC->SelectObject(&gpen);
+                pOldBrush = pDC->SelectObject(&gbrush);
+                rect.SetRect(int(x + 54 + n / 27.10), y + 5, x + reinforced_bar.Width() - 54, y + reinforced_bar.Height() - 20);
+                pDC->RoundRect(rect, CPoint(0, 0));
+                pDC->SelectObject(pOldPen);
+                pDC->SelectObject(pOldBrush);
+                CDDraw::ReleaseBackCDC();
             }
         }
     }
