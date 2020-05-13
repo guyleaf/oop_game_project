@@ -80,7 +80,7 @@ namespace game_framework
         // 完成部分Loading動作，提高進度
         //
         ShowInitProgress(50);
-        Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
+        //Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         //CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
         CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
         CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
