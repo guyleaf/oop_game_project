@@ -278,7 +278,7 @@ namespace game_framework
                     {
                         mainGirl->Attack(man[0][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
-                        ui.AddHeartPoints(-12 * girlsOnScreen.size());
+                        ui.AddHeartPoints(-18 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
@@ -407,7 +407,7 @@ namespace game_framework
                     {
                         mainGirl->Attack(man[1][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
-                        ui.AddHeartPoints(-12 * girlsOnScreen.size());
+                        ui.AddHeartPoints(-19 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
