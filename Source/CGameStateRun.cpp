@@ -507,6 +507,18 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // special mode
+        if (!mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
+        {
+            ui.Pause();
+            ui.GotoHRState(CHeartPoint::reinforcing);
+            mainGirl->SetIsReinforced(true);
+            mainGirl->SetIsFocusing(false);
+            mainGirl->SetIsAttacking(false);
+            CAudio::Instance()->Pause();
+            CAudio::Instance()->Play(AUDIO_REINFORCING, false);
+        }
+
         for (size_t i = 0; i < hearts.size(); i++)
         {
             if (hearts[i]->HitMainGirl(mainGirl))
@@ -524,18 +536,6 @@ namespace game_framework
             }
             else
                 hearts[i]->OnMove();
-        }
-
-        // special mode
-        if (!mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
-        {
-            ui.Pause();
-            CAudio::Instance()->Pause();
-            CAudio::Instance()->Play(AUDIO_REINFORCING, false);
-            ui.GotoHRState(CHeartPoint::reinforcing);
-            mainGirl->SetIsReinforced(true);
-            mainGirl->SetIsFocusing(false);
-            mainGirl->SetIsAttacking(false);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -559,6 +559,11 @@ namespace game_framework
         if (nChar == KEY_UP)
         {
             ui.SetHeartPoints(4500);
+        }
+        else if (nChar == KEY_DOWN)
+        {
+            if (mainGirl->IsReinforced() && !mainGirl->IsInAnimation())
+                ui.SetHeartPoints(0);
         }
     }
 
