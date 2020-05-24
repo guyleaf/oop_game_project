@@ -33,6 +33,7 @@ namespace game_framework
         bool IsClicked();
         void AddSlave(Man* man);
     private:
+        void InitializeReinforcing();
         void SetVelocity(CGameMap* map);
         void DrawBeam(CGameMap* map);
         int x, y;
@@ -57,7 +58,8 @@ namespace game_framework
         CAnimation girl_right_reinforcing, girl_left_reinforcing;
         CAnimation focus_point_on, focus_point_off;
         CAnimation bump_left, bump_right;
-        CAnimation reinforcing[3];
+        CAnimation reinforcing[2];
+        CBitmap m_memBitmap;
         CPoint beam_pos[4];
         vector<Man*> slaves;
     };
