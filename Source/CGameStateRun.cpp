@@ -80,7 +80,7 @@ namespace game_framework
         // 完成部分Loading動作，提高進度
         //
         ShowInitProgress(50);
-        Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
+        //Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
         //CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
         CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
         CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
@@ -278,7 +278,7 @@ namespace game_framework
                     {
                         mainGirl->Attack(man[0][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
-                        ui.AddHeartPoints(-12 * girlsOnScreen.size());
+                        ui.AddHeartPoints(-18 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
@@ -407,7 +407,7 @@ namespace game_framework
                     {
                         mainGirl->Attack(man[1][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
-                        ui.AddHeartPoints(-12 * girlsOnScreen.size());
+                        ui.AddHeartPoints(-19 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
@@ -507,6 +507,18 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // special mode
+        if (!mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
+        {
+            ui.Pause();
+            ui.GotoHRState(CHeartPoint::reinforcing);
+            mainGirl->SetIsReinforced(true);
+            mainGirl->SetIsFocusing(false);
+            mainGirl->SetIsAttacking(false);
+            CAudio::Instance()->Pause();
+            CAudio::Instance()->Play(AUDIO_REINFORCING, false);
+        }
+
         for (size_t i = 0; i < hearts.size(); i++)
         {
             if (hearts[i]->HitMainGirl(mainGirl))
@@ -524,18 +536,6 @@ namespace game_framework
             }
             else
                 hearts[i]->OnMove();
-        }
-
-        // special mode
-        if (!mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
-        {
-            ui.Pause();
-            CAudio::Instance()->Pause();
-            CAudio::Instance()->Play(AUDIO_REINFORCING, false);
-            ui.GotoHRState(CHeartPoint::reinforcing);
-            mainGirl->SetIsReinforced(true);
-            mainGirl->SetIsFocusing(false);
-            mainGirl->SetIsAttacking(false);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -559,6 +559,11 @@ namespace game_framework
         if (nChar == KEY_UP)
         {
             ui.SetHeartPoints(4500);
+        }
+        else if (nChar == KEY_DOWN)
+        {
+            if (mainGirl->IsReinforced() && !mainGirl->IsInAnimation())
+                ui.SetHeartPoints(0);
         }
     }
 

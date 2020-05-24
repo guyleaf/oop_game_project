@@ -20,6 +20,8 @@ namespace game_framework
         is_reinforced = false;
         state = INNORMAL;
         delay_counter = 30;
+        cursor_x = 450;
+        cursor_y = 0;
     }
 
     void MainGirl::LoadBitMap()
@@ -111,17 +113,11 @@ namespace game_framework
             strcpy(text, ("RES/mainGirl/reinforcing (" + to_string(i) + ").bmp").c_str());
             reinforcing[0].AddBitmap(text, RGB(230, 230, 196));
             reinforcing[1].AddBitmap(text, RGB(230, 230, 196));
-            reinforcing[2].AddBitmap(text, RGB(230, 230, 196));
         }
 
         reinforcing[0].SetDelayCount(5);
         reinforcing[1].SetDelayCount(5);
-        reinforcing[2].SetDelayCount(5);
-        /*for (int i = 1; i <= 6; i++)
-        {
-            strcpy(text, ("RES/mainGirl/floor (" + to_string(i) + ").bmp").c_str());
-            floor[i - 1].Attach((HBITMAP)LoadImage(NULL, text, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE));
-        }*/
+        InitializeReinforcing();
     }
 
     void MainGirl::OnMove(CGameMap* map)
@@ -217,11 +213,8 @@ namespace game_framework
             {
                 reinforcing[0].OnMove();
 
-                if (delay_counter < 15)
-                    reinforcing[1].OnMove();
-
                 if (delay_counter < 0)
-                    reinforcing[2].OnMove();
+                    reinforcing[1].OnMove();
 
                 if (delay_counter >= 0)
                     delay_counter--;
@@ -357,6 +350,36 @@ namespace game_framework
         cursor_y = point.y;
     }
 
+    void MainGirl::InitializeReinforcing()
+    {
+        CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+        CDC ImageDC;
+        ImageDC.CreateCompatibleDC(pDC);
+        ImageDC.SetBkColor(RGB(0, 0, 0));
+        m_memBitmap.CreateCompatibleBitmap(pDC, 140, 500);
+        CBitmap* pOldBitmap = ImageDC.SelectObject(&m_memBitmap);
+        CPen pen(PS_SOLID, 3, RGB(255, 0, 255));
+        CBrush brush(RGB(255, 214, 255));
+        CPen linePen(PS_SOLID, 4, RGB(255, 214, 255));
+        CPen* pOldPen = ImageDC.SelectObject(&pen);
+        CBrush* pOldBrush = ImageDC.SelectObject(&brush);
+        CRect Erect, Rrect;
+        Erect.SetRect(0, 452, 135, 467);
+        ImageDC.Ellipse(&Erect);
+        Rrect.SetRect(0, -10, 135, 457);
+        ImageDC.Rectangle(&Rrect);
+        ImageDC.SelectObject(pOldPen);
+        ImageDC.SelectObject(pOldBrush);
+        // cover rectangle border
+        CPen* pOldLinePen = ImageDC.SelectObject(&linePen);
+        ImageDC.MoveTo(4, 456);
+        ImageDC.LineTo(131, 456);
+        ImageDC.SelectObject(pOldLinePen);
+        ImageDC.SelectObject(pOldBitmap);
+        ImageDC.DeleteDC();
+        CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
+    }
+
     void MainGirl::SetVelocity(CGameMap* map)
     {
         if (!moving) //沒有正在移動則退出
@@ -387,6 +410,39 @@ namespace game_framework
         }
     }
 
+    /*void PremultiplyBitmapAlpha(HDC hDC, HBITMAP hBmp)
+    {
+        BITMAP bm = { 0 };
+        GetObject(hBmp, sizeof(bm), &bm);
+        BITMAPINFO* bmi = (BITMAPINFO*)_alloca(sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD)));
+        ::ZeroMemory(bmi, sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD)));
+        bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        BOOL bRes = ::GetDIBits(hDC, hBmp, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS);
+
+        if (!bRes || bmi->bmiHeader.biBitCount != 32) return;
+
+        LPBYTE pBitData = (LPBYTE) ::LocalAlloc(LPTR, bm.bmWidth * bm.bmHeight * sizeof(DWORD));
+
+        if (pBitData == NULL) return;
+
+        LPBYTE pData = pBitData;
+        ::GetDIBits(hDC, hBmp, 0, bm.bmHeight, pData, bmi, DIB_RGB_COLORS);
+
+        for (int y = 0; y < bm.bmHeight; y++)
+        {
+            for (int x = 0; x < bm.bmWidth; x++)
+            {
+                pData[0] = (BYTE)((DWORD)pData[0] * pData[3] / 255);
+                pData[1] = (BYTE)((DWORD)pData[1] * pData[3] / 255);
+                pData[2] = (BYTE)((DWORD)pData[2] * pData[3] / 255);
+                pData += 4;
+            }
+        }
+
+        ::SetDIBits(hDC, hBmp, 0, bm.bmHeight, pBitData, bmi, DIB_RGB_COLORS);
+        ::LocalFree(pBitData);
+    }*/
+
     void MainGirl::OnShow(CGameMap* map)
     {
         if (state == INANIMATION)
@@ -408,41 +464,24 @@ namespace game_framework
             {
                 if (girl_right_reinforcing.GetCurrentBitmapNumber() < 20 && girl_left_reinforcing.GetCurrentBitmapNumber() < 20)
                 {
-                    CBitmap m_memBitmap;
                     CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
                     CDC ImageDC;
                     ImageDC.CreateCompatibleDC(pDC);
-                    m_memBitmap.CreateCompatibleBitmap(pDC, 140, 500);
-                    ImageDC.SetBkMode(TRANSPARENT);
                     CBitmap* pOldBitmap = ImageDC.SelectObject(&m_memBitmap);
-                    CPen pen(PS_SOLID, 3, RGB(255, 0, 255));
-                    CBrush brush(RGB(255, 214, 255));
-                    CPen linePen(PS_SOLID, 4, RGB(255, 214, 255));
-                    CPen* pOldPen = ImageDC.SelectObject(&pen);
-                    CBrush* pOldBrush = ImageDC.SelectObject(&brush);
                     CPoint coordinates[2];
-                    coordinates[0].SetPoint(map->ScreenX(x - 30), 0);
+                    coordinates[0].SetPoint(map->ScreenX(x - 30), 80);
                     coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 30), map->ScreenY(y + girl_left_stand.Height() + 5));
                     CRect Erect, Rrect;
                     Erect.SetRect(0, 452, 135, 467);
-                    ImageDC.Ellipse(&Erect);
                     Rrect.SetRect(0, -10, 135, 457);
-                    ImageDC.Rectangle(&Rrect);
-                    ImageDC.SelectObject(pOldPen);
-                    ImageDC.SelectObject(pOldBrush);
-                    // cover rectangle border
-                    CPen* pOldLinePen = ImageDC.SelectObject(&linePen);
-                    ImageDC.MoveTo(4, 456);
-                    ImageDC.LineTo(131, 456);
                     BLENDFUNCTION bf;
                     bf.AlphaFormat = 0;
                     bf.BlendFlags = 0;
                     bf.BlendOp = 0;
                     bf.SourceConstantAlpha = 220;
-                    pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, bf);
-                    ImageDC.SelectObject(pOldLinePen);
+                    //pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, bf);
+                    pDC->BitBlt(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 94, &ImageDC, 0, 80, SRCCOPY);
                     ImageDC.SelectObject(pOldBitmap);
-                    m_memBitmap.DeleteObject();
                     ImageDC.DeleteDC();
                     CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
                 }
