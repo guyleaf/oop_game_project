@@ -20,7 +20,7 @@ namespace game_framework
         bool IsInScreen(int start_x, int end_x);
         bool IsEmpty(int x, int y);
     private:
-        CMovingBitmap firstFloor, secondFloor, ceiling;
+        CMovingBitmap firstFloor, secondFloor, thirdFloor, ceiling;
         int sx, sy;
         int level;
         int height, width;
