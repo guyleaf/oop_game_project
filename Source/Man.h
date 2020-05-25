@@ -75,4 +75,17 @@ namespace game_framework
     private:
         const int type;
     };
+
+	class SpecialMan : public Man
+	{
+	public:
+		SpecialMan(int x, int y, int start, int end, bool direction, int type);
+		~SpecialMan();
+		void LoadBitMap();
+	private:
+		// type == 1 => Blue hair
+		// type == 2 => Brown hair
+		// type == 3 => Gold hair
+		const int type;
+	};
 }

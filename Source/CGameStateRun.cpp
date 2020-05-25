@@ -25,6 +25,7 @@ namespace game_framework
         man[1].push_back(new NormalMan(1800, 400, 1000, 1800, false, 1));
         man[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
         man[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
+        GenerateSpecialMan(true, true, 1, 5);
     }
 
     CGameStateRun::~CGameStateRun()
@@ -113,6 +114,7 @@ namespace game_framework
         //SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
         //mainGirl->SetIsFocusing(false);
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        map.OnMove();
         ui.OnMove();
 
         if (!mainGirl->IsInAnimation() && mainGirl->IsReinforced() && !ui.IsGameOver())
@@ -547,6 +549,19 @@ namespace game_framework
         }
 
         mainGirl->OnMove(&map);
+
+        if (map.IsEmpty(mainGirl->GetPositionX(), mainGirl->GetPositionY()) && map.IsEmpty(mainGirl->GetPositionX() + mainGirl->Width(), mainGirl->GetPositionY()))
+        {
+            ui.SetIsButtonVisible(false, false);
+            ui.SetIsButtonVisible(false, true);
+        }
+        else
+        {
+            if (mainGirl->GetPositionX() <= map.Width() / 2)
+                ui.SetIsButtonVisible(true, false);
+            else
+                ui.SetIsButtonVisible(true, true);
+        }
     }
 
     void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -586,9 +601,6 @@ namespace game_framework
             else
                 CAudio::Instance()->Play(AUDIO_LASER, true);
         }
-
-        if (ui.IsAudioButtonHoverd())
-            ui.Toggle();
     }
 
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -598,6 +610,14 @@ namespace game_framework
             mainGirl->SetIsAttacking(false);
             CAudio::Instance()->Stop(AUDIO_LASER);
         }
+
+        if (ui.IsAudioButtonHoverd())
+            ui.Toggle();
+
+        if (map.GetLevel() != 3 && ui.IsUpButtonHoverd())
+            map.SetLevel(map.GetLevel() + 1);
+        else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
+            map.SetLevel(map.GetLevel() - 1);
     }
 
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -630,7 +650,7 @@ namespace game_framework
         //  貼上背景圖、撞擊數、球、擦子、彈跳的球
         //
         map.OnShow();
-        ui.OnShow();
+        ui.OnShow(&map);
 
         for (size_t i = 0; i < man[0].size(); i++)
         {
@@ -658,5 +678,43 @@ namespace game_framework
         }
 
         mainGirl->ShowFocus();
+
+        if (map.IsMapChanging())
+            CDDraw::BltBackColor(RGB(0, 0, 0));
+    }
+
+    void CGameStateRun::GenerateSpecialMan(bool direction, bool top, int type, int num_girl)
+    {
+        int gx, gy;
+        int mx, my;
+
+        if (top)
+        {
+            my = 100;
+            gy = 120;
+        }
+        else
+        {
+            my = 400;
+            gy = 380;
+        }
+
+        srand((int)(time(NULL)));
+        mx = rand() % 2030 + 450;
+        int distance = 10;
+
+        if (direction)
+            man[!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, type));
+        else
+            man[!top].push_back(new SpecialMan(mx, my, mx, mx - distance, direction, type));
+
+        srand((int)(time(NULL) + time(NULL)));
+        srand((int)(rand() + time(NULL)));
+
+        for (int i = 0; i < num_girl; i++)
+        {
+            gx = rand() % 100 + (mx - 80) + i * 20;
+            normalGirl[!top].push_back(new NormalGirl(gx, gy, gx - rand() % 20, gx + rand() % 20, rand() % 2, rand() % 2 + 1));
+        }
     }
 }

@@ -13,6 +13,10 @@ namespace game_framework
 {
     CGameMap::CGameMap() : sx(300), sy(0), level(1), width(2894), height(600)
     {
+        left_edge = 236;
+        right_edge = 2688;
+        counter = 25;
+        is_mapChanging = false;
     }
 
     void CGameMap::LoadBitMap()
@@ -20,6 +24,20 @@ namespace game_framework
         firstFloor.LoadBitmap(IDB_FIRSTFLOOR);
         secondFloor.LoadBitmap(IDB_SECONDFLOOR);
         ceiling.LoadBitmap(IDB_CEILING);
+    }
+
+    void CGameMap::OnMove()
+    {
+        if (counter == 0)
+        {
+            counter = 25;
+            is_mapChanging = false;
+        }
+
+        if (is_mapChanging)
+        {
+            counter--;
+        }
     }
 
     void CGameMap::OnShow()
@@ -80,12 +98,22 @@ namespace game_framework
         return val - sy;
     }
 
+    bool CGameMap::IsMapChanging()
+    {
+        return is_mapChanging;
+    }
+
     bool CGameMap::IsInScreen(int start_x, int end_x)
     {
         if (sx <= start_x && end_x <= sx + SIZE_X)
             return true;
         else
             return false;
+    }
+
+    bool CGameMap::IsEmpty(int x, int y)
+    {
+        return left_edge <= x && x <= right_edge;
     }
 
     int CGameMap::GetLevel()
@@ -96,5 +124,6 @@ namespace game_framework
     void CGameMap::SetLevel(int level)
     {
         this->level = level;
+        is_mapChanging = true;
     }
 }

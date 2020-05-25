@@ -264,6 +264,11 @@ namespace game_framework
                 else
                     moving = false;
 
+                if (!map->IsEmpty(x, y) && direction == false)
+                    moving = false;
+                else if (!map->IsEmpty(x + Width(), y) && direction == true)
+                    moving = false;
+
                 SetVelocity(map);
             }
             else
