@@ -228,6 +228,9 @@
     <Image Include="RES\map3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\map4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
     <Image Include="RES\left_girl.bmp">
       <Filter>Resource Files</Filter>
     </Image>

@@ -19,6 +19,7 @@ namespace game_framework
     {
         firstFloor.LoadBitmap(IDB_FIRSTFLOOR);
         secondFloor.LoadBitmap(IDB_SECONDFLOOR);
+        thirdFloor.LoadBitmap(IDB_THIRDFLOOR);
         ceiling.LoadBitmap(IDB_CEILING);
     }
 

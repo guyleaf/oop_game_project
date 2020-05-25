@@ -17,7 +17,7 @@ namespace game_framework
         int GetLevel();
         bool IsInScreen(int start_x, int end_x);
     private:
-        CMovingBitmap firstFloor, secondFloor, ceiling;
+        CMovingBitmap firstFloor, secondFloor, thirdFloor, ceiling;
         int sx, sy;
         int level;
         int height, width;

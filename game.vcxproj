@@ -344,6 +344,7 @@
     <Image Include="RES\map1.bmp" />
     <Image Include="RES\map2.bmp" />
     <Image Include="RES\map3.bmp" />
+    <Image Include="RES\map4.bmp" />
     <Image Include="RES\UI\number\number (0).bmp" />
     <Image Include="RES\UI\number\number (1).bmp" />
     <Image Include="RES\UI\number\number (2).bmp" />
