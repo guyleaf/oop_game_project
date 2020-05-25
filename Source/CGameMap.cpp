@@ -53,6 +53,11 @@ namespace game_framework
             secondFloor.SetTopLeft(-sx, -sy);
             secondFloor.ShowBitmap();
         }
+        else if (level == 3)
+        {
+            thirdFloor.SetTopLeft(-sx, -sy);
+            thirdFloor.ShowBitmap();
+        }
         else
         {
             ceiling.SetTopLeft(-sx, -sy);
