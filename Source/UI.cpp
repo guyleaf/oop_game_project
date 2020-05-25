@@ -202,7 +202,7 @@ namespace game_framework
                 }
             }
 
-            if (map->GetLevel() != 3)
+            if (map->GetLevel() != 4)
             {
                 up.ShowBitmap();
 

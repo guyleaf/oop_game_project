@@ -614,7 +614,7 @@ namespace game_framework
         if (ui.IsAudioButtonHoverd())
             ui.Toggle();
 
-        if (map.GetLevel() != 3 && ui.IsUpButtonHoverd())
+        if (map.GetLevel() != 4 && ui.IsUpButtonHoverd())
             map.SetLevel(map.GetLevel() + 1);
         else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
             map.SetLevel(map.GetLevel() - 1);
