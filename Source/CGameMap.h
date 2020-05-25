@@ -11,7 +11,7 @@ namespace game_framework
         void Addsy(int val);
     private:
         void ParseCsv(std::string name, int array[][24]);
-        CMovingBitmap firstFloor, secondFloor, ceiling;
+        CMovingBitmap firstFloor, secondFloor, thirdFloor, ceiling;
         int sx, sy;
     };
 }

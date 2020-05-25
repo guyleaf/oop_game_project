@@ -108,7 +108,9 @@ IDB_FIRSTFLOOR          BITMAP                  "..\\RES\\map1.bmp"
 
 IDB_SECONDFLOOR         BITMAP                  "..\\RES\\map2.bmp"
 
-IDB_CEILING             BITMAP                  "..\\RES\\map3.bmp"
+IDB_THIRDFLOOR          BITMAP                  "..\\RES\\map3.bmp"
+
+IDB_CEILING             BITMAP                  "..\\RES\\map4.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

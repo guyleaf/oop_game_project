@@ -331,6 +331,7 @@
     <Image Include="RES\map1.png" />
     <Image Include="RES\map2.bmp" />
     <Image Include="RES\map3.bmp" />
+    <Image Include="RES\map4.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
