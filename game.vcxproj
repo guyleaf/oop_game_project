@@ -258,9 +258,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\audio.cpp" />
-    <ClCompile Include="Source\CBall.cpp" />
-    <ClCompile Include="Source\CBouncingBall.cpp" />
-    <ClCompile Include="Source\CEraser.cpp" />
     <ClCompile Include="Source\CGameMap.cpp" />
     <ClCompile Include="Source\CGameStateInit.cpp" />
     <ClCompile Include="Source\CGameStateOver.cpp" />
@@ -280,11 +277,16 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="Source\Girl.cpp" />
+    <ClCompile Include="Source\Heart.cpp" />
+    <ClCompile Include="Source\CHeartPoint.cpp" />
     <ClCompile Include="Source\MainFrm.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="Source\MainGirl.cpp" />
+    <ClCompile Include="Source\Man.cpp" />
     <ClCompile Include="Source\StdAfx.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -300,23 +302,28 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ObjectFileName>
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ProgramDataBaseFileName>
     </ClCompile>
+    <ClCompile Include="Source\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\audio.h" />
-    <ClInclude Include="Source\CBall.h" />
-    <ClInclude Include="Source\CBouncingBall.h" />
-    <ClInclude Include="Source\CEraser.h" />
     <ClInclude Include="Source\CGameMap.h" />
     <ClInclude Include="Source\CGameStateInit.h" />
     <ClInclude Include="Source\CGameStateOver.h" />
     <ClInclude Include="Source\CGameStateRun.h" />
     <ClInclude Include="Source\game.h" />
     <ClInclude Include="Source\gameDoc.h" />
+    <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\gameView.h" />
+    <ClInclude Include="Source\Girl.h" />
+    <ClInclude Include="Source\Heart.h" />
+    <ClInclude Include="Source\CHeartPoint.h" />
     <ClInclude Include="Source\MainFrm.h" />
+    <ClInclude Include="Source\MainGirl.h" />
+    <ClInclude Include="Source\Man.h" />
     <ClInclude Include="Source\Resource.h" />
     <ClInclude Include="Source\StdAfx.h" />
     <ClInclude Include="Source\gamelib.h" />
+    <ClInclude Include="Source\UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\game.rc">
@@ -326,12 +333,32 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="RES\button (1).bmp" />
+    <Image Include="RES\button (2).bmp" />
+    <Image Include="RES\button (3).bmp" />
+    <Image Include="RES\button (4).bmp" />
     <Image Include="RES\classroom.bmp" />
+    <Image Include="RES\initScreen2.bmp" />
+    <Image Include="RES\left_girl.bmp" />
+    <Image Include="RES\loding.bmp" />
     <Image Include="RES\map1.bmp" />
-    <Image Include="RES\map1.png" />
     <Image Include="RES\map2.bmp" />
     <Image Include="RES\map3.bmp" />
     <Image Include="RES\map4.bmp" />
+    <Image Include="RES\UI\number\number (0).bmp" />
+    <Image Include="RES\UI\number\number (1).bmp" />
+    <Image Include="RES\UI\number\number (2).bmp" />
+    <Image Include="RES\UI\number\number (3).bmp" />
+    <Image Include="RES\UI\number\number (4).bmp" />
+    <Image Include="RES\UI\number\number (5).bmp" />
+    <Image Include="RES\UI\number\number (6).bmp" />
+    <Image Include="RES\UI\number\number (7).bmp" />
+    <Image Include="RES\UI\number\number (8).bmp" />
+    <Image Include="RES\UI\number\number (9).bmp" />
+    <Image Include="RES\voice1.bmp" />
+    <Image Include="RES\voice2.bmp" />
+    <Image Include="RES\voice3.bmp" />
+    <Image Include="RES\voice4.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

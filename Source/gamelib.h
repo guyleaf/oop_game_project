@@ -74,7 +74,7 @@
 #define GAME_CYCLE_TIME		 33		    // 每33ms跑一次Move及Show(每秒30次)
 #define SHOW_GAME_CYCLE_TIME false		// 是否在debug mode顯示cycle time
 #define ENABLE_GAME_PAUSE	 true		// 是否允許以 Ctrl-Q 暫停遊戲
-#define ENABLE_AUDIO		 false		// 啟動音效介面
+#define ENABLE_AUDIO		 true		// 啟動音效介面
 
 /////////////////////////////////////////////////////////////////////////////
 // 定義CGame及CGameState所使用的三個狀態常數
@@ -87,6 +87,19 @@ enum GAME_STATES
     GAME_STATE_OVER
 };
 
+enum AUDIO_ID  				// 定義各種音效的編號
+{
+    AUDIO_GAME,				// 0
+    AUDIO_LASER,			// 1
+    AUDIO_EAT_HEART,		// 2
+    AUDIO_FLYING,			// 3
+    AUDIO_BELL,				// 4
+    AUDIO_SNATCH,			// 5
+    AUDIO_INIT,
+    AUDIO_REINFORCING,
+    AUDIO_BLINK,
+	AUDIO_PRESS
+};
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
@@ -145,6 +158,7 @@ namespace game_framework
     class CDDraw
     {
         friend class CMovingBitmap;
+        friend class UI;
     public:
         ~CDDraw();
         static void  BltBackColor(DWORD);		// 將Back plain全部著上指定的顏色
