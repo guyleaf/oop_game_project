@@ -213,6 +213,8 @@ namespace game_framework
                     shooting_left.ShowBitmap();
                 }
             }
+
+            status = ALIVE;
         }
         else if (status == FLYING)
         {

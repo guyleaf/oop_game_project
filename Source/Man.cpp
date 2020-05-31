@@ -99,6 +99,7 @@ namespace game_framework
             flash_multi.OnMove();
             weakening.OnMove();
             clicking.OnMove();
+            blood.Reset();
         }
         else if (status == DEAD)
         {
@@ -352,6 +353,9 @@ namespace game_framework
     void Man::SetIsFocused(bool status)
     {
         is_focused = status;
+
+        if (status == false)
+            this->status = ALIVE;
     }
 
     void Man::SetIsAttackedBy(int who)
@@ -593,62 +597,63 @@ namespace game_framework
         man_following_girl_right.SetDelayCount(8);
     }
 
-	SpecialMan::SpecialMan(int x, int y, int start, int end, bool direction, int type) : type(type), Man(x, y, start, end, direction)
-	{
-	}
+    SpecialMan::SpecialMan(int x, int y, int start, int end, bool direction, int type) : type(type), Man(x, y, start, end, direction)
+    {
+        HP = 800;
+    }
 
-	SpecialMan::~SpecialMan()
-	{
-	}
+    SpecialMan::~SpecialMan()
+    {
+    }
 
-	void SpecialMan::LoadBitMap()
-	{
-		char text[100] = {0};
-		strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
-		man_left_stand.LoadBitmap(text, RGB(0, 0, 0));
-		strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
-		man_right_stand.LoadBitmap(text, RGB(0, 0, 0));
+    void SpecialMan::LoadBitMap()
+    {
+        char text[100] = {0};
+        strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
+        man_left_stand.LoadBitmap(text, RGB(0, 0, 0));
+        strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
+        man_right_stand.LoadBitmap(text, RGB(0, 0, 0));
 
-		for (int i = 1; i <= 5; i++)
-		{
-			strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-			man_right.AddBitmap(text, RGB(0, 0, 0));
-		}
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
+            man_right.AddBitmap(text, RGB(0, 0, 0));
+        }
 
-		man_right.SetDelayCount(13);
+        man_right.SetDelayCount(13);
 
-		for (int i = 1; i <= 5; i++)
-		{
-			strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-			man_left.AddBitmap(text, RGB(0, 0, 0));
-		}
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
+            man_left.AddBitmap(text, RGB(0, 0, 0));
+        }
 
-		man_left.SetDelayCount(13);
+        man_left.SetDelayCount(13);
 
-		for (int i = 1; i <= 4; i++)
-		{
-			strcpy(text, ("RES/Man/flash (" + to_string(i) + ").bmp").c_str());
-			flash.AddBitmap(text, RGB(255, 255, 255));
-		}
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Man/flash (" + to_string(i) + ").bmp").c_str());
+            flash.AddBitmap(text, RGB(255, 255, 255));
+        }
 
-		for (int i = 1; i <= 4; i++)
-		{
-			strcpy(text, ("RES/Man/flash_multiple (" + to_string(i) + ").bmp").c_str());
-			flash_multi.AddBitmap(text, RGB(0, 0, 0));
-		}
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Man/flash_multiple (" + to_string(i) + ").bmp").c_str());
+            flash_multi.AddBitmap(text, RGB(0, 0, 0));
+        }
 
-		for (int i = 1; i <= 2; i++)
-		{
-			strcpy(text, ("RES/Man/weakening (" + to_string(i) + ").bmp").c_str());
-			weakening.AddBitmap(text, RGB(255, 255, 255));
-		}
+        for (int i = 1; i <= 2; i++)
+        {
+            strcpy(text, ("RES/Man/weakening (" + to_string(i) + ").bmp").c_str());
+            weakening.AddBitmap(text, RGB(255, 255, 255));
+        }
 
-		for (int i = 1; i <= 14; i++)
-		{
-			strcpy(text, ("RES/Man/blood (" + to_string(i) + ").bmp").c_str());
-			blood.AddBitmap(text, RGB(0, 0, 0));
-		}
+        for (int i = 1; i <= 14; i++)
+        {
+            strcpy(text, ("RES/Man/blood (" + to_string(i) + ").bmp").c_str());
+            blood.AddBitmap(text, RGB(0, 0, 0));
+        }
 
-		blood.SetDelayCount(1);
-	}
+        blood.SetDelayCount(1);
+    }
 }

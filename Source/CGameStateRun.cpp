@@ -26,6 +26,7 @@ namespace game_framework
         man[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
         man[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
         GenerateSpecialMan(true, true, 1, 5);
+        teacher = new Teacher(1000, MIDDLE);
     }
 
     CGameStateRun::~CGameStateRun()
@@ -41,6 +42,7 @@ namespace game_framework
         }
 
         delete mainGirl;
+        delete teacher;
     }
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -76,6 +78,7 @@ namespace game_framework
             normalGirl[1][i]->LoadBitMap();
         }
 
+        teacher->LoadBitmap();
         ui.LoadBitmap();
         //
         // 完成部分Loading動作，提高進度
@@ -125,6 +128,20 @@ namespace game_framework
 
         if (!mainGirl->IsInAnimation())
         {
+            if (teacher->HitMainGirl(mainGirl))
+            {
+                mainGirl->SetIsLocked(false);
+                mainGirl->SetIsFocusing(false);
+                mainGirl->SetIsAttacking(false);
+                ui.AddHeartPoints(-600);
+                mainGirl->Lose();
+            }
+        }
+
+        teacher->OnMove(&map);
+
+        if (!mainGirl->IsInAnimation())
+        {
             for (size_t i = 0; i < man[0].size(); i++)
             {
                 if (man[0][i]->IsAlive() && !mainGirl->IsFocusing() && man[0][i]->HitMainGirl(&map, mainGirl))
@@ -149,6 +166,26 @@ namespace game_framework
                 }
                 else if (!man[1][i]->IsFocused())
                     man[1][i]->SetMoving(true);
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < man[0].size(); i++)
+            {
+                if (man[0][i]->IsAlive())
+                {
+                    man[0][i]->SetIsFocused(false);
+                    man[0][i]->SetMoving(true);
+                }
+            }
+
+            for (size_t i = 0; i < man[1].size(); i++)
+            {
+                if (man[1][i]->IsAlive())
+                {
+                    man[1][i]->SetIsFocused(false);
+                    man[1][i]->SetMoving(true);
+                }
             }
         }
 
@@ -231,7 +268,7 @@ namespace game_framework
 
             if (man[0][i]->IsAlreadyDead())
             {
-                if (HP == 0)
+                if (HP <= 0)
                 {
                     mainGirl->AddSlave(man[0][i]);
                     man[0].erase(man[0].begin() + i);
@@ -239,18 +276,18 @@ namespace game_framework
                 }
             }
 
-            if (!mainGirl->IsInAnimation())
+            if (true)
             {
-                if (man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl->IsAttacking())
+                if (mainGirl->IsLocked() && man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl->IsAttacking())
                 {
-                    if (HP == 800 || HP == 0)
+                    if (HP >= 800 || HP <= 0)
                     {
                         man[0][i]->SetIsAlive(false);
                         mainGirl->SetIsFocusing(false);
                         mainGirl->SetIsAttacking(false);
                         mainGirl->SetIsLocked(false);
 
-                        if (HP == 0)
+                        if (HP <= 0)
                         {
                             hearts.push_back(new Heart(0, 1, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), girlsOnScreen.size()));
 
@@ -261,7 +298,7 @@ namespace game_framework
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
-                        else if (HP == 800)
+                        else if (HP >= 800)
                         {
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Win();
@@ -292,7 +329,7 @@ namespace game_framework
                 {
                     if (man[0][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[0][i]))
                     {
-                        if (HP == 0)
+                        if (HP <= 0)
                         {
                             man[0][i]->SetIsAlive(false);
                             man[0][i]->SetIsKilledBy(Man::mainGirl);
@@ -360,7 +397,7 @@ namespace game_framework
 
             if (man[1][i]->IsAlreadyDead())
             {
-                if (HP == 0)
+                if (HP <= 0)
                 {
                     mainGirl->AddSlave(man[1][i]);
                     man[1].erase(man[1].begin() + i);
@@ -368,18 +405,18 @@ namespace game_framework
                 }
             }
 
-            if (!mainGirl->IsInAnimation())
+            if (true)
             {
                 if (man[1][i]->IsAttackedBy(Man::all) && man[1][i]->IsAlive() && mainGirl->IsAttacking())
                 {
-                    if (HP == 800 || HP == 0)
+                    if (HP >= 800 || HP <= 0)
                     {
                         man[1][i]->SetIsAlive(false);
                         mainGirl->SetIsFocusing(false);
                         mainGirl->SetIsAttacking(false);
                         mainGirl->SetIsLocked(false);
 
-                        if (HP == 0)
+                        if (HP <= 0)
                         {
                             hearts.push_back(new Heart(1, 1, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, girlsOnScreen.size()));
 
@@ -390,7 +427,7 @@ namespace game_framework
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
-                        else if (HP == 800)
+                        else if (HP >= 800)
                         {
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Win();
@@ -421,7 +458,7 @@ namespace game_framework
                 {
                     if (man[1][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[1][i]))
                     {
-                        if (HP == 0)
+                        if (HP <= 0)
                         {
                             man[1][i]->SetIsAlive(false);
                             man[1][i]->SetIsKilledBy(Man::mainGirl);
@@ -581,7 +618,6 @@ namespace game_framework
                 ui.SetHeartPoints(0);
         }
     }
-
     void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
         const char KEY_LEFT = 0x25; // keyboard左箭頭
@@ -589,7 +625,6 @@ namespace game_framework
         const char KEY_RIGHT = 0x27; // keyboard右箭頭
         const char KEY_DOWN = 0x28; // keyboard下箭頭
     }
-
     void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
         if (mainGirl->IsFocusing())
@@ -602,7 +637,6 @@ namespace game_framework
                 CAudio::Instance()->Play(AUDIO_LASER, true);
         }
     }
-
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         if (!mainGirl->IsLocked())
@@ -619,26 +653,22 @@ namespace game_framework
         else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
             map.SetLevel(map.GetLevel() - 1);
     }
-
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
         mainGirl->OnMouseMove(point);
         ui.OnMouseMove(point);
     }
-
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
         //waveOutSetVolume(0, 0x0000);
         //CAudio::Instance()->Pause();
     }
-
     void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         //waveOutSetVolume(0, 0x0FFF);
         //CAudio::Instance()->Resume();
     }
-
     void CGameStateRun::OnShow()
     {
         //
@@ -662,6 +692,7 @@ namespace game_framework
             normalGirl[0][i]->OnShow(&map);
         }
 
+        teacher->OnShow(&map);
         mainGirl->OnShow(&map);
 
         for (size_t i = 0; i < hearts.size(); i++)
@@ -682,7 +713,6 @@ namespace game_framework
         if (map.IsMapChanging())
             CDDraw::BltBackColor(RGB(0, 0, 0));
     }
-
     void CGameStateRun::GenerateSpecialMan(bool direction, bool top, int type, int num_girl)
     {
         int gx, gy;
