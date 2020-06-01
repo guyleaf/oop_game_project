@@ -30,10 +30,12 @@ namespace game_framework
         CMovingBitmap	help;		// 說明圖
         CInteger		score;	// 得分數
         CGameMap map;
-        MainGirl mainGirl;
+        MainGirl* mainGirl;
         vector<Man*> man[2];
-        vector<NormalGirl> normalGirl[2];
+        vector<Girl*> normalGirl[2];
         vector<Heart*> hearts;
+        vector<Girl*> girlsOnScreen;
+        UI ui;
     };
 }
 

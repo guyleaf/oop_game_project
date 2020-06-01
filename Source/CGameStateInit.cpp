@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -9,32 +9,55 @@
 namespace game_framework
 {
     /////////////////////////////////////////////////////////////////////////////
-    // ³o­Óclass¬°¹CÀ¸ªº¹CÀ¸¶}ÀYµe­±ª«¥ó
+    // é€™å€‹classç‚ºéŠæˆ²çš„éŠæˆ²é–‹é ­ç•«é¢ç‰©ä»¶
     /////////////////////////////////////////////////////////////////////////////
 
     CGameStateInit::CGameStateInit(CGame* g) : CGameState(g)
     {
+        change = false;
+        changeState = false;
+        delay_counter = 72;
     }
 
     void CGameStateInit::OnInit()
     {
         //
-        // ·í¹Ï«Ü¦h®É¡AOnInit¸ü¤J©Ò¦³ªº¹Ï­nªá«Ü¦h®É¶¡¡C¬°Á×§Kª±¹CÀ¸ªº¤H
-        //     µ¥ªº¤£­@·Ğ¡A¹CÀ¸·|¥X²{¡uLoading ...¡v¡AÅã¥ÜLoadingªº¶i«×¡C
+        // ç•¶åœ–å¾ˆå¤šæ™‚ï¼ŒOnInitè¼‰å…¥æ‰€æœ‰çš„åœ–è¦èŠ±å¾ˆå¤šæ™‚é–“ã€‚ç‚ºé¿å…ç©éŠæˆ²çš„äºº
+        //     ç­‰çš„ä¸è€ç…©ï¼ŒéŠæˆ²æœƒå‡ºç¾ã€ŒLoading ...ã€ï¼Œé¡¯ç¤ºLoadingçš„é€²åº¦ã€‚
         //
-        ShowInitProgress(0);	// ¤@¶}©lªºloading¶i«×¬°0%
+        ShowInitProgress(0);	// ä¸€é–‹å§‹çš„loadingé€²åº¦ç‚º0%
         //
-        // ¶}©l¸ü¤J¸ê®Æ
+        // é–‹å§‹è¼‰å…¥è³‡æ–™
         //
+        //CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
         logo.LoadBitmap(IDB_INITSCREEN);
-        Sleep(300);				// ©ñºC¡A¥H«K¬İ²M·¡¶i«×¡A¹ê»Ú¹CÀ¸½Ğ§R°£¦¹Sleep
+        button1_1.LoadBitmap(IDB_BUTTON1_1);
+        button1_2.LoadBitmap(IDB_BUTTON1_2);
+        button2_1.LoadBitmap(IDB_BUTTON2_1);
+        button2_2.LoadBitmap(IDB_BUTTON2_2);
+        voice1.LoadBitmap(IDB_VOICE1);
+        voice2.LoadBitmap(IDB_VOICE2);
+        voice3.LoadBitmap(IDB_VOICE3);
+        voice4.LoadBitmap(IDB_VOICE4);
+        CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
+        CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
+        CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
+        CAudio::Instance()->Play(AUDIO_INIT, true);
+        //Sleep(300);				// æ”¾æ…¢ï¼Œä»¥ä¾¿çœ‹æ¸…æ¥šé€²åº¦ï¼Œå¯¦éš›éŠæˆ²è«‹åˆªé™¤æ­¤Sleep
         //
-        // ¦¹OnInit°Ê§@·|±µ¨ìCGameStaterRun::OnInit()¡A©Ò¥H¶i«×ÁÙ¨S¨ì100%
+        // æ­¤OnInitå‹•ä½œæœƒæ¥åˆ°CGameStaterRun::OnInit()ï¼Œæ‰€ä»¥é€²åº¦é‚„æ²’åˆ°100%
         //
     }
 
     void CGameStateInit::OnBeginState()
     {
+        waveOutGetVolume(0, &volume);
+
+        if (volume == 0)
+        {
+            volume = 0xFFFFFFFF;
+            waveOutSetVolume(0, volume);
+        }
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -43,40 +66,187 @@ namespace game_framework
         const char KEY_SPACE = ' ';
 
         if (nChar == KEY_SPACE)
-            GotoGameState(GAME_STATE_RUN);						// ¤Á´«¦ÜGAME_STATE_RUN
-        else if (nChar == KEY_ESC)								// Demo Ãö³¬¹CÀ¸ªº¤èªk
-            PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// Ãö³¬¹CÀ¸
+            GotoGameState(GAME_STATE_RUN);						// åˆ‡æ›è‡³GAME_STATE_RUN
+        else if (nChar == KEY_ESC)								// Demo é—œé–‰éŠæˆ²çš„æ–¹æ³•
+            PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// é—œé–‰éŠæˆ²
     }
 
     void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
     {
-        GotoGameState(GAME_STATE_RUN);		// ¤Á´«¦ÜGAME_STATE_RUN
     }
+
+    void CGameStateInit::OnLButtonUp(UINT nFlags, CPoint point)
+    {
+        cursor_x1 = point.x;
+        cursor_y1 = point.y;
+    }
+
+    void CGameStateInit::OnMove()
+    {
+        if (changeState && --delay_counter <= 0)
+            GotoGameState(GAME_STATE_RUN);		// åˆ‡æ›è‡³GAME_STATE_RUN
+
+        if (cursor_x1 >= 180 && cursor_x1 <= 375)
+        {
+            if (cursor_y1 >= 490 && cursor_y1 <= 540)
+            {
+                if (!changeState)
+                {
+                    CAudio::Instance()->Play(AUDIO_PRESS, false);
+                    CAudio::Instance()->Stop(AUDIO_INIT);
+                    CAudio::Instance()->Play(AUDIO_GAME, false);
+                }
+
+                changeState = true;
+            }
+        }
+
+        if (cursor_x1 >= 420 && cursor_x1 <= 615)
+        {
+            if (cursor_y1 >= 490 && cursor_y1 <= 540)
+            {
+                PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// é—œé–‰éŠæˆ²
+            }
+        }
+
+        if (change == false)
+        {
+            if (cursor_x1 >= 630 && cursor_x1 <= 690)
+            {
+                if (cursor_y1 >= 450 && cursor_y1 <= 510)
+                {
+                    change = true;
+                    waveOutGetVolume(0, &volume);
+                    waveOutSetVolume(0, 0);
+                    cursor_x1 = -1;
+                    cursor_y1 = -1;
+                }
+            }
+        }
+        else
+        {
+            if (cursor_x1 >= 630 && cursor_x1 <= 690)
+            {
+                if (cursor_y1 >= 450 && cursor_y1 <= 510)
+                {
+                    change = false;
+                    waveOutSetVolume(0, volume);
+                    cursor_x1 = -1;
+                    cursor_y1 = -1;
+                }
+            }
+        }
+    }
+    void CGameStateInit::OnMouseMove(UINT nFlags, CPoint point)
+    {
+        cursor_x2 = point.x;
+        cursor_y2 = point.y;
+    }
+
 
     void CGameStateInit::OnShow()
     {
+        if (changeState)
+        {
+            CDDraw::BltBackColor(RGB(0, 0, 0));
+            return;
+        }
+
         //
-        // ¶K¤Wlogo
+        // è²¼ä¸Šlogo
         //
-        logo.SetTopLeft((SIZE_X - logo.Width()) / 2, SIZE_Y / 8);
+        //i = false;
+        logo.SetTopLeft((SIZE_X - logo.Width()) / 2, (SIZE_Y - logo.Height()) / 8);
         logo.ShowBitmap();
+        button1_1.SetTopLeft(180, 490);
+        button1_1.ShowBitmap();
+        button2_1.SetTopLeft(420, 490);
+        button2_1.ShowBitmap();
+        voice1.SetTopLeft(630, 450);
+        voice1.ShowBitmap();
+
+        if (cursor_x2 >= 180 && cursor_x2 <= 375)
+        {
+            if (cursor_y2 >= 490 && cursor_y2 <= 540)
+            {
+                button1_2.SetTopLeft(180, 490);
+                button1_2.ShowBitmap();
+            }
+        }
+
+        if (cursor_x2 >= 420 && cursor_x2 <= 615)
+        {
+            if (cursor_y2 >= 490 && cursor_y2 <= 540)
+            {
+                button2_2.SetTopLeft(420, 490);
+                button2_2.ShowBitmap();
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////
+
+        if (change == false)
+        {
+            voice1.SetTopLeft(630, 450);
+            voice1.ShowBitmap();
+
+            if (cursor_x2 >= 630 && cursor_x2 <= 690)
+            {
+                if (cursor_y2 >= 450 && cursor_y2 <= 510)
+                {
+                    voice2.SetTopLeft(630, 450);
+                    voice2.ShowBitmap();
+                }
+            }
+        }
+
+        if (change == true)
+        {
+            voice4.SetTopLeft(630, 450);
+            voice4.ShowBitmap();
+
+            if (cursor_x2 >= 630 && cursor_x2 <= 690)
+            {
+                if (cursor_y2 >= 450 && cursor_y2 <= 510)
+                {
+                    voice3.SetTopLeft(630, 450);
+                    voice3.ShowBitmap();
+                }
+            }
+        }
+
         //
-        // Demo¿Ã¹õ¦r«¬ªº¨Ï¥Î¡A¤£¹L¶}µo®É½ĞºÉ¶qÁ×§Kª½±µ¨Ï¥Î¦r«¬¡A§ï¥ÎCMovingBitmap¤ñ¸û¦n
+        // Demoè¢å¹•å­—å‹çš„ä½¿ç”¨ï¼Œä¸éé–‹ç™¼æ™‚è«‹ç›¡é‡é¿å…ç›´æ¥ä½¿ç”¨å­—å‹ï¼Œæ”¹ç”¨CMovingBitmapæ¯”è¼ƒå¥½
         //
-        CDC* pDC = CDDraw::GetBackCDC();			// ¨ú±o Back Plain ªº CDC
+        /*CDC* pDC = CDDraw::GetBackCDC();			// å–å¾— Back Plain çš„ CDC
         CFont f, *fp;
-        f.CreatePointFont(160, "Times New Roman");	// ²£¥Í font f; 160ªí¥Ü16 pointªº¦r
-        fp = pDC->SelectObject(&f);					// ¿ï¥Î font f
-        pDC->SetBkColor(RGB(0, 0, 0));
-        pDC->SetTextColor(RGB(255, 255, 0));
-        pDC->TextOut(120, 220, "Please click mouse or press SPACE to begin.");
-        pDC->TextOut(5, 395, "Press Ctrl-F to switch in between window mode and full screen mode.");
-
-        if (ENABLE_GAME_PAUSE)
-            pDC->TextOut(5, 425, "Press Ctrl-Q to pause the Game.");
-
-        pDC->TextOut(5, 455, "Press Alt-F4 or ESC to Quit.");
-        pDC->SelectObject(fp);						// ©ñ±¼ font f (¤d¸U¤£­nº|¤F©ñ±¼)
-        CDDraw::ReleaseBackCDC();					// ©ñ±¼ Back Plain ªº CDC
+        f.CreatePointFont(140, "Consolas");	// ç”¢ç”Ÿ font f; 160è¡¨ç¤º16 pointçš„å­—
+        fp = pDC->SelectObject(&f);					// é¸ç”¨ font f
+        /*  pDC->SetBkColor(RGB(255, 255, 255));
+          pDC->SetTextColor(RGB(255, 105, 180));
+         // pDC->TextOut(280, 490, "é»æ“Šä»»æ„è™•é–‹å§‹éŠæˆ²");
+         // pDC->TextOut(5, 395, "Press Ctrl-F to switch in between window mode and full screen mode.");
+          if (ENABLE_GAME_PAUSE)
+              pDC->TextOut(295, 525, "æŒ‰ä¸‹ Ctrl-Q æš«åœ");*/
+        //  pDC->TextOut(5, 455, "Press Alt-F4 or ESC to Quit.");
+        //pDC->SelectObject(fp);						// æ”¾æ‰ font f (åƒè¬ä¸è¦æ¼äº†æ”¾æ‰)
+        //CDDraw::ReleaseBackCDC();					// æ”¾æ‰ Back Plain çš„ CDC
     }
+
+    /*int CGameStateInit::GetCursorX1()
+    {
+    	return cursor_x1;
+    }
+    int CGameStateInit::GetCursorY1()
+    {
+    	return cursor_y1;
+    }
+    int CGameStateInit::GetCursorX2()
+    {
+    	return cursor_x2;
+    }
+    int CGameStateInit::GetCursorY2()
+    {
+    	return cursor_y2;
+    }*/
 }

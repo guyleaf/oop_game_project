@@ -87,6 +87,19 @@ enum GAME_STATES
     GAME_STATE_OVER
 };
 
+enum AUDIO_ID  				// 定義各種音效的編號
+{
+    AUDIO_GAME,				// 0
+    AUDIO_LASER,			// 1
+    AUDIO_EAT_HEART,		// 2
+    AUDIO_FLYING,			// 3
+    AUDIO_BELL,				// 4
+    AUDIO_SNATCH,			// 5
+    AUDIO_INIT,
+    AUDIO_REINFORCING,
+    AUDIO_BLINK,
+	AUDIO_PRESS
+};
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
@@ -145,6 +158,7 @@ namespace game_framework
     class CDDraw
     {
         friend class CMovingBitmap;
+        friend class UI;
     public:
         ~CDDraw();
         static void  BltBackColor(DWORD);		// 將Back plain全部著上指定的顏色
