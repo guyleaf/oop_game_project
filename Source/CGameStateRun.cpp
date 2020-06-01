@@ -93,7 +93,6 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_SNATCH, "sounds\\snatch.mp3");
         CAudio::Instance()->Load(AUDIO_REINFORCING, "sounds\\reinforcing.mp3");
         CAudio::Instance()->Load(AUDIO_BLINK, "sounds\\blink.mp3");
-        CAudio::Instance()->Load(AUDIO_BUMP, "sounds\\bump.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
@@ -142,6 +141,7 @@ namespace game_framework
                 if (!mainGirl->IsReinforced())
                     ui.AddHeartPoints(-600);
 
+                CAudio::Instance()->Play(AUDIO_FLYING, false);
                 mainGirl->Lose();
             }
         }
@@ -303,6 +303,7 @@ namespace game_framework
                                 girlsOnScreen[j]->Win();
 
                             ui.AddHeartPoints(-750);
+                            CAudio::Instance()->Play(AUDIO_FLYING, false);
                             mainGirl->Lose();
                             man[0][i]->SetIsKilledBy(Man::girl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
@@ -431,6 +432,7 @@ namespace game_framework
                                 girlsOnScreen[j]->Win();
 
                             ui.AddHeartPoints(-750);
+                            CAudio::Instance()->Play(AUDIO_FLYING, false);
                             mainGirl->Lose();
                             man[1][i]->SetIsKilledBy(Man::girl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
