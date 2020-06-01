@@ -9,7 +9,7 @@ namespace game_framework
         void SetMoving(bool status);
         void SetVelocity(int speed);
         void SetDirection(bool direction);
-        void OnMove();
+        void OnMove(int seed);
         void OnShow(CGameMap* map);
         int GetX();
         int GetY();
@@ -76,16 +76,16 @@ namespace game_framework
         const int type;
     };
 
-	class SpecialMan : public Man
-	{
-	public:
-		SpecialMan(int x, int y, int start, int end, bool direction, int type);
-		~SpecialMan();
-		void LoadBitMap();
-	private:
-		// type == 1 => Blue hair
-		// type == 2 => Brown hair
-		// type == 3 => Gold hair
-		const int type;
-	};
+    class SpecialMan : public Man
+    {
+    public:
+        SpecialMan(int x, int y, int start, int end, bool direction, int type);
+        ~SpecialMan();
+        void LoadBitMap();
+    private:
+        // type == 1 => Blue hair
+        // type == 2 => Brown hair
+        // type == 3 => Gold hair
+        const int type;
+    };
 }

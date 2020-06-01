@@ -144,7 +144,10 @@ namespace game_framework
                     if (!bump_right.IsFinalBitmap())
                         bump_right.OnMove();
                     else
+                    {
                         is_bump = false;
+                        state = INNORMAL;
+                    }
                 }
                 else
                 {
@@ -164,7 +167,10 @@ namespace game_framework
                     if (!bump_left.IsFinalBitmap())
                         bump_left.OnMove();
                     else
+                    {
                         is_bump = false;
+                        state = INNORMAL;
+                    }
                 }
             }
             else if (is_reinforced)
@@ -201,10 +207,6 @@ namespace game_framework
                         CAudio::Instance()->Resume();
                     }
                 }
-            }
-            else
-            {
-                state = INNORMAL;
             }
         }
         else if (state == INNORMAL)
@@ -345,7 +347,7 @@ namespace game_framework
                 sx += (girl_left_stand.Width() + 8);
             }
 
-            slaves[i]->OnMove();
+            slaves[i]->OnMove(0);
         }
     }
 

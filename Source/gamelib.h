@@ -98,7 +98,7 @@ enum AUDIO_ID  				// 定義各種音效的編號
     AUDIO_INIT,
     AUDIO_REINFORCING,
     AUDIO_BLINK,
-	AUDIO_PRESS
+    AUDIO_PRESS
 };
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)

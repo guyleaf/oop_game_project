@@ -119,6 +119,7 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         map.OnMove();
         ui.OnMove();
+        srand((unsigned)time(NULL));
 
         if (!mainGirl->IsInAnimation() && mainGirl->IsReinforced() && !ui.IsGameOver())
         {
@@ -130,10 +131,16 @@ namespace game_framework
         {
             if (teacher->HitMainGirl(mainGirl))
             {
+                if (mainGirl->IsAttacking())
+                    CAudio::Instance()->Stop(AUDIO_LASER);
+
                 mainGirl->SetIsLocked(false);
                 mainGirl->SetIsFocusing(false);
                 mainGirl->SetIsAttacking(false);
-                ui.AddHeartPoints(-600);
+
+                if (!mainGirl->IsReinforced())
+                    ui.AddHeartPoints(-600);
+
                 mainGirl->Lose();
             }
         }
@@ -147,12 +154,9 @@ namespace game_framework
                 if (man[0][i]->IsAlive() && !mainGirl->IsFocusing() && man[0][i]->HitMainGirl(&map, mainGirl))
                 {
                     man[0][i]->SetIsFocused(true);
-                    man[0][i]->SetMoving(false);
                     mainGirl->SetIsFocusing(true);
                     mainGirl->SetFocusPerson(&map, man[0][i]);
                 }
-                else if (!man[0][i]->IsFocused())
-                    man[0][i]->SetMoving(true);
             }
 
             for (size_t i = 0; i < man[1].size(); i++)
@@ -160,12 +164,9 @@ namespace game_framework
                 if (man[1][i]->IsAlive() && !mainGirl->IsFocusing() && man[1][i]->HitMainGirl(&map, mainGirl))
                 {
                     man[1][i]->SetIsFocused(true);
-                    man[1][i]->SetMoving(false);
                     mainGirl->SetIsFocusing(true);
                     mainGirl->SetFocusPerson(&map, man[1][i]);
                 }
-                else if (!man[1][i]->IsFocused())
-                    man[1][i]->SetMoving(true);
             }
         }
         else
@@ -175,7 +176,6 @@ namespace game_framework
                 if (man[0][i]->IsAlive())
                 {
                     man[0][i]->SetIsFocused(false);
-                    man[0][i]->SetMoving(true);
                 }
             }
 
@@ -184,7 +184,6 @@ namespace game_framework
                 if (man[1][i]->IsAlive())
                 {
                     man[1][i]->SetIsFocused(false);
-                    man[1][i]->SetMoving(true);
                 }
             }
         }
@@ -203,7 +202,7 @@ namespace game_framework
                     break;
             }
 
-            (*person)->OnMove();
+            (*person)->OnMove(rand());
         }
 
         for (vector<Man*>::iterator person = man[1].begin(); person != man[1].end(); person++)
@@ -219,7 +218,7 @@ namespace game_framework
                     break;
             }
 
-            (*person)->OnMove();
+            (*person)->OnMove(rand());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,7 +254,6 @@ namespace game_framework
                     break;
 
                 girlsOnScreen[i]->SetIsShocking(false);
-                girlsOnScreen[i]->SetMoving(true);
             }
 
             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
@@ -367,7 +365,6 @@ namespace game_framework
 
                                         girlsOnScreen[j]->LockPerson(man[0][i], &map);
                                         girlsOnScreen[j]->SetIsShocking(true);
-                                        girlsOnScreen[j]->SetMoving(false);
                                     }
 
                                     if (ready == girlsOnScreen.size() && mainGirl->IsAttacking())
@@ -496,7 +493,6 @@ namespace game_framework
 
                                         girlsOnScreen[j]->LockPerson(man[1][i], &map);
                                         girlsOnScreen[j]->SetIsShocking(true);
-                                        girlsOnScreen[j]->SetMoving(false);
                                     }
 
                                     if (ready == girlsOnScreen.size() && mainGirl->IsAttacking())
@@ -530,8 +526,10 @@ namespace game_framework
                 break;
             }
 
-            normalGirl[0][i]->OnMove(&map);
+            normalGirl[0][i]->OnMove(&map, rand());
         }
+
+        //srand((unsigned)time(NULL));
 
         for (size_t i = 0; i < normalGirl[1].size(); i++)
         {
@@ -542,7 +540,7 @@ namespace game_framework
                 break;
             }
 
-            normalGirl[1][i]->OnMove(&map);
+            normalGirl[1][i]->OnMove(&map, rand());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -715,36 +713,36 @@ namespace game_framework
     }
     void CGameStateRun::GenerateSpecialMan(bool direction, bool top, int type, int num_girl)
     {
-        int gx, gy;
+        int gx;
         int mx, my;
 
         if (top)
         {
             my = 100;
-            gy = 120;
         }
         else
         {
             my = 400;
-            gy = 380;
         }
 
-        srand((int)(time(NULL)));
         mx = rand() % 2030 + 450;
-        int distance = 10;
+        int distance = 50;
 
         if (direction)
             man[!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, type));
         else
             man[!top].push_back(new SpecialMan(mx, my, mx, mx - distance, direction, type));
 
-        srand((int)(time(NULL) + time(NULL)));
-        srand((int)(rand() + time(NULL)));
+        srand((unsigned)time(NULL));
 
         for (int i = 0; i < num_girl; i++)
         {
-            gx = rand() % 100 + (mx - 80) + i * 20;
-            normalGirl[!top].push_back(new NormalGirl(gx, gy, gx - rand() % 20, gx + rand() % 20, rand() % 2, rand() % 2 + 1));
+            gx = rand() % 150 + (mx - 150) + i * 20;
+
+            if (rand() % 2 == 0)
+                normalGirl[0].push_back(new NormalGirl(gx, 140, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
+            else
+                normalGirl[1].push_back(new NormalGirl(gx, 380, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
         }
     }
 }

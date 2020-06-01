@@ -49,11 +49,13 @@ namespace game_framework
     {
     }
 
-    void Man::OnMove()
+    void Man::OnMove(int seed)
     {
         if (status == ALIVE)
         {
-            if (moving)
+            moving = seed % 2;
+
+            if (moving && !is_focused)
             {
                 if (direction)
                 {
