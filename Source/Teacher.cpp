@@ -8,10 +8,11 @@
 
 namespace game_framework
 {
-    Teacher::Teacher(int x, int y)
+    Teacher::Teacher(int level, int x, int y)
     {
         this->x = x;
         this->y = y;
+        this->level = level;
         direction = false;
     }
 
@@ -37,38 +38,48 @@ namespace game_framework
 
     void Teacher::OnMove(CGameMap* map)
     {
-        if (!map->IsEmpty(x, y))
-            direction = !direction;
+        if (map->GetLevel() == level)
+        {
+            if (!map->IsEmpty(x, y))
+                direction = !direction;
 
-        if (direction)
-        {
-            x += 5;
-            right.OnMove();
-        }
-        else
-        {
-            x -= 5;
-            left.OnMove();
+            if (direction)
+            {
+                x += 5;
+                right.OnMove();
+            }
+            else
+            {
+                x -= 5;
+                left.OnMove();
+            }
         }
     }
 
     void Teacher::OnShow(CGameMap* map)
     {
-        if (direction)
+        if (map->GetLevel() == level)
         {
-            right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-            right.OnShow();
-        }
-        else
-        {
-            left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-            left.OnShow();
+            if (direction)
+            {
+                right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                right.OnShow();
+            }
+            else
+            {
+                left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                left.OnShow();
+            }
         }
     }
 
     bool Teacher::HitMainGirl(MainGirl* girl)
     {
         return girl->GetPositionX() <= x && x <= girl->GetPositionX() + girl->Width();
+    }
+    bool Teacher::IsInLevel(int level)
+    {
+        return this->level == level;
     }
 }
 

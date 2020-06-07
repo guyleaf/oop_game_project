@@ -5,6 +5,7 @@
 #include "audio.h"
 #include "gamelib.h"
 #include "CGameStateRun.h"
+#include <regex>
 
 namespace game_framework
 {
@@ -15,30 +16,22 @@ namespace game_framework
     CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
     {
         mainGirl = new MainGirl();
-        normalGirl[0].push_back(new NormalGirl(800, 120, 800, 1500, true, 1));
-        normalGirl[1].push_back(new NormalGirl(1500, 380, 300, 1500, false, 1));
-        normalGirl[0].push_back(new NormalGirl(400, 120, 400, 700,  true, 2));
-        normalGirl[1].push_back(new NormalGirl(900, 380, 200, 900, false, 2));
-        man[0].push_back(new NormalMan(120, 100, 120, 300, true, 1));
-        man[0].push_back(new NormalMan(500, 100, 500, 1000, true, 2));
-        man[0].push_back(new NormalMan(1700, 100, 1700, 2000, true, 1));
-        man[1].push_back(new NormalMan(1800, 400, 1000, 1800, false, 1));
-        man[1].push_back(new NormalMan(1100, 400, 500, 1100, false, 2));
-        man[1].push_back(new NormalMan(1000, 400, 200, 1000, false, 3));
-        GenerateSpecialMan(true, true, 1, 5);
-        teacher = new Teacher(1000, MIDDLE);
+        LoadData();
     }
 
     CGameStateRun::~CGameStateRun()
     {
-        for (size_t i = 0; i < man[0].size(); i++)
+        for (int j = 0; j < 4; j++)
         {
-            delete man[0][i];
-        }
+            for (size_t i = 0; i < man[j][0].size(); i++)
+            {
+                delete man[j][0][i];
+            }
 
-        for (size_t i = 0; i < man[1].size(); i++)
-        {
-            delete man[1][i];
+            for (size_t i = 0; i < man[j][1].size(); i++)
+            {
+                delete man[j][1][i];
+            }
         }
 
         delete mainGirl;
@@ -58,24 +51,27 @@ namespace game_framework
         map.LoadBitMap();
         mainGirl->LoadBitMap();
 
-        for (size_t i = 0; i < man[0].size(); i++)
+        for (int j = 0; j < 4; j++)
         {
-            man[0][i]->LoadBitMap();
-        }
+            for (size_t i = 0; i < man[j][0].size(); i++)
+            {
+                man[j][0][i]->LoadBitMap();
+            }
 
-        for (size_t i = 0; i < man[1].size(); i++)
-        {
-            man[1][i]->LoadBitMap();
-        }
+            for (size_t i = 0; i < man[j][1].size(); i++)
+            {
+                man[j][1][i]->LoadBitMap();
+            }
 
-        for (size_t i = 0; i < normalGirl[0].size(); i++)
-        {
-            normalGirl[0][i]->LoadBitMap();
-        }
+            for (size_t i = 0; i < girl[j][0].size(); i++)
+            {
+                girl[j][0][i]->LoadBitMap();
+            }
 
-        for (size_t i = 0; i < normalGirl[1].size(); i++)
-        {
-            normalGirl[1][i]->LoadBitMap();
+            for (size_t i = 0; i < girl[j][1].size(); i++)
+            {
+                girl[j][1][i]->LoadBitMap();
+            }
         }
 
         teacher->LoadBitmap();
@@ -117,6 +113,7 @@ namespace game_framework
         //SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
         //mainGirl->SetIsFocusing(false);
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        int level = map.GetLevel();
         map.OnMove();
         ui.OnMove();
         srand((unsigned)time(NULL));
@@ -129,7 +126,7 @@ namespace game_framework
 
         if (!mainGirl->IsInAnimation())
         {
-            if (teacher->HitMainGirl(mainGirl))
+            if (teacher->IsInLevel(level) && teacher->HitMainGirl(mainGirl))
             {
                 if (mainGirl->IsAttacking())
                     CAudio::Instance()->Stop(AUDIO_LASER);
@@ -150,54 +147,54 @@ namespace game_framework
 
         if (!mainGirl->IsInAnimation())
         {
-            for (size_t i = 0; i < man[0].size(); i++)
+            for (size_t i = 0; i < man[level - 1][0].size(); i++)
             {
-                if (man[0][i]->IsAlive() && !mainGirl->IsFocusing() && man[0][i]->HitMainGirl(&map, mainGirl))
+                if (man[level - 1][0][i]->IsAlive() && !mainGirl->IsFocusing() && man[level - 1][0][i]->HitMainGirl(&map, mainGirl))
                 {
-                    man[0][i]->SetIsFocused(true);
+                    man[level - 1][0][i]->SetIsFocused(true);
                     mainGirl->SetIsFocusing(true);
-                    mainGirl->SetFocusPerson(&map, man[0][i]);
+                    mainGirl->SetFocusPerson(&map, man[level - 1][0][i]);
                 }
             }
 
-            for (size_t i = 0; i < man[1].size(); i++)
+            for (size_t i = 0; i < man[level - 1][1].size(); i++)
             {
-                if (man[1][i]->IsAlive() && !mainGirl->IsFocusing() && man[1][i]->HitMainGirl(&map, mainGirl))
+                if (man[level - 1][1][i]->IsAlive() && !mainGirl->IsFocusing() && man[level - 1][1][i]->HitMainGirl(&map, mainGirl))
                 {
-                    man[1][i]->SetIsFocused(true);
+                    man[level - 1][1][i]->SetIsFocused(true);
                     mainGirl->SetIsFocusing(true);
-                    mainGirl->SetFocusPerson(&map, man[1][i]);
+                    mainGirl->SetFocusPerson(&map, man[level - 1][1][i]);
                 }
             }
         }
         else
         {
-            for (size_t i = 0; i < man[0].size(); i++)
+            for (size_t i = 0; i < man[level - 1][0].size(); i++)
             {
-                if (man[0][i]->IsAlive())
+                if (man[level - 1][0][i]->IsAlive())
                 {
-                    man[0][i]->SetIsFocused(false);
+                    man[level - 1][0][i]->SetIsFocused(false);
                 }
             }
 
-            for (size_t i = 0; i < man[1].size(); i++)
+            for (size_t i = 0; i < man[level - 1][1].size(); i++)
             {
-                if (man[1][i]->IsAlive())
+                if (man[level - 1][1][i]->IsAlive())
                 {
-                    man[1][i]->SetIsFocused(false);
+                    man[level - 1][1][i]->SetIsFocused(false);
                 }
             }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (vector<Man*>::iterator person = man[0].begin(); person != man[0].end(); person++)
+        for (vector<Man*>::iterator person = man[level - 1][0].begin(); person != man[level - 1][0].end(); person++)
         {
             if ((*person)->IsOver())
             {
                 delete (*person);
-                person = man[0].erase(person);
+                person = man[level - 1][0].erase(person);
 
-                if (person != man[0].end())
+                if (person != man[level - 1][0].end())
                     continue;
                 else
                     break;
@@ -206,14 +203,14 @@ namespace game_framework
             (*person)->OnMove(rand());
         }
 
-        for (vector<Man*>::iterator person = man[1].begin(); person != man[1].end(); person++)
+        for (vector<Man*>::iterator person = man[level - 1][1].begin(); person != man[level - 1][1].end(); person++)
         {
             if ((*person)->IsOver())
             {
                 delete (*person);
-                person = man[1].erase(person);
+                person = man[level - 1][1].erase(person);
 
-                if (person != man[1].end())
+                if (person != man[level - 1][1].end())
                     continue;
                 else
                     break;
@@ -226,19 +223,19 @@ namespace game_framework
 
         if (mainGirl->IsAttacking() && girlsOnScreen.size() == 0)
         {
-            for (size_t i = 0; i < normalGirl[0].size(); i++)
+            for (size_t i = 0; i < girl[level - 1][0].size(); i++)
             {
-                if (map.IsInScreen(normalGirl[0][i]->GetX(), normalGirl[0][i]->GetX() + normalGirl[0][i]->GetWidth()) && normalGirl[0][i]->IsAlive())
+                if (map.IsInScreen(girl[level - 1][0][i]->GetX(), girl[level - 1][0][i]->GetX() + girl[level - 1][0][i]->GetWidth()) && girl[level - 1][0][i]->IsAlive())
                 {
-                    girlsOnScreen.push_back(normalGirl[0][i]);
+                    girlsOnScreen.push_back(girl[level - 1][0][i]);
                 }
             }
 
-            for (size_t i = 0; i < normalGirl[1].size(); i++)
+            for (size_t i = 0; i < girl[level - 1][1].size(); i++)
             {
-                if (map.IsInScreen(normalGirl[1][i]->GetX(), normalGirl[1][i]->GetX() + normalGirl[1][i]->GetWidth()) && normalGirl[1][i]->IsAlive())
+                if (map.IsInScreen(girl[level - 1][1][i]->GetX(), girl[level - 1][1][i]->GetX() + girl[level - 1][1][i]->GetWidth()) && girl[level - 1][1][i]->IsAlive())
                 {
-                    girlsOnScreen.push_back(normalGirl[1][i]);
+                    girlsOnScreen.push_back(girl[level - 1][1][i]);
                 }
             }
 
@@ -261,39 +258,39 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (size_t i = 0; i < man[0].size(); i++)
+        for (size_t i = 0; i < man[level - 1][0].size(); i++)
         {
-            int HP = int(man[0][i]->GetHP());
+            int HP = int(man[level - 1][0][i]->GetHP());
 
-            if (man[0][i]->IsAlreadyDead())
+            if (man[level - 1][0][i]->IsAlreadyDead())
             {
                 if (HP <= 0)
                 {
-                    mainGirl->AddSlave(man[0][i]);
-                    man[0].erase(man[0].begin() + i);
+                    mainGirl->AddSlave(man[level - 1][0][i]);
+                    man[level - 1][0].erase(man[level - 1][0].begin() + i);
                     break;
                 }
             }
 
             if (true)
             {
-                if (mainGirl->IsLocked() && man[0][i]->IsAttackedBy(Man::all) && man[0][i]->IsAlive() && mainGirl->IsAttacking())
+                if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
                 {
                     if (HP >= 800 || HP <= 0)
                     {
-                        man[0][i]->SetIsAlive(false);
+                        man[level - 1][0][i]->SetIsAlive(false);
                         mainGirl->SetIsFocusing(false);
                         mainGirl->SetIsAttacking(false);
                         mainGirl->SetIsLocked(false);
 
                         if (HP <= 0)
                         {
-                            hearts.push_back(new Heart(0, 1, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), girlsOnScreen.size()));
+                            hearts.push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), girlsOnScreen.size()));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
 
-                            man[0][i]->SetIsKilledBy(Man::mainGirl);
+                            man[level - 1][0][i]->SetIsKilledBy(Man::mainGirl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
@@ -305,7 +302,7 @@ namespace game_framework
                             ui.AddHeartPoints(-750);
                             CAudio::Instance()->Play(AUDIO_FLYING, false);
                             mainGirl->Lose();
-                            man[0][i]->SetIsKilledBy(Man::girl);
+                            man[level - 1][0][i]->SetIsKilledBy(Man::girl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
@@ -315,36 +312,36 @@ namespace game_framework
 
                     if (mainGirl->IsClicked())
                     {
-                        mainGirl->Attack(man[0][i], &map);
+                        mainGirl->Attack(man[level - 1][0][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
                         ui.AddHeartPoints(-18 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
                     {
-                        girlsOnScreen[j]->Attack(man[0][i], &map);
+                        girlsOnScreen[j]->Attack(man[level - 1][0][i], &map);
                     }
                 }
                 else
                 {
-                    if (man[0][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[0][i]))
+                    if (man[level - 1][0][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[level - 1][0][i]))
                     {
                         if (HP <= 0)
                         {
-                            man[0][i]->SetIsAlive(false);
-                            man[0][i]->SetIsKilledBy(Man::mainGirl);
+                            man[level - 1][0][i]->SetIsAlive(false);
+                            man[level - 1][0][i]->SetIsKilledBy(Man::mainGirl);
                             mainGirl->SetIsFocusing(false);
                             mainGirl->SetIsAttacking(false);
-                            hearts.push_back(new Heart(0, 0, man[0][i]->GetX() + man[0][i]->GetWidth() / 2, man[0][i]->GetY(), 0));
+                            hearts.push_back(new Heart(0, 0, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), 0));
                             CAudio::Instance()->Stop(AUDIO_LASER);
                         }
 
-                        if (man[0][i]->HitMainGirl(&map, mainGirl))
+                        if (man[level - 1][0][i]->HitMainGirl(&map, mainGirl))
                         {
                             if (mainGirl->IsAttacking())
                             {
-                                man[0][i]->SetIsAttackedBy(Man::mainGirl);
-                                mainGirl->Attack(man[0][i], &map);
+                                man[level - 1][0][i]->SetIsAttackedBy(Man::mainGirl);
+                                mainGirl->Attack(man[level - 1][0][i], &map);
                                 ui.AddScore(1);
                                 ui.AddHeartPoints(-8);
 
@@ -360,18 +357,18 @@ namespace game_framework
                                         if (girlsOnScreen[j]->IsLocked())
                                             ready++;
 
-                                        if (girlsOnScreen[j]->GetX() >= man[0][i]->GetX() + man[0][i]->GetWidth() / 2)
+                                        if (girlsOnScreen[j]->GetX() >= man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2)
                                             girlsOnScreen[j]->SetDirection(false);
                                         else
                                             girlsOnScreen[j]->SetDirection(true);
 
-                                        girlsOnScreen[j]->LockPerson(man[0][i], &map);
+                                        girlsOnScreen[j]->LockPerson(man[level - 1][0][i], &map);
                                         girlsOnScreen[j]->SetIsShocking(true);
                                     }
 
                                     if (ready == girlsOnScreen.size() && mainGirl->IsAttacking())
                                     {
-                                        man[0][i]->SetIsAttackedBy(Man::all);
+                                        man[level - 1][0][i]->SetIsAttackedBy(Man::all);
                                         mainGirl->SetIsLocked(true);
                                         CAudio::Instance()->Play(AUDIO_SNATCH, false);
                                     }
@@ -380,7 +377,7 @@ namespace game_framework
                         }
                         else
                         {
-                            man[0][i]->SetIsFocused(false);
+                            man[level - 1][0][i]->SetIsFocused(false);
                             mainGirl->SetIsFocusing(false);
                             mainGirl->SetIsAttacking(false);
                             CAudio::Instance()->Stop(AUDIO_LASER);
@@ -390,39 +387,39 @@ namespace game_framework
             }
         }
 
-        for (size_t i = 0; i < man[1].size(); i++)
+        for (size_t i = 0; i < man[level - 1][1].size(); i++)
         {
-            int HP = int(man[1][i]->GetHP());
+            int HP = int(man[level - 1][1][i]->GetHP());
 
-            if (man[1][i]->IsAlreadyDead())
+            if (man[level - 1][1][i]->IsAlreadyDead())
             {
                 if (HP <= 0)
                 {
-                    mainGirl->AddSlave(man[1][i]);
-                    man[1].erase(man[1].begin() + i);
+                    mainGirl->AddSlave(man[level - 1][1][i]);
+                    man[level - 1][1].erase(man[level - 1][1].begin() + i);
                     break;
                 }
             }
 
             if (true)
             {
-                if (man[1][i]->IsAttackedBy(Man::all) && man[1][i]->IsAlive() && mainGirl->IsAttacking())
+                if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
                 {
                     if (HP >= 800 || HP <= 0)
                     {
-                        man[1][i]->SetIsAlive(false);
+                        man[level - 1][1][i]->SetIsAlive(false);
                         mainGirl->SetIsFocusing(false);
                         mainGirl->SetIsAttacking(false);
                         mainGirl->SetIsLocked(false);
 
                         if (HP <= 0)
                         {
-                            hearts.push_back(new Heart(1, 1, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, girlsOnScreen.size()));
+                            hearts.push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, girlsOnScreen.size()));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
 
-                            man[1][i]->SetIsKilledBy(Man::mainGirl);
+                            man[level - 1][1][i]->SetIsKilledBy(Man::mainGirl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
@@ -434,7 +431,7 @@ namespace game_framework
                             ui.AddHeartPoints(-750);
                             CAudio::Instance()->Play(AUDIO_FLYING, false);
                             mainGirl->Lose();
-                            man[1][i]->SetIsKilledBy(Man::girl);
+                            man[level - 1][1][i]->SetIsKilledBy(Man::girl);
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
@@ -444,36 +441,36 @@ namespace game_framework
 
                     if (mainGirl->IsClicked())
                     {
-                        mainGirl->Attack(man[1][i], &map);
+                        mainGirl->Attack(man[level - 1][1][i], &map);
                         ui.AddScore(3 * girlsOnScreen.size());
                         ui.AddHeartPoints(-19 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
                     {
-                        girlsOnScreen[j]->Attack(man[1][i], &map);
+                        girlsOnScreen[j]->Attack(man[level - 1][1][i], &map);
                     }
                 }
                 else
                 {
-                    if (man[1][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[1][i]))
+                    if (man[level - 1][1][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[level - 1][1][i]))
                     {
                         if (HP <= 0)
                         {
-                            man[1][i]->SetIsAlive(false);
-                            man[1][i]->SetIsKilledBy(Man::mainGirl);
+                            man[level - 1][1][i]->SetIsAlive(false);
+                            man[level - 1][1][i]->SetIsKilledBy(Man::mainGirl);
                             mainGirl->SetIsFocusing(false);
                             mainGirl->SetIsAttacking(false);
-                            hearts.push_back(new Heart(1, 0, man[1][i]->GetX() + man[1][i]->GetWidth() / 2, man[1][i]->GetY() - 55, 0));
+                            hearts.push_back(new Heart(1, 0, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, 0));
                             CAudio::Instance()->Stop(AUDIO_LASER);
                         }
 
-                        if (man[1][i]->HitMainGirl(&map, mainGirl))
+                        if (man[level - 1][1][i]->HitMainGirl(&map, mainGirl))
                         {
                             if (mainGirl->IsAttacking())
                             {
-                                man[1][i]->SetIsAttackedBy(Man::mainGirl);
-                                mainGirl->Attack(man[1][i], &map);
+                                man[level - 1][1][i]->SetIsAttackedBy(Man::mainGirl);
+                                mainGirl->Attack(man[level - 1][1][i], &map);
                                 ui.AddScore(1);
                                 ui.AddHeartPoints(-8);
 
@@ -489,18 +486,18 @@ namespace game_framework
                                         if (girlsOnScreen[j]->IsLocked())
                                             ready++;
 
-                                        if (girlsOnScreen[j]->GetX() + girlsOnScreen[j]->GetWidth() / 2 >= man[1][i]->GetX() + man[1][i]->GetWidth() / 2)
+                                        if (girlsOnScreen[j]->GetX() + girlsOnScreen[j]->GetWidth() / 2 >= man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2)
                                             girlsOnScreen[j]->SetDirection(false);
                                         else
                                             girlsOnScreen[j]->SetDirection(true);
 
-                                        girlsOnScreen[j]->LockPerson(man[1][i], &map);
+                                        girlsOnScreen[j]->LockPerson(man[level - 1][1][i], &map);
                                         girlsOnScreen[j]->SetIsShocking(true);
                                     }
 
                                     if (ready == girlsOnScreen.size() && mainGirl->IsAttacking())
                                     {
-                                        man[1][i]->SetIsAttackedBy(Man::all);
+                                        man[level - 1][1][i]->SetIsAttackedBy(Man::all);
                                         mainGirl->SetIsLocked(true);
                                         CAudio::Instance()->Play(AUDIO_SNATCH, false);
                                     }
@@ -509,7 +506,7 @@ namespace game_framework
                         }
                         else
                         {
-                            man[1][i]->SetIsFocused(false);
+                            man[level - 1][1][i]->SetIsFocused(false);
                             mainGirl->SetIsFocusing(false);
                             mainGirl->SetIsAttacking(false);
                             CAudio::Instance()->Stop(AUDIO_LASER);
@@ -520,30 +517,30 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        for (size_t i = 0; i < girl[level - 1][0].size(); i++)
         {
-            if (normalGirl[0][i]->IsAlreadyDead())
+            if (girl[level - 1][0][i]->IsAlreadyDead())
             {
-                delete normalGirl[0][i];
-                normalGirl[0].erase(normalGirl[0].begin() + i);
+                delete girl[level - 1][0][i];
+                girl[level - 1][0].erase(girl[level - 1][0].begin() + i);
                 break;
             }
 
-            normalGirl[0][i]->OnMove(&map, rand());
+            girl[level - 1][0][i]->OnMove(&map, rand());
         }
 
         //srand((unsigned)time(NULL));
 
-        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
-            if (normalGirl[1][i]->IsAlreadyDead())
+            if (girl[level - 1][1][i]->IsAlreadyDead())
             {
-                delete normalGirl[1][i];
-                normalGirl[1].erase(normalGirl[1].begin() + i);
+                delete girl[level - 1][1][i];
+                girl[level - 1][1].erase(girl[level - 1][1].begin() + i);
                 break;
             }
 
-            normalGirl[1][i]->OnMove(&map, rand());
+            girl[level - 1][1][i]->OnMove(&map, rand());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -665,11 +662,13 @@ namespace game_framework
         //waveOutSetVolume(0, 0x0000);
         //CAudio::Instance()->Pause();
     }
+
     void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
         //waveOutSetVolume(0, 0x0FFF);
         //CAudio::Instance()->Resume();
     }
+
     void CGameStateRun::OnShow()
     {
         //
@@ -680,17 +679,18 @@ namespace game_framework
         //
         //  貼上背景圖、撞擊數、球、擦子、彈跳的球
         //
+        int level = map.GetLevel();
         map.OnShow();
         ui.OnShow(&map);
 
-        for (size_t i = 0; i < man[0].size(); i++)
+        for (size_t i = 0; i < man[level - 1][0].size(); i++)
         {
-            man[0][i]->OnShow(&map);
+            man[level - 1][0][i]->OnShow(&map);
         }
 
-        for (size_t i = 0; i < normalGirl[0].size(); i++)
+        for (size_t i = 0; i < girl[level - 1][0].size(); i++)
         {
-            normalGirl[0][i]->OnShow(&map);
+            girl[level - 1][0][i]->OnShow(&map);
         }
 
         teacher->OnShow(&map);
@@ -699,14 +699,14 @@ namespace game_framework
         for (size_t i = 0; i < hearts.size(); i++)
             hearts[i]->OnShow(&map);
 
-        for (size_t i = 0; i < normalGirl[1].size(); i++)
+        for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
-            normalGirl[1][i]->OnShow(&map);
+            girl[level - 1][1][i]->OnShow(&map);
         }
 
-        for (size_t i = 0; i < man[1].size(); i++)
+        for (size_t i = 0; i < man[level - 1][1].size(); i++)
         {
-            man[1][i]->OnShow(&map);
+            man[level - 1][1][i]->OnShow(&map);
         }
 
         mainGirl->ShowFocus();
@@ -714,7 +714,8 @@ namespace game_framework
         if (map.IsMapChanging())
             CDDraw::BltBackColor(RGB(0, 0, 0));
     }
-    void CGameStateRun::GenerateSpecialMan(bool direction, bool top, int type, int num_girl)
+
+    void CGameStateRun::GenerateSpecialMan(int level, bool direction, bool top, int type, int num_girl)
     {
         int gx;
         int mx, my;
@@ -732,9 +733,9 @@ namespace game_framework
         int distance = 50;
 
         if (direction)
-            man[!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, type));
+            man[level][!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, type));
         else
-            man[!top].push_back(new SpecialMan(mx, my, mx, mx - distance, direction, type));
+            man[level][!top].push_back(new SpecialMan(mx, my, mx, mx - distance, direction, type));
 
         srand((unsigned)time(NULL));
 
@@ -743,9 +744,58 @@ namespace game_framework
             gx = rand() % 150 + (mx - 150) + i * 20;
 
             if (rand() % 2 == 0)
-                normalGirl[0].push_back(new NormalGirl(gx, 140, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
+                girl[level][0].push_back(new NormalGirl(gx, 140, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
             else
-                normalGirl[1].push_back(new NormalGirl(gx, 380, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
+                girl[level][1].push_back(new NormalGirl(gx, 380, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
         }
+    }
+
+    void CGameStateRun::LoadData()
+    {
+        CStdioFile myFile;
+        myFile.Open("RES\\data.txt", CFile::modeRead);
+        int level = 0;
+        CString tmp;
+        const std::regex check("^[0-9]?,[0-9]?,[0-9]*,[0-9]*,[0-9]*,[0-9]?,[0-9]?$");
+        const std::regex pattern("[^,]+");
+        myFile.ReadString(tmp);
+        myFile.ReadString(tmp);
+
+        while (level != 4)
+        {
+            level = stoi(tmp.GetString());
+
+            while (myFile.ReadString(tmp) && std::regex_match(tmp.GetString(), tmp.GetString() + tmp.GetLength(), check))
+            {
+                string t(tmp.GetString());
+                std::regex_iterator<std::string::iterator> rit(t.begin(), t.end(), pattern);
+                std::regex_iterator<std::string::iterator> rend;
+                vector<int> data;
+
+                while (rit != rend)
+                {
+                    data.push_back(stoi(rit->str()));
+                    rit++;
+                }
+
+                //data[0] => top(0) / btm(1) / mid(2)
+                //data[1] => 0(girl) / 1(specialGirl) / 2(normalMan) / 3(specialMan) / 4(teacher)
+                //data[2] => x
+                //data[3] => left
+                //data[4] == right
+                //data[5] => 0 / 1(direction)
+                //data[6] => type
+                if (data[1] == 0)
+                    girl[level - 1][data[0]].push_back(new NormalGirl(data[2], 120 * (1 - data[0]) + 380 * (data[0]), data[3], data[4], data[5], data[6]));
+                else if (data[1] == 2)
+                    man[level - 1][data[0]].push_back(new NormalMan(data[2], 100 * (1 - data[0]) + 400 * data[0], data[3], data[4], data[5], data[6]));
+                else if (data[1] == 3)
+                    man[level - 1][data[0]].push_back(new SpecialMan(data[2], 100 * (1 - data[0]) + 400 * data[0], data[3], data[4], data[5], data[6]));
+                else if (data[1] == 4)
+                    teacher = new Teacher(level, data[2], MIDDLE);
+            }
+        }
+
+        myFile.Close();
     }
 }
