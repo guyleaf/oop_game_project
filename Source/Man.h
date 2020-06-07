@@ -31,7 +31,8 @@ namespace game_framework
 
         //only affect when status is following
         void Follow(int x, int y, bool direction);
-
+        void Report();
+        bool IsReporting();
         static int mainGirl;
         static int all;
         static int girl;
@@ -52,6 +53,7 @@ namespace game_framework
         bool is_focused;
         static bool bitmapIsLoaded;
         int distance;
+        bool is_reporting;
         //bool is_attacked;
         CAnimation man_left, man_right;
         CMovingBitmap man_left_stand, man_right_stand;
@@ -60,7 +62,7 @@ namespace game_framework
         CAnimation flash, flash_multi, weakening;
         CAnimation blood;
         CAnimation man_following_girl_left, man_following_girl_right;
-
+        CAnimation scoreReport;
         static CAnimation clicking;
         static CMovingBitmap clicking_bar;
         CPoint color_point[2];

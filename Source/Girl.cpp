@@ -106,17 +106,17 @@ namespace game_framework
             {
                 if (direction)
                 {
-                    x += velocity;
+                    x += 5;
                     leaving_right.OnMove();
                 }
                 else
                 {
-                    x -= velocity;
+                    x -= 5;
                     leaving_left.OnMove();
                 }
 
                 fun.OnMove();
-                distance -= velocity;
+                distance -= 5;
             }
             else
                 status = DEAD;

@@ -43,6 +43,7 @@ namespace game_framework
         fdirection = false;
         is_positioned = false;
         distance = 300;
+        is_reporting = false;
     }
 
     Man::~Man()
@@ -181,6 +182,14 @@ namespace game_framework
                 man_following_right.OnMove();
             else
                 man_following_left.OnMove();
+
+            if (is_reporting)
+            {
+                if (scoreReport.IsFinalBitmap())
+                    is_reporting = false;
+                else
+                    scoreReport.OnMove();
+            }
         }
         else if (status == LEAVING)
         {
@@ -286,6 +295,16 @@ namespace game_framework
             {
                 man_following_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                 man_following_left.OnShow();
+            }
+
+            if (is_reporting)
+            {
+                if (direction)
+                    scoreReport.SetTopLeft(map->ScreenX(x) + 50, map->ScreenY(y) - 30);
+                else
+                    scoreReport.SetTopLeft(map->ScreenX(x) - 13, map->ScreenY(y) - 30);
+
+                scoreReport.OnShow();
             }
         }
         else if (status == LEAVING)
@@ -436,6 +455,16 @@ namespace game_framework
         fx = x;
         fy = y;
         fdirection = direction;
+    }
+
+    void Man::Report()
+    {
+        is_reporting = true;
+    }
+
+    bool Man::IsReporting()
+    {
+        return is_reporting;
     }
 
     int Man::GetId()
@@ -597,6 +626,14 @@ namespace game_framework
 
         man_following_girl_left.SetDelayCount(8);
         man_following_girl_right.SetDelayCount(8);
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Man/1000 (" + to_string(i) + ").bmp").c_str());
+            scoreReport.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        scoreReport.SetDelayCount(3);
     }
 
     SpecialMan::SpecialMan(int x, int y, int start, int end, bool direction, int type) : type(type), Man(x, y, start, end, direction)
@@ -616,21 +653,42 @@ namespace game_framework
         strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
         man_right_stand.LoadBitmap(text, RGB(0, 0, 0));
 
-        for (int i = 1; i <= 5; i++)
+        if (type == 1)
         {
-            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-            man_right.AddBitmap(text, RGB(0, 0, 0));
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_right.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_right.SetDelayCount(13);
+
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_left.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_left.SetDelayCount(13);
         }
-
-        man_right.SetDelayCount(13);
-
-        for (int i = 1; i <= 5; i++)
+        else if (type == 2)
         {
-            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-            man_left.AddBitmap(text, RGB(0, 0, 0));
-        }
+            for (int i = 1; i <= 5; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_right.AddBitmap(text, RGB(0, 0, 0));
+            }
 
-        man_left.SetDelayCount(13);
+            man_right.SetDelayCount(13);
+
+            for (int i = 1; i <= 5; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_left.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_left.SetDelayCount(13);
+        }
 
         for (int i = 1; i <= 4; i++)
         {
@@ -657,5 +715,88 @@ namespace game_framework
         }
 
         blood.SetDelayCount(1);
+
+        if (type == 1)
+        {
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/left/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_left.AddBitmap(text, RGB(255, 255, 255));
+            }
+
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/right/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_right.AddBitmap(text, RGB(255, 255, 255));
+            }
+        }
+        else if (type == 2)
+        {
+            for (int i = 1; i <= 6; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/left/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_left.AddBitmap(text, RGB(255, 255, 255));
+            }
+
+            for (int i = 1; i <= 6; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/right/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_right.AddBitmap(text, RGB(255, 255, 255));
+            }
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/left/slave (" + to_string(i) + ").bmp").c_str());
+            man_following_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/right/slave (" + to_string(i) + ").bmp").c_str());
+            man_following_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        man_dead_left.SetDelayCount(8);
+        man_dead_right.SetDelayCount(8);
+        man_following_left.SetDelayCount(8);
+        man_following_right.SetDelayCount(8);
+
+        if (!bitmapIsLoaded)
+        {
+            for (int i = 1; i <= 2; i++)
+            {
+                strcpy(text, ("RES/Man/clicking (" + to_string(i) + ").bmp").c_str());
+                clicking.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            clicking.SetDelayCount(2);
+            strcpy(text, "RES/Man/clicking_bar.bmp");
+            clicking_bar.LoadBitmap(text, RGB(255, 255, 255));
+            bitmapIsLoaded = true;
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/left/slave_girl (" + to_string(i) + ").bmp").c_str());
+            man_following_girl_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/right/slave_girl (" + to_string(i) + ").bmp").c_str());
+            man_following_girl_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        man_following_girl_left.SetDelayCount(8);
+        man_following_girl_right.SetDelayCount(8);
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Man/25000 (" + to_string(i) + ").bmp").c_str());
+            scoreReport.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        scoreReport.SetDelayCount(3);
     }
 }

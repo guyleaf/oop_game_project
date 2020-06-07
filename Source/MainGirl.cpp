@@ -22,6 +22,7 @@ namespace game_framework
         delay_counter = 30;
         cursor_x = 450;
         cursor_y = 0;
+        is_reporting = false;
     }
 
     void MainGirl::LoadBitMap()
@@ -118,13 +119,83 @@ namespace game_framework
         reinforcing[0].SetDelayCount(5);
         reinforcing[1].SetDelayCount(5);
         InitializeReinforcing();
+        surprising_left.AddBitmap("RES/mainGirl/surprising_left.bmp", RGB(255, 255, 255));
+        surprising_left.AddBitmap("RES/mainGirl/blank.bmp", RGB(255, 255, 255));
+        surprising_right.AddBitmap("RES/mainGirl/surprising_right.bmp", RGB(255, 255, 255));
+        surprising_right.AddBitmap("RES/mainGirl/blank.bmp", RGB(255, 255, 255));
+
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/mainGirl/fun (" + to_string(i) + ").bmp").c_str());
+            fun.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        fun.SetDelayCount(7);
     }
 
-    void MainGirl::OnMove(CGameMap* map)
+    void MainGirl::OnMove(CGameMap* map, UI* ui)
     {
         if (state == INANIMATION)
         {
-            if (is_bump)
+            if (ui->IsGameOver())
+            {
+                static int count = 40;
+
+                if (count > 0)
+                {
+                    if (direction)
+                    {
+                        surprising_right.OnMove();
+                    }
+                    else
+                    {
+                        surprising_left.OnMove();
+                    }
+
+                    count--;
+                }
+                else
+                    moving = true;
+
+                if (moving)
+                {
+                    if (direction)
+                    {
+                        x += 5;
+                        girl_walk_right.OnMove();
+                    }
+                    else
+                    {
+                        x -= 5;
+                        girl_walk_left.OnMove();
+                    }
+
+                    fun.OnMove();
+                    static unsigned int startIndex = 0;
+
+                    if (startIndex < slaves.size())
+                    {
+                        if (startIndex == 0)
+                        {
+                            slaves[startIndex]->Report();
+                            startIndex++;
+                        }
+                        else if (startIndex != 0 && !slaves[startIndex - 1]->IsReporting())
+                        {
+                            slaves[startIndex]->Report();
+                            startIndex++;
+                        }
+                    }
+                    else
+                        count = 20;
+
+                    count--;
+
+                    if (startIndex >= slaves.size() && count <= 0)
+                        is_reporting = false;
+                }
+            }
+            else if (is_bump)
             {
                 if (direction)
                 {
@@ -325,6 +396,13 @@ namespace game_framework
                         girl_run_left.OnMove();
                 }
             }
+
+            if (ui->IsGameOver())
+            {
+                is_reporting = true;
+                state = INANIMATION;
+                moving = false;
+            }
         }
 
         int sx;
@@ -450,11 +528,50 @@ namespace game_framework
         ::LocalFree(pBitData);
     }*/
 
-    void MainGirl::OnShow(CGameMap* map)
+    void MainGirl::OnShow(CGameMap* map, UI* ui)
     {
         if (state == INANIMATION)
         {
-            if (is_bump)
+            if (ui->IsGameOver())
+            {
+                if (moving)
+                {
+                    if (direction)
+                    {
+                        girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_walk_right.OnShow();
+                    }
+                    else
+                    {
+                        girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_walk_left.OnShow();
+                    }
+
+                    if (slaves.size() != 0)
+                    {
+                        fun.SetTopLeft(map->ScreenX(x) + 12, map->ScreenY(y) - 5);
+                        fun.OnShow();
+                    }
+                }
+                else
+                {
+                    if (direction) //false => 往左, true => 往右
+                    {
+                        girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_right_stand.ShowBitmap();
+                        surprising_right.SetTopLeft(map->ScreenX(x + girl_left_stand.Width()), map->ScreenY(y));
+                        surprising_right.OnShow();
+                    }
+                    else
+                    {
+                        girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_left_stand.ShowBitmap();
+                        surprising_left.SetTopLeft(map->ScreenX(x) - 26, map->ScreenY(y));
+                        surprising_left.OnShow();
+                    }
+                }
+            }
+            else if (is_bump)
             {
                 if (direction)
                 {
@@ -765,6 +882,11 @@ namespace game_framework
     bool MainGirl::IsAttacking()
     {
         return is_attacking;
+    }
+
+    bool MainGirl::IsReporting()
+    {
+        return is_reporting;
     }
 
     void MainGirl::Lose()

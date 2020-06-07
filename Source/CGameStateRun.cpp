@@ -118,13 +118,23 @@ namespace game_framework
         ui.OnMove();
         srand((unsigned)time(NULL));
 
-        if (!mainGirl->IsInAnimation() && mainGirl->IsReinforced() && !ui.IsGameOver())
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation() && mainGirl->IsReinforced() && !ui.IsGameOver())
         {
             ui.GotoHRState(CHeartPoint::reinforced);
             ui.Resume();
         }
 
-        if (!mainGirl->IsInAnimation())
+        if (ui.IsGameOver())
+        {
+            if (mainGirl->IsAttacking())
+                CAudio::Instance()->Stop(AUDIO_LASER);
+
+            mainGirl->SetIsLocked(false);
+            mainGirl->SetIsFocusing(false);
+            mainGirl->SetIsAttacking(false);
+        }
+
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
             if (teacher->IsInLevel(level) && teacher->HitMainGirl(mainGirl))
             {
@@ -145,7 +155,7 @@ namespace game_framework
 
         teacher->OnMove(&map);
 
-        if (!mainGirl->IsInAnimation())
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
             for (size_t i = 0; i < man[level - 1][0].size(); i++)
             {
@@ -272,7 +282,7 @@ namespace game_framework
                 }
             }
 
-            if (true)
+            if (!ui.IsGameOver())
             {
                 if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
                 {
@@ -401,7 +411,7 @@ namespace game_framework
                 }
             }
 
-            if (true)
+            if (!ui.IsGameOver())
             {
                 if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
                 {
@@ -583,19 +593,41 @@ namespace game_framework
             mainGirl->SetIsReinforced(false);
         }
 
-        mainGirl->OnMove(&map);
-
-        if (map.IsEmpty(mainGirl->GetPositionX(), mainGirl->GetPositionY()) && map.IsEmpty(mainGirl->GetPositionX() + mainGirl->Width(), mainGirl->GetPositionY()))
+        if (ui.IsGameOver() && mainGirl->IsReinforced())
         {
-            ui.SetIsButtonVisible(false, false);
-            ui.SetIsButtonVisible(false, true);
+            ui.GotoHRState(CHeartPoint::normal);
+            mainGirl->SetIsReinforced(false);
         }
-        else
+
+        if (ui.IsGameOver() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
         {
-            if (mainGirl->GetPositionX() <= map.Width() / 2)
-                ui.SetIsButtonVisible(true, false);
+            if (ui.GetHeartPoints() > 0)
+            {
+                ui.AddHeartPoints(-5);
+                ui.AddScore(5);
+            }
             else
-                ui.SetIsButtonVisible(true, true);
+                GotoGameState(GAME_STATE_OVER);
+
+            //Add audio
+        }
+
+        mainGirl->OnMove(&map, &ui);
+
+        if (!ui.IsGameOver())
+        {
+            if (map.IsEmpty(mainGirl->GetPositionX(), mainGirl->GetPositionY()) && map.IsEmpty(mainGirl->GetPositionX() + mainGirl->Width(), mainGirl->GetPositionY()))
+            {
+                ui.SetIsButtonVisible(false, false);
+                ui.SetIsButtonVisible(false, true);
+            }
+            else
+            {
+                if (mainGirl->GetPositionX() <= map.Width() / 2)
+                    ui.SetIsButtonVisible(true, false);
+                else
+                    ui.SetIsButtonVisible(true, true);
+            }
         }
     }
 
@@ -694,7 +726,7 @@ namespace game_framework
         }
 
         teacher->OnShow(&map);
-        mainGirl->OnShow(&map);
+        mainGirl->OnShow(&map, &ui);
 
         for (size_t i = 0; i < hearts.size(); i++)
             hearts[i]->OnShow(&map);

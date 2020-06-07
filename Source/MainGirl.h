@@ -13,8 +13,8 @@ namespace game_framework
         int GetPositionY();
         int Height();
         int Width();
-        void OnMove(CGameMap* map);
-        void OnShow(CGameMap* map);
+        void OnMove(CGameMap* map, UI* ui);
+        void OnShow(CGameMap* map, UI* ui);
         void Attack(Man* man, CGameMap* map);
         void ShowFocus();
         void SetIsFocusing(bool status);
@@ -28,6 +28,7 @@ namespace game_framework
         bool IsFocusing();
         bool IsFocusPerson(Man* man);
         bool IsAttacking();
+        bool IsReporting();
         void Lose();
         void Click();
         bool IsClicked();
@@ -48,6 +49,7 @@ namespace game_framework
         int focus_id;
         bool is_bump;
         bool is_reinforced;
+        bool is_reporting;
         int state;
         int delay_counter;
         CAnimation girl_walk_left, girl_walk_right;
@@ -62,6 +64,8 @@ namespace game_framework
         CBitmap m_memBitmap;
         CPoint beam_pos[4];
         vector<Man*> slaves;
+        CAnimation surprising_left, surprising_right;
+        CAnimation fun;
     };
 }
 
