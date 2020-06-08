@@ -90,6 +90,7 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_REINFORCING, "sounds\\reinforcing.mp3");
         CAudio::Instance()->Load(AUDIO_BLINK, "sounds\\blink.mp3");
         CAudio::Instance()->Load(AUDIO_BUMP, "sounds\\bump.mp3");
+        CAudio::Instance()->Load(AUDIO_SUMMARIZE, "sounds\\summarize.mp3");
         //
         // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
         //
