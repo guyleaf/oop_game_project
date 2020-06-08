@@ -32,7 +32,22 @@ namespace game_framework
             {
                 delete man[j][1][i];
             }
+
+			for (size_t i = 0; i <girl[j][0].size(); i++)
+			{
+				delete girl[j][0][i];
+			}
+
+			for (size_t i = 0; i < girl[j][1].size(); i++)
+			{
+				delete girl[j][1][i];
+			}
         }
+
+		for (size_t i = 0; i < hearts.size(); i++)
+		{
+			delete hearts[i];
+		}
 
         delete mainGirl;
         delete teacher;
