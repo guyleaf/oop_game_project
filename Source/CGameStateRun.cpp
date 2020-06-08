@@ -605,11 +605,28 @@ namespace game_framework
         {
             if (ui.GetHeartPoints() > 0)
             {
-                ui.AddHeartPoints(-5);
-                ui.AddScore(5);
+                static bool isPlayed = false;
+                static int counter = 20;
+
+                if (!isPlayed)
+                {
+                    CAudio::Instance()->Play(AUDIO_SUMMARIZE, true);
+                    isPlayed = true;
+                }
+                else
+                    counter--;
+
+                if (counter <= 0)
+                {
+                    ui.AddHeartPoints(-5);
+                    ui.AddScore(5);
+                }
             }
             else
+            {
+                CAudio::Instance()->Stop(AUDIO_SUMMARIZE);
                 GotoGameState(GAME_STATE_OVER);
+            }
 
             //Add audio
         }

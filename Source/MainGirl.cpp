@@ -155,7 +155,10 @@ namespace game_framework
                     count--;
                 }
                 else
+                {
                     moving = true;
+                    count = 50;
+                }
 
                 if (moving)
                 {
@@ -173,7 +176,7 @@ namespace game_framework
                     fun.OnMove();
                     static unsigned int startIndex = 0;
 
-                    if (startIndex < slaves.size())
+                    if (count <= 0 && startIndex < slaves.size())
                     {
                         if (startIndex == 0)
                         {
@@ -185,9 +188,10 @@ namespace game_framework
                             slaves[startIndex]->Report();
                             startIndex++;
                         }
+
+                        if (startIndex == slaves.size())
+                            count = 30;
                     }
-                    else
-                        count = 20;
 
                     count--;
 
