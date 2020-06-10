@@ -22,6 +22,15 @@ namespace game_framework
         delay_counter = 30;
         cursor_x = 450;
         cursor_y = 0;
+        is_reporting = false;
+    }
+
+    MainGirl::~MainGirl()
+    {
+        for (size_t i = 0; i < slaves.size(); i++)
+        {
+            delete slaves[i];
+        }
     }
 
     void MainGirl::LoadBitMap()
@@ -77,13 +86,13 @@ namespace game_framework
         girl_run_left.SetDelayCount(5);
         girl_run_right.SetDelayCount(5);
 
-        for (int i = 1; i <= 15; i++)
+        for (int i = 1; i <= 19; i++)
         {
             strcpy(text, ("RES/mainGirl/left/bump (" + to_string(i) + ").bmp").c_str());
             bump_left.AddBitmap(text, RGB(255, 255, 255));
         }
 
-        for (int i = 1; i <= 15; i++)
+        for (int i = 1; i <= 19; i++)
         {
             strcpy(text, ("RES/mainGirl/right/bump (" + to_string(i) + ").bmp").c_str());
             bump_right.AddBitmap(text, RGB(255, 255, 255));
@@ -118,13 +127,89 @@ namespace game_framework
         reinforcing[0].SetDelayCount(5);
         reinforcing[1].SetDelayCount(5);
         InitializeReinforcing();
+        surprising_left.AddBitmap("RES/mainGirl/surprising_left.bmp", RGB(255, 255, 255));
+        surprising_left.AddBitmap("RES/mainGirl/blank.bmp", RGB(255, 255, 255));
+        surprising_right.AddBitmap("RES/mainGirl/surprising_right.bmp", RGB(255, 255, 255));
+        surprising_right.AddBitmap("RES/mainGirl/blank.bmp", RGB(255, 255, 255));
+
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/mainGirl/fun (" + to_string(i) + ").bmp").c_str());
+            fun.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        fun.SetDelayCount(7);
     }
 
-    void MainGirl::OnMove(CGameMap* map)
+    void MainGirl::OnMove(CGameMap* map, UI* ui)
     {
         if (state == INANIMATION)
         {
-            if (is_bump)
+            if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
+            {
+                static int count = 40;
+
+                if (count > 0)
+                {
+                    if (direction)
+                    {
+                        surprising_right.OnMove();
+                    }
+                    else
+                    {
+                        surprising_left.OnMove();
+                    }
+
+                    count--;
+                }
+                else
+                {
+                    moving = true;
+                    count = 50;
+                }
+
+                if (moving)
+                {
+                    if (direction)
+                    {
+                        x += 5;
+                        girl_walk_right.OnMove();
+                    }
+                    else
+                    {
+                        x -= 5;
+                        girl_walk_left.OnMove();
+                    }
+
+                    fun.OnMove();
+                    static unsigned int startIndex = 0;
+
+                    if (count <= 0 && startIndex < slaves.size())
+                    {
+                        if (startIndex == 0)
+                        {
+                            slaves[startIndex]->Report();
+                            ui->AddScore(slaves[startIndex]->GetScore());
+                            startIndex++;
+                        }
+                        else if (startIndex != 0 && !slaves[startIndex - 1]->IsReporting())
+                        {
+                            slaves[startIndex]->Report();
+                            ui->AddScore(slaves[startIndex]->GetScore());
+                            startIndex++;
+                        }
+
+                        if (startIndex == slaves.size())
+                            count = 30;
+                    }
+
+                    count--;
+
+                    if (startIndex >= slaves.size() && count <= 0)
+                        is_reporting = false;
+                }
+            }
+            else if (is_bump)
             {
                 if (direction)
                 {
@@ -134,17 +219,17 @@ namespace game_framework
                         x -= (9 - bump_right.GetCurrentBitmapNumber());
                         y += bump_right.GetCurrentBitmapNumber() + 1;
                     }
-                    else if (bump_right.GetCurrentBitmapNumber() >= 11)
+                    else if (bump_right.GetCurrentBitmapNumber() == 14)
                     {
                         map->Addsx((bump_right.GetCurrentBitmapNumber() - 5));
                         x += (bump_right.GetCurrentBitmapNumber() - 5);
-                        y -= 15 - bump_right.GetCurrentBitmapNumber();
                     }
-
-                    if (!bump_right.IsFinalBitmap())
-                        bump_right.OnMove();
-                    else
-                        is_bump = false;
+                    else if (bump_right.GetCurrentBitmapNumber() > 14)
+                    {
+                        map->Addsx((bump_right.GetCurrentBitmapNumber() - 5));
+                        x += (bump_right.GetCurrentBitmapNumber() - 5);
+                        y -= 19 - bump_right.GetCurrentBitmapNumber();
+                    }
                 }
                 else
                 {
@@ -154,17 +239,58 @@ namespace game_framework
                         x += (9 - bump_left.GetCurrentBitmapNumber());
                         y += bump_left.GetCurrentBitmapNumber() + 1;
                     }
-                    else if (bump_left.GetCurrentBitmapNumber() >= 11)
+                    else if (bump_left.GetCurrentBitmapNumber() == 14)
                     {
                         map->Addsx(-(bump_left.GetCurrentBitmapNumber() - 5));
                         x -= (bump_left.GetCurrentBitmapNumber() - 5);
-                        y -= 15 - bump_left.GetCurrentBitmapNumber();
                     }
+                    else if (bump_left.GetCurrentBitmapNumber() > 14)
+                    {
+                        map->Addsx(-(bump_left.GetCurrentBitmapNumber() - 5));
+                        x -= (bump_left.GetCurrentBitmapNumber() - 5);
+                        y -= 19 - bump_left.GetCurrentBitmapNumber();
+                    }
+                }
 
-                    if (!bump_left.IsFinalBitmap())
-                        bump_left.OnMove();
+                if (ui->GetHeartPoints() > 0)
+                {
+                    if (direction)
+                    {
+                        if (!bump_right.IsFinalBitmap())
+                            bump_right.OnMove();
+                        else
+                        {
+                            is_bump = false;
+                            state = INNORMAL;
+                        }
+                    }
                     else
-                        is_bump = false;
+                    {
+                        if (!bump_left.IsFinalBitmap())
+                            bump_left.OnMove();
+                        else
+                        {
+                            is_bump = false;
+                            state = INNORMAL;
+                        }
+                    }
+                }
+                else
+                {
+                    if (bump_right.GetCurrentBitmapNumber() <= 11 && bump_left.GetCurrentBitmapNumber() <= 11)
+                    {
+                        if (direction)
+                            bump_right.OnMove();
+                        else
+                            bump_left.OnMove();
+
+                        if (bump_right.GetCurrentBitmapNumber() == 12 || bump_left.GetCurrentBitmapNumber() == 12)
+                        {
+                            ui->SetIsGameOver(true);
+                            CAudio::Instance()->Pause();
+                            CAudio::Instance()->Play(AUDIO_LOSE);
+                        }
+                    }
                 }
             }
             else if (is_reinforced)
@@ -201,10 +327,6 @@ namespace game_framework
                         CAudio::Instance()->Resume();
                     }
                 }
-            }
-            else
-            {
-                state = INNORMAL;
             }
         }
         else if (state == INNORMAL)
@@ -264,6 +386,11 @@ namespace game_framework
                 else
                     moving = false;
 
+                if (!map->IsEmpty(x, y) && map->IsEmpty(x + Width(), y) && direction == false)
+                    moving = false;
+                else if (map->IsEmpty(x, y) && !map->IsEmpty(x + Width(), y) && direction == true)
+                    moving = false;
+
                 SetVelocity(map);
             }
             else
@@ -318,6 +445,13 @@ namespace game_framework
                         girl_run_left.OnMove();
                 }
             }
+
+            if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
+            {
+                is_reporting = true;
+                state = INANIMATION;
+                moving = false;
+            }
         }
 
         int sx;
@@ -340,7 +474,7 @@ namespace game_framework
                 sx += (girl_left_stand.Width() + 8);
             }
 
-            slaves[i]->OnMove();
+            slaves[i]->OnMove(0);
         }
     }
 
@@ -410,44 +544,50 @@ namespace game_framework
         }
     }
 
-    /*void PremultiplyBitmapAlpha(HDC hDC, HBITMAP hBmp)
-    {
-        BITMAP bm = { 0 };
-        GetObject(hBmp, sizeof(bm), &bm);
-        BITMAPINFO* bmi = (BITMAPINFO*)_alloca(sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD)));
-        ::ZeroMemory(bmi, sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD)));
-        bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        BOOL bRes = ::GetDIBits(hDC, hBmp, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS);
-
-        if (!bRes || bmi->bmiHeader.biBitCount != 32) return;
-
-        LPBYTE pBitData = (LPBYTE) ::LocalAlloc(LPTR, bm.bmWidth * bm.bmHeight * sizeof(DWORD));
-
-        if (pBitData == NULL) return;
-
-        LPBYTE pData = pBitData;
-        ::GetDIBits(hDC, hBmp, 0, bm.bmHeight, pData, bmi, DIB_RGB_COLORS);
-
-        for (int y = 0; y < bm.bmHeight; y++)
-        {
-            for (int x = 0; x < bm.bmWidth; x++)
-            {
-                pData[0] = (BYTE)((DWORD)pData[0] * pData[3] / 255);
-                pData[1] = (BYTE)((DWORD)pData[1] * pData[3] / 255);
-                pData[2] = (BYTE)((DWORD)pData[2] * pData[3] / 255);
-                pData += 4;
-            }
-        }
-
-        ::SetDIBits(hDC, hBmp, 0, bm.bmHeight, pBitData, bmi, DIB_RGB_COLORS);
-        ::LocalFree(pBitData);
-    }*/
-
-    void MainGirl::OnShow(CGameMap* map)
+    void MainGirl::OnShow(CGameMap* map, UI* ui)
     {
         if (state == INANIMATION)
         {
-            if (is_bump)
+            if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
+            {
+                if (moving)
+                {
+                    if (direction)
+                    {
+                        girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_walk_right.OnShow();
+                    }
+                    else
+                    {
+                        girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_walk_left.OnShow();
+                    }
+
+                    if (slaves.size() != 0)
+                    {
+                        fun.SetTopLeft(map->ScreenX(x) + 12, map->ScreenY(y) - 5);
+                        fun.OnShow();
+                    }
+                }
+                else
+                {
+                    if (direction) //false => 往左, true => 往右
+                    {
+                        girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_right_stand.ShowBitmap();
+                        surprising_right.SetTopLeft(map->ScreenX(x + girl_left_stand.Width()), map->ScreenY(y));
+                        surprising_right.OnShow();
+                    }
+                    else
+                    {
+                        girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        girl_left_stand.ShowBitmap();
+                        surprising_left.SetTopLeft(map->ScreenX(x) - 26, map->ScreenY(y));
+                        surprising_left.OnShow();
+                    }
+                }
+            }
+            else if (is_bump)
             {
                 if (direction)
                 {
@@ -469,7 +609,7 @@ namespace game_framework
                     ImageDC.CreateCompatibleDC(pDC);
                     CBitmap* pOldBitmap = ImageDC.SelectObject(&m_memBitmap);
                     CPoint coordinates[2];
-                    coordinates[0].SetPoint(map->ScreenX(x - 30), 80);
+                    coordinates[0].SetPoint(map->ScreenX(x - 30), 0);
                     coordinates[1].SetPoint(map->ScreenX(x + girl_left_stand.Width() + 30), map->ScreenY(y + girl_left_stand.Height() + 5));
                     CRect Erect, Rrect;
                     Erect.SetRect(0, 452, 135, 467);
@@ -479,8 +619,8 @@ namespace game_framework
                     bf.BlendFlags = 0;
                     bf.BlendOp = 0;
                     bf.SourceConstantAlpha = 220;
-                    //pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, bf);
-                    pDC->BitBlt(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 94, &ImageDC, 0, 80, SRCCOPY);
+                    pDC->AlphaBlend(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, &ImageDC, 0, 0, Rrect.Width(), Rrect.Height() + Erect.Height() - 14, bf);
+                    //pDC->BitBlt(coordinates[0].x, coordinates[0].y, Rrect.Width(), Rrect.Height() + Erect.Height() - 94, &ImageDC, 0, 80, SRCCOPY);
                     ImageDC.SelectObject(pOldBitmap);
                     ImageDC.DeleteDC();
                     CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
@@ -758,6 +898,11 @@ namespace game_framework
     bool MainGirl::IsAttacking()
     {
         return is_attacking;
+    }
+
+    bool MainGirl::IsReporting()
+    {
+        return is_reporting;
     }
 
     void MainGirl::Lose()

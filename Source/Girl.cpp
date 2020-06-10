@@ -17,7 +17,7 @@ namespace game_framework
         DEAD
     };
 
-    Girl::Girl(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(5)
+    Girl::Girl(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(2)
     {
         range[0] = start;
         range[1] = end;
@@ -40,7 +40,7 @@ namespace game_framework
         this->moving = status;
     }
 
-    void Girl::OnMove(CGameMap* map)
+    void Girl::OnMove(CGameMap* map, int seed)
     {
         if (status == ALIVE)
         {
@@ -54,7 +54,9 @@ namespace game_framework
                     surprising_left.OnMove();
             }
 
-            if (moving)
+            moving = seed % 2;
+
+            if (moving && !is_shocking)
             {
                 if (direction)
                 {
@@ -104,17 +106,17 @@ namespace game_framework
             {
                 if (direction)
                 {
-                    x += velocity;
+                    x += 5;
                     leaving_right.OnMove();
                 }
                 else
                 {
-                    x -= velocity;
+                    x -= 5;
                     leaving_left.OnMove();
                 }
 
                 fun.OnMove();
-                distance -= velocity;
+                distance -= 5;
             }
             else
                 status = DEAD;
@@ -213,6 +215,8 @@ namespace game_framework
                     shooting_left.ShowBitmap();
                 }
             }
+
+            status = ALIVE;
         }
         else if (status == FLYING)
         {

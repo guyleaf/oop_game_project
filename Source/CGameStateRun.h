@@ -26,16 +26,21 @@ namespace game_framework
         void OnMove();									// 移動遊戲元素
         void OnShow();									// 顯示這個狀態的遊戲畫面
     private:
+        void GenerateSpecialMan(int level, bool direction, bool top, int type, int num_girl);
+        void LoadData();
+        void ChangeGameState(int state);
         CMovingBitmap	background;	// 背景圖
         CMovingBitmap	help;		// 說明圖
         CInteger		score;	// 得分數
         CGameMap map;
         MainGirl* mainGirl;
-        vector<Man*> man[2];
-        vector<Girl*> normalGirl[2];
+        vector<Man*> man[4][2];
+        vector<Girl*> girl[4][2];
         vector<Heart*> hearts;
         vector<Girl*> girlsOnScreen;
         UI ui;
+        Teacher* teacher;
+        bool isGoldBoyGenerated;
     };
 }
 

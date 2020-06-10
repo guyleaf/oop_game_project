@@ -25,6 +25,8 @@ namespace game_framework
         angle = 0;
         xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
         cursor_x = cursor_y = 0;
+        rightButton = leftButton = false;
+        is_muted = false;
     }
 
     void UI::LoadVolume()
@@ -63,6 +65,10 @@ namespace game_framework
         audio_button_on_hovered.LoadBitmap("RES/UI/audio_button_on_hovered.bmp", RGB(0, 0, 0));
         audio_button_off.LoadBitmap("RES/UI/audio_button_off.bmp", RGB(0, 0, 0));
         audio_button_off_hovered.LoadBitmap("RES/UI/audio_button_off_hovered.bmp", RGB(0, 0, 0));
+        up.LoadBitmap("RES/UI/up.bmp", RGB(255, 255, 255));
+        up_hover.LoadBitmap("RES/UI/up_hover.bmp", RGB(255, 255, 255));
+        down.LoadBitmap("RES/UI/down.bmp", RGB(255, 255, 255));
+        down_hover.LoadBitmap("RES/UI/down_hover.bmp", RGB(255, 255, 255));
     }
 
     void UI::OnMove()
@@ -123,7 +129,7 @@ namespace game_framework
         }
     }
 
-    void UI::OnShow()
+    void UI::OnShow(CGameMap* map)
     {
         heartPointBoard.SetTopLeft(0, 0);
         heartPointBoard.ShowBitmap();
@@ -167,6 +173,44 @@ namespace game_framework
             {
                 audio_button_on.SetTopLeft(scoreBoard.Left() + scoreBoard.Width() - audio_button_on.Width() - 10, 8);
                 audio_button_on.ShowBitmap();
+            }
+        }
+
+        if (rightButton || leftButton)
+        {
+            if (rightButton)
+            {
+                up.SetTopLeft(680 - up.Width(), 150);
+                up_hover.SetTopLeft(680 - up_hover.Width(), 150);
+                down.SetTopLeft(692 - down.Width(), 300);
+                down_hover.SetTopLeft(692 - down_hover.Width(), 300);
+            }
+            else
+            {
+                up.SetTopLeft(120, 150);
+                up_hover.SetTopLeft(120, 150);
+                down.SetTopLeft(130, 300);
+                down_hover.SetTopLeft(130, 300);
+            }
+
+            if (map->GetLevel() != 1)
+            {
+                down.ShowBitmap();
+
+                if ((down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height())))
+                {
+                    down_hover.ShowBitmap();
+                }
+            }
+
+            if (map->GetLevel() != 4)
+            {
+                up.ShowBitmap();
+
+                if ((up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height()))
+                {
+                    up_hover.ShowBitmap();
+                }
             }
         }
     }
@@ -238,6 +282,32 @@ namespace game_framework
     bool UI::IsGameOver()
     {
         return state == GAMEOVER;
+    }
+
+    void UI::SetIsGameOver(bool status)
+    {
+        if (status)
+            state = GAMEOVER;
+        else
+            state = INPROGRESS;
+    }
+
+    void UI::SetIsButtonVisible(bool status, bool direction)
+    {
+        if (direction)
+            rightButton = status;
+        else
+            leftButton = status;
+    }
+
+    bool UI::IsUpButtonHoverd()
+    {
+        return (rightButton || leftButton) && (up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height());
+    }
+
+    bool UI::IsDownButtonHoverd()
+    {
+        return (rightButton || leftButton) && (down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height()));
     }
 
     void UI::DrawPie()

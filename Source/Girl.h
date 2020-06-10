@@ -8,7 +8,7 @@ namespace game_framework
         virtual void LoadBitMap() = 0;
         void SetMoving(bool status);
         void SetDirection(bool direction);
-        void OnMove(CGameMap* map);
+        void OnMove(CGameMap* map, int seed);
         void OnShow(CGameMap* map);
         void SetIsShocking(bool status);
         bool IsShocking();
