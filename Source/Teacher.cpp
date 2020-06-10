@@ -38,21 +38,18 @@ namespace game_framework
 
     void Teacher::OnMove(CGameMap* map)
     {
-        if (map->GetLevel() == level)
-        {
-            if (!map->IsEmpty(x, y))
-                direction = !direction;
+        if (!map->IsEmpty(x, y))
+            direction = !direction;
 
-            if (direction)
-            {
-                x += 5;
-                right.OnMove();
-            }
-            else
-            {
-                x -= 5;
-                left.OnMove();
-            }
+        if (direction)
+        {
+            x += 5;
+            right.OnMove();
+        }
+        else
+        {
+            x -= 5;
+            left.OnMove();
         }
     }
 

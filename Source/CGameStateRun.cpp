@@ -17,6 +17,7 @@ namespace game_framework
     {
         mainGirl = new MainGirl();
         LoadData();
+        isGoldBoyGenerated = false;
     }
 
     CGameStateRun::~CGameStateRun()
@@ -33,21 +34,21 @@ namespace game_framework
                 delete man[j][1][i];
             }
 
-			for (size_t i = 0; i <girl[j][0].size(); i++)
-			{
-				delete girl[j][0][i];
-			}
+            for (size_t i = 0; i < girl[j][0].size(); i++)
+            {
+                delete girl[j][0][i];
+            }
 
-			for (size_t i = 0; i < girl[j][1].size(); i++)
-			{
-				delete girl[j][1][i];
-			}
+            for (size_t i = 0; i < girl[j][1].size(); i++)
+            {
+                delete girl[j][1][i];
+            }
         }
 
-		for (size_t i = 0; i < hearts.size(); i++)
-		{
-			delete hearts[i];
-		}
+        for (size_t i = 0; i < hearts.size(); i++)
+        {
+            delete hearts[i];
+        }
 
         delete mainGirl;
         delete teacher;
@@ -136,7 +137,13 @@ namespace game_framework
         ui.OnMove();
         srand((unsigned)time(NULL));
 
-        if (!ui.IsGameOver() && !mainGirl->IsInAnimation() && mainGirl->IsReinforced() && !ui.IsGameOver())
+        if (!isGoldBoyGenerated && !mainGirl->IsInAnimation() && mainGirl->IsReinforced())
+        {
+            GenerateSpecialMan(0, false, rand() % 2, 3, 5);
+            isGoldBoyGenerated = true;
+        }
+
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation() && mainGirl->IsReinforced())
         {
             ui.GotoHRState(CHeartPoint::reinforced);
             ui.Resume();
@@ -166,6 +173,17 @@ namespace game_framework
                 if (!mainGirl->IsReinforced())
                     ui.AddHeartPoints(-600);
 
+                CAudio::Instance()->Play(AUDIO_FLYING, false);
+                mainGirl->Lose();
+            }
+            else if (mainGirl->IsAttacking() && ui.GetHeartPoints() <= 0)
+            {
+                if (mainGirl->IsAttacking())
+                    CAudio::Instance()->Stop(AUDIO_LASER);
+
+                mainGirl->SetIsLocked(false);
+                mainGirl->SetIsFocusing(false);
+                mainGirl->SetIsAttacking(false);
                 CAudio::Instance()->Play(AUDIO_FLYING, false);
                 mainGirl->Lose();
             }
@@ -215,36 +233,39 @@ namespace game_framework
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (vector<Man*>::iterator person = man[level - 1][0].begin(); person != man[level - 1][0].end(); person++)
+        for (int i = 0; i < 4; i++)
         {
-            if ((*person)->IsOver())
+            for (vector<Man*>::iterator person = man[i][0].begin(); person != man[i][0].end(); person++)
             {
-                delete (*person);
-                person = man[level - 1][0].erase(person);
+                if ((*person)->IsOver())
+                {
+                    delete (*person);
+                    person = man[i][0].erase(person);
 
-                if (person != man[level - 1][0].end())
-                    continue;
-                else
-                    break;
+                    if (person != man[i][0].end())
+                        continue;
+                    else
+                        break;
+                }
+
+                (*person)->OnMove(rand());
             }
 
-            (*person)->OnMove(rand());
-        }
-
-        for (vector<Man*>::iterator person = man[level - 1][1].begin(); person != man[level - 1][1].end(); person++)
-        {
-            if ((*person)->IsOver())
+            for (vector<Man*>::iterator person = man[i][1].begin(); person != man[i][1].end(); person++)
             {
-                delete (*person);
-                person = man[level - 1][1].erase(person);
+                if ((*person)->IsOver())
+                {
+                    delete (*person);
+                    person = man[i][1].erase(person);
 
-                if (person != man[level - 1][1].end())
-                    continue;
-                else
-                    break;
+                    if (person != man[i][1].end())
+                        continue;
+                    else
+                        break;
+                }
+
+                (*person)->OnMove(rand());
             }
-
-            (*person)->OnMove(rand());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -557,8 +578,6 @@ namespace game_framework
             girl[level - 1][0][i]->OnMove(&map, rand());
         }
 
-        //srand((unsigned)time(NULL));
-
         for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
             if (girl[level - 1][1][i]->IsAlreadyDead())
@@ -617,7 +636,16 @@ namespace game_framework
             mainGirl->SetIsReinforced(false);
         }
 
-        if (ui.IsGameOver() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
+        if (ui.IsGameOver() && ui.GetHeartPoints() <= 0 && mainGirl->IsInAnimation())
+        {
+            static int counter = 280;
+
+            if (counter <= 0)
+                GotoGameState(GAME_STATE_OVER);
+
+            counter--;
+        }
+        else if (ui.IsGameOver() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
         {
             if (ui.GetHeartPoints() > 0)
             {
@@ -778,6 +806,58 @@ namespace game_framework
 
         mainGirl->ShowFocus();
 
+        if (ui.IsGameOver())
+        {
+            if (ui.GetHeartPoints() <= 0)
+            {
+                static int counter = 120;
+                CRect rect;
+                CDDraw::GetClientRect(rect);
+                HBITMAP bitmap;
+                CDC bkDC;
+                CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+                bkDC.CreateCompatibleDC(pDC);
+                bitmap = CreateCompatibleBitmap(bkDC.m_hDC, rect.Width(), rect.Height());
+                HBITMAP* pOldBitmap = (HBITMAP*)bkDC.SelectObject(bitmap);
+                bkDC.SetBkColor(RGB(0, 0, 0));
+                BLENDFUNCTION bf;
+                bf.AlphaFormat = 0;
+                bf.BlendFlags = 0;
+                bf.BlendOp = 0;
+                bf.SourceConstantAlpha = 200;
+                pDC->AlphaBlend(0, 0, rect.Width(), rect.Height(), &bkDC, 0, 0, rect.Width(), rect.Height(), bf);
+                bkDC.SelectObject(pOldBitmap);
+                bkDC.DeleteDC();
+
+                if (counter <= 20)
+                {
+                    CFont f, *fp;
+                    CSize size;
+                    f.CreatePointFont(6000 * counter, "Times New Roman");	// 產生 font f; 160表示16 point的字
+                    LOGFONT logFont;
+                    f.GetLogFont(&logFont);
+                    logFont.lfWeight = FW_BOLD;
+                    f.DeleteObject();
+                    f.CreatePointFontIndirect(&logFont);
+                    fp = pDC->SelectObject(&f);					// 選用 font f
+                    size = pDC->GetTextExtent("死");
+                    pDC->SetBkMode(TRANSPARENT);
+                    char str[80];								// Demo 數字對字串的轉換
+                    sprintf(str, "死");
+                    pDC->SetTextColor(RGB(187, 13, 13));
+                    pDC->TextOut(rect.CenterPoint().x - size.cx / 2 - 3, rect.CenterPoint().y - size.cy / 2 - 3, str);
+                    pDC->SetTextColor(RGB(255, 0, 0));
+                    pDC->TextOut(rect.CenterPoint().x - size.cx / 2, rect.CenterPoint().y - size.cy / 2, str);
+                    pDC->SelectObject(fp);						// 放掉 font f (千萬不要漏了放掉)
+                }
+
+                if (counter > 1)
+                    counter--;
+
+                CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
+            }
+        }
+
         if (map.IsMapChanging())
             CDDraw::BltBackColor(RGB(0, 0, 0));
     }
@@ -797,13 +877,14 @@ namespace game_framework
         }
 
         mx = rand() % 2030 + 450;
-        int distance = 50;
+        int distance = 100;
 
         if (direction)
             man[level][!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, type));
         else
-            man[level][!top].push_back(new SpecialMan(mx, my, mx, mx - distance, direction, type));
+            man[level][!top].push_back(new SpecialMan(mx, my, mx - distance, mx, direction, type));
 
+        (*(man[level][!top].crbegin()))->LoadBitMap();
         srand((unsigned)time(NULL));
 
         for (int i = 0; i < num_girl; i++)
@@ -811,9 +892,15 @@ namespace game_framework
             gx = rand() % 150 + (mx - 150) + i * 20;
 
             if (rand() % 2 == 0)
+            {
                 girl[level][0].push_back(new NormalGirl(gx, 140, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
+                (*(girl[level][0].crbegin()))->LoadBitMap();
+            }
             else
+            {
                 girl[level][1].push_back(new NormalGirl(gx, 380, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
+                (*(girl[level][1].crbegin()))->LoadBitMap();
+            }
         }
     }
 
@@ -858,11 +945,17 @@ namespace game_framework
                     man[level - 1][data[0]].push_back(new NormalMan(data[2], 100 * (1 - data[0]) + 400 * data[0], data[3], data[4], data[5], data[6]));
                 else if (data[1] == 3)
                     man[level - 1][data[0]].push_back(new SpecialMan(data[2], 100 * (1 - data[0]) + 400 * data[0], data[3], data[4], data[5], data[6]));
-                else if (data[1] == 4)
-                    teacher = new Teacher(level, data[2], MIDDLE);
             }
         }
 
+        srand((unsigned int)time(NULL));
+        teacher = new Teacher(rand() % 4 + 1, 1000, MIDDLE);
         myFile.Close();
+    }
+
+    void CGameStateRun::ChangeGameState(int state)
+    {
+        CDC aa;
+        GotoGameState(state);
     }
 }

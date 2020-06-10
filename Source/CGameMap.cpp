@@ -71,11 +71,15 @@ namespace game_framework
         {
             if (width - (sx + SIZE_X) > 0)
                 sx += value;
+            else
+                sx = width - SIZE_X;
         }
         else
         {
             if (sx > 0)
                 sx += value;
+            else
+                sx = 0;
         }
     }
 
@@ -83,32 +87,26 @@ namespace game_framework
     {
         sy += value;
     }
-
     int CGameMap::Height()
     {
         return height;
     }
-
     int CGameMap::Width()
     {
         return width;
     }
-
     int CGameMap::ScreenX(int val)
     {
         return val - sx;
     }
-
     int CGameMap::ScreenY(int val)
     {
         return val - sy;
     }
-
     bool CGameMap::IsMapChanging()
     {
         return is_mapChanging;
     }
-
     bool CGameMap::IsInScreen(int start_x, int end_x)
     {
         if (sx <= start_x && end_x <= sx + SIZE_X)
@@ -116,17 +114,14 @@ namespace game_framework
         else
             return false;
     }
-
     bool CGameMap::IsEmpty(int x, int y)
     {
         return left_edge <= x && x <= right_edge;
     }
-
     int CGameMap::GetLevel()
     {
         return level;
     }
-
     void CGameMap::SetLevel(int level)
     {
         this->level = level;

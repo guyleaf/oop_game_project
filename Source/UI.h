@@ -20,6 +20,7 @@ namespace game_framework
         int GetHeartPoints();
         void GotoHRState(int state);
         bool IsGameOver();
+        void SetIsGameOver(bool status);
         void SetIsButtonVisible(bool status, bool direction);
         bool IsUpButtonHoverd();
         bool IsDownButtonHoverd();

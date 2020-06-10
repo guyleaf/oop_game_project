@@ -26,6 +26,7 @@ namespace game_framework
         xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
         cursor_x = cursor_y = 0;
         rightButton = leftButton = false;
+        is_muted = false;
     }
 
     void UI::LoadVolume()
@@ -281,6 +282,14 @@ namespace game_framework
     bool UI::IsGameOver()
     {
         return state == GAMEOVER;
+    }
+
+    void UI::SetIsGameOver(bool status)
+    {
+        if (status)
+            state = GAMEOVER;
+        else
+            state = INPROGRESS;
     }
 
     void UI::SetIsButtonVisible(bool status, bool direction)

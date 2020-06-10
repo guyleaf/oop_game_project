@@ -28,6 +28,7 @@ namespace game_framework
     private:
         void GenerateSpecialMan(int level, bool direction, bool top, int type, int num_girl);
         void LoadData();
+        void ChangeGameState(int state);
         CMovingBitmap	background;	// 背景圖
         CMovingBitmap	help;		// 說明圖
         CInteger		score;	// 得分數
@@ -39,6 +40,7 @@ namespace game_framework
         vector<Girl*> girlsOnScreen;
         UI ui;
         Teacher* teacher;
+        bool isGoldBoyGenerated;
     };
 }
 

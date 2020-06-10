@@ -5,6 +5,7 @@ namespace game_framework
     {
     public:
         MainGirl();
+        ~MainGirl();
         void LoadBitMap();
         void OnMouseMove(CPoint point);
         int GetCursorX();

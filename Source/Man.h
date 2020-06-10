@@ -17,6 +17,7 @@ namespace game_framework
         int GetHeight();
         int GetId();
         double GetHP();
+        int GetScore();
         bool HitMainGirl(CGameMap* map, MainGirl* girl);
         void SetIsAlive(bool status);
         void SetIsFocused(bool status);
@@ -39,6 +40,7 @@ namespace game_framework
     protected:
         void DrawBeam(CGameMap* map);
         int id;
+        int score;
         int x, y;
         int fx, fy;
         bool fdirection;
