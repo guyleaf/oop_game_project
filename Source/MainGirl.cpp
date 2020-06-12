@@ -14,7 +14,19 @@ namespace game_framework
         INANIMATION
     };
 
-    MainGirl::MainGirl() : x(450), y(MIDDLE), moving(false), velocity(5), is_focusing(false), is_attacking(false), is_locked(false), is_clicked(false)
+    MainGirl::MainGirl()
+    {
+    }
+
+    MainGirl::~MainGirl()
+    {
+        /*for (size_t i = 0; i < slaves.size(); i++)
+        {
+            delete slaves[i];
+        }*/
+    }
+
+    void MainGirl::OnBeginState()
     {
         is_bump = false;
         is_reinforced = false;
@@ -23,14 +35,19 @@ namespace game_framework
         cursor_x = 450;
         cursor_y = 0;
         is_reporting = false;
-    }
-
-    MainGirl::~MainGirl()
-    {
-        for (size_t i = 0; i < slaves.size(); i++)
-        {
-            delete slaves[i];
-        }
+        x = 450;
+        y = MIDDLE;
+        moving = false;
+        velocity = 5;
+        is_focusing = false;
+        is_attacking = false;
+        is_locked = false;
+        is_clicked = false;
+        slaves.erase(slaves.begin(), slaves.end());
+        focus_point_on.Reset();
+        focus_point_off.Reset();
+        bump_left.Reset();
+        bump_right.Reset();
     }
 
     void MainGirl::LoadBitMap()
@@ -148,25 +165,7 @@ namespace game_framework
             if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
             {
                 static int count = 40;
-
-                if (count > 0)
-                {
-                    if (direction)
-                    {
-                        surprising_right.OnMove();
-                    }
-                    else
-                    {
-                        surprising_left.OnMove();
-                    }
-
-                    count--;
-                }
-                else
-                {
-                    moving = true;
-                    count = 50;
-                }
+                static unsigned int startIndex = 0;
 
                 if (moving)
                 {
@@ -182,7 +181,6 @@ namespace game_framework
                     }
 
                     fun.OnMove();
-                    static unsigned int startIndex = 0;
 
                     if (count <= 0 && startIndex < slaves.size())
                     {
@@ -207,6 +205,28 @@ namespace game_framework
 
                     if (startIndex >= slaves.size() && count <= 0)
                         is_reporting = false;
+                }
+                else
+                {
+                    if (count > 0)
+                    {
+                        if (direction)
+                        {
+                            surprising_right.OnMove();
+                        }
+                        else
+                        {
+                            surprising_left.OnMove();
+                        }
+
+                        count--;
+                    }
+                    else
+                    {
+                        startIndex = 0;
+                        moving = true;
+                        count = 50;
+                    }
                 }
             }
             else if (is_bump)

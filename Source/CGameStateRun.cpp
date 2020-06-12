@@ -13,10 +13,11 @@ namespace game_framework
     // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
+    CGameStateRun::CGameStateRun(CGame* g, int* score) : CGameState(g, score)
     {
         mainGirl = new MainGirl();
         LoadData();
+        teacher = NULL;
         isGoldBoyGenerated = false;
     }
 
@@ -90,7 +91,6 @@ namespace game_framework
             }
         }
 
-        teacher->LoadBitmap();
         ui.LoadBitmap();
         //
         // 完成部分Loading動作，提高進度
@@ -115,13 +115,83 @@ namespace game_framework
 
     void CGameStateRun::OnBeginState()
     {
-        const int HITS_LEFT = 10;
-        const int HITS_LEFT_X = 590;
-        const int HITS_LEFT_Y = 0;
-        /*hits_left.SetInteger(HITS_LEFT);					// 指定剩下的撞擊數
-        hits_left.SetTopLeft(HITS_LEFT_X, HITS_LEFT_Y);		// 指定剩下撞擊數的座標*/
+        ui.OnBeginState();
         ui.LoadVolume();
-        //CAudio::Instance()->Play(AUDIO_GAME, true);			// 撥放 GAME
+        map.OnBeginState();
+        mainGirl->OnBeginState();
+
+        for (int level = 0; level < 4; level++)
+        {
+            int index = -1;
+
+            for (size_t i = 0; i < man[level][0].size(); i++)
+            {
+                if (man[level][0][i]->GetScore() != 30000)
+                    man[level][0][i]->OnBeginState();
+                else
+                    index = i;
+            }
+
+            if (index != -1)
+            {
+                delete man[level][0][index];
+                man[level][0].erase(man[level][0].begin() + index);
+            }
+
+            index = -1;
+
+            for (size_t i = 0; i < man[level][1].size(); i++)
+            {
+                if (man[level][1][i]->GetScore() != 30000)
+                    man[level][1][i]->OnBeginState();
+                else
+                    index = i;
+            }
+
+            if (index != -1)
+            {
+                delete man[level][1][index];
+                man[level][1].erase(man[level][1].begin() + index);
+            }
+
+            index = -1;
+
+            for (size_t i = 0; i < girl[level][0].size(); i++)
+            {
+                if (!girl[level][0][i]->IsSpecialGirl())
+                    girl[level][0][i]->OnBeginState();
+                else
+                    index = i;
+            }
+
+            if (index != -1)
+            {
+                delete girl[level][0][index];
+                girl[level][0].erase(girl[level][0].begin() + index);
+            }
+
+            index = -1;
+
+            for (size_t i = 0; i < girl[level][1].size(); i++)
+            {
+                if (!girl[level][1][i]->IsSpecialGirl())
+                    girl[level][1][i]->OnBeginState();
+                else
+                    index = i;
+            }
+
+            if (index != -1)
+            {
+                delete girl[level][1][index];
+                girl[level][1].erase(girl[level][1].begin() + index);
+            }
+        }
+
+        srand((unsigned int)time(NULL));
+        delete teacher;
+        teacher = new Teacher(rand() % 4 + 1, 1000, MIDDLE);
+        teacher->LoadBitmap();
+        isGoldBoyGenerated = false;
     }
 
     void CGameStateRun::OnMove()							// 移動遊戲元素
@@ -139,7 +209,7 @@ namespace game_framework
 
         if (!isGoldBoyGenerated && !mainGirl->IsInAnimation() && mainGirl->IsReinforced())
         {
-            GenerateSpecialMan(0, false, rand() % 2, 3, 5);
+            GenerateGoldBoy(0, false, rand() % 2);
             isGoldBoyGenerated = true;
         }
 
@@ -176,7 +246,7 @@ namespace game_framework
                 CAudio::Instance()->Play(AUDIO_FLYING, false);
                 mainGirl->Lose();
             }
-            else if (mainGirl->IsAttacking() && ui.GetHeartPoints() <= 0)
+            else if (mainGirl->IsAttacking() && !mainGirl->IsReinforced() && ui.GetHeartPoints() <= 0)
             {
                 if (mainGirl->IsAttacking())
                     CAudio::Instance()->Stop(AUDIO_LASER);
@@ -237,7 +307,7 @@ namespace game_framework
         {
             for (vector<Man*>::iterator person = man[i][0].begin(); person != man[i][0].end(); person++)
             {
-                if ((*person)->IsOver())
+                /*if ((*person)->IsOver())
                 {
                     delete (*person);
                     person = man[i][0].erase(person);
@@ -246,14 +316,14 @@ namespace game_framework
                         continue;
                     else
                         break;
-                }
-
-                (*person)->OnMove(rand());
+                }*/
+                if (!(*person)->IsFollowing(Man::mainGirl))
+                    (*person)->OnMove(rand());
             }
 
             for (vector<Man*>::iterator person = man[i][1].begin(); person != man[i][1].end(); person++)
             {
-                if ((*person)->IsOver())
+                /*if ((*person)->IsOver())
                 {
                     delete (*person);
                     person = man[i][1].erase(person);
@@ -262,9 +332,9 @@ namespace game_framework
                         continue;
                     else
                         break;
-                }
-
-                (*person)->OnMove(rand());
+                }*/
+                if (!(*person)->IsFollowing(Man::mainGirl))
+                    (*person)->OnMove(rand());
             }
         }
 
@@ -309,20 +379,25 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (size_t i = 0; i < man[level - 1][0].size(); i++)
         {
-            int HP = int(man[level - 1][0][i]->GetHP());
-
-            if (man[level - 1][0][i]->IsAlreadyDead())
+            if (man[level - 1][0][i]->IsAlreadyDead() && !man[level - 1][0][i]->IsFollowing(Man::mainGirl) && !man[level - 1][0][i]->IsFollowing(Man::girl))
             {
-                if (HP <= 0)
+                if (man[level - 1][0][i]->IsKilledBy(Man::mainGirl))
                 {
                     mainGirl->AddSlave(man[level - 1][0][i]);
-                    man[level - 1][0].erase(man[level - 1][0].begin() + i);
+                    man[level - 1][0][i]->SetIsFollowing(Man::mainGirl);
+                    //man[level - 1][0].erase(man[level - 1][0].begin() + i);
                     break;
+                }
+                else
+                {
+                    man[level - 1][0][i]->SetIsFollowing(Man::girl);
                 }
             }
 
             if (!ui.IsGameOver())
             {
+                int HP = int(man[level - 1][0][i]->GetHP());
+
                 if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
                 {
                     if (HP >= 800 || HP <= 0)
@@ -438,20 +513,25 @@ namespace game_framework
 
         for (size_t i = 0; i < man[level - 1][1].size(); i++)
         {
-            int HP = int(man[level - 1][1][i]->GetHP());
-
-            if (man[level - 1][1][i]->IsAlreadyDead())
+            if (man[level - 1][1][i]->IsAlreadyDead() && !man[level - 1][1][i]->IsFollowing(Man::mainGirl) && !man[level - 1][1][i]->IsFollowing(Man::girl))
             {
-                if (HP <= 0)
+                if (man[level - 1][1][i]->IsKilledBy(Man::mainGirl))
                 {
                     mainGirl->AddSlave(man[level - 1][1][i]);
-                    man[level - 1][1].erase(man[level - 1][1].begin() + i);
+                    man[level - 1][1][i]->SetIsFollowing(Man::mainGirl);
+                    //man[level - 1][1].erase(man[level - 1][1].begin() + i);
                     break;
+                }
+                else
+                {
+                    man[level - 1][1][i]->SetIsFollowing(Man::girl);
                 }
             }
 
             if (!ui.IsGameOver())
             {
+                int HP = int(man[level - 1][1][i]->GetHP());
+
                 if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
                 {
                     if (HP >= 800 || HP <= 0)
@@ -568,25 +648,23 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (size_t i = 0; i < girl[level - 1][0].size(); i++)
         {
-            if (girl[level - 1][0][i]->IsAlreadyDead())
+            /*if (girl[level - 1][0][i]->IsAlreadyDead())
             {
                 delete girl[level - 1][0][i];
                 girl[level - 1][0].erase(girl[level - 1][0].begin() + i);
                 break;
-            }
-
+            }*/
             girl[level - 1][0][i]->OnMove(&map, rand());
         }
 
         for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
-            if (girl[level - 1][1][i]->IsAlreadyDead())
+            /*if (girl[level - 1][1][i]->IsAlreadyDead())
             {
                 delete girl[level - 1][1][i];
                 girl[level - 1][1].erase(girl[level - 1][1].begin() + i);
                 break;
-            }
-
+            }*/
             girl[level - 1][1][i]->OnMove(&map, rand());
         }
 
@@ -641,17 +719,21 @@ namespace game_framework
             static int counter = 280;
 
             if (counter <= 0)
-                GotoGameState(GAME_STATE_OVER);
+            {
+                *score = ui.GetScore();
+                counter = 280;
+                ChangeGameState(GAME_STATE_OVER);
+            }
 
             counter--;
         }
         else if (ui.IsGameOver() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
         {
+            static bool isPlayed = false;
+            static int counter = 20;
+
             if (ui.GetHeartPoints() > 0)
             {
-                static bool isPlayed = false;
-                static int counter = 20;
-
                 if (!isPlayed)
                 {
                     CAudio::Instance()->Play(AUDIO_SUMMARIZE, true);
@@ -666,10 +748,14 @@ namespace game_framework
                     ui.AddScore(5);
                 }
             }
-            else
+
+            if (ui.GetHeartPoints() <= 0)
             {
+                counter = 20;
+                isPlayed = false;
                 CAudio::Instance()->Stop(AUDIO_SUMMARIZE);
-                GotoGameState(GAME_STATE_OVER);
+                *score = ui.GetScore();
+                ChangeGameState(GAME_STATE_OVER);
             }
 
             //Add audio
@@ -780,7 +866,8 @@ namespace game_framework
 
         for (size_t i = 0; i < man[level - 1][0].size(); i++)
         {
-            man[level - 1][0][i]->OnShow(&map);
+            if (!man[level - 1][0][i]->IsFollowing(Man::mainGirl))
+                man[level - 1][0][i]->OnShow(&map);
         }
 
         for (size_t i = 0; i < girl[level - 1][0].size(); i++)
@@ -801,16 +888,18 @@ namespace game_framework
 
         for (size_t i = 0; i < man[level - 1][1].size(); i++)
         {
-            man[level - 1][1][i]->OnShow(&map);
+            if (!man[level - 1][1][i]->IsFollowing(Man::mainGirl))
+                man[level - 1][1][i]->OnShow(&map);
         }
 
         mainGirl->ShowFocus();
 
         if (ui.IsGameOver())
         {
+            static int counter = 120;
+
             if (ui.GetHeartPoints() <= 0)
             {
-                static int counter = 120;
                 CRect rect;
                 CDDraw::GetClientRect(rect);
                 HBITMAP bitmap;
@@ -856,15 +945,16 @@ namespace game_framework
 
                 CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
             }
+            else
+                counter = 120;
         }
 
         if (map.IsMapChanging())
             CDDraw::BltBackColor(RGB(0, 0, 0));
     }
 
-    void CGameStateRun::GenerateSpecialMan(int level, bool direction, bool top, int type, int num_girl)
+    void CGameStateRun::GenerateGoldBoy(int level, bool direction, bool top)
     {
-        int gx;
         int mx, my;
 
         if (top)
@@ -880,28 +970,17 @@ namespace game_framework
         int distance = 100;
 
         if (direction)
-            man[level][!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, type));
+            man[level][!top].push_back(new SpecialMan(mx, my, mx, mx + distance, direction, 3));
         else
-            man[level][!top].push_back(new SpecialMan(mx, my, mx - distance, mx, direction, type));
+            man[level][!top].push_back(new SpecialMan(mx, my, mx - distance, mx, direction, 3));
 
         (*(man[level][!top].crbegin()))->LoadBitMap();
+        (*(man[level][!top].crbegin()))->OnBeginState();
         srand((unsigned)time(NULL));
-
-        for (int i = 0; i < num_girl; i++)
-        {
-            gx = rand() % 150 + (mx - 150) + i * 20;
-
-            if (rand() % 2 == 0)
-            {
-                girl[level][0].push_back(new NormalGirl(gx, 140, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
-                (*(girl[level][0].crbegin()))->LoadBitMap();
-            }
-            else
-            {
-                girl[level][1].push_back(new NormalGirl(gx, 380, gx - 50, gx + 50, rand() % 2, rand() % 2 + 1));
-                (*(girl[level][1].crbegin()))->LoadBitMap();
-            }
-        }
+        int thresh = rand() % 2;
+        girl[level][thresh].push_back(new SpecialGirl(mx + rand() % 50 - rand() % 50, 120 * (1 - thresh) + 380 * (thresh), mx - rand() % 30 - 50, mx + rand() % 30 + 50, rand() % 2, 1));
+        (*(girl[level][thresh].crbegin()))->LoadBitMap();
+        (*(girl[level][thresh].crbegin()))->OnBeginState();
     }
 
     void CGameStateRun::LoadData()
@@ -948,14 +1027,12 @@ namespace game_framework
             }
         }
 
-        srand((unsigned int)time(NULL));
-        teacher = new Teacher(rand() % 4 + 1, 1000, MIDDLE);
         myFile.Close();
     }
 
     void CGameStateRun::ChangeGameState(int state)
     {
-        CDC aa;
+        CAudio::Instance()->Stop(AUDIO_GAME);
         GotoGameState(state);
     }
 }

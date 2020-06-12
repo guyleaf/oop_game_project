@@ -3,7 +3,7 @@ namespace game_framework
     class Man
     {
     public:
-        Man(int x, int y, int start, int end, bool direction);
+        Man();
         virtual ~Man();
         virtual void LoadBitMap() = 0;
         void SetMoving(bool status);
@@ -11,6 +11,7 @@ namespace game_framework
         void SetDirection(bool direction);
         void OnMove(int seed);
         void OnShow(CGameMap* map);
+        virtual void OnBeginState() = 0;
         int GetX();
         int GetY();
         int GetWidth();
@@ -29,7 +30,9 @@ namespace game_framework
         bool IsFocused();
         void LoseHP(double value);
         void SetIsKilledBy(int who);
-
+        bool IsKilledBy(int who);
+        void SetIsFollowing(int who);
+        bool IsFollowing(int who);
         //only affect when status is following
         void Follow(int x, int y, bool direction);
         void Report();
@@ -76,8 +79,14 @@ namespace game_framework
         NormalMan(int x, int y, int start, int end, bool direction, int type);
         ~NormalMan();
         void LoadBitMap();
+        void OnBeginState();
     private:
         const int type;
+        const int x;
+        const int y;
+        const int start;
+        const int end;
+        const bool direction;
     };
 
     class SpecialMan : public Man
@@ -86,10 +95,16 @@ namespace game_framework
         SpecialMan(int x, int y, int start, int end, bool direction, int type);
         ~SpecialMan();
         void LoadBitMap();
+        void OnBeginState();
     private:
         // type == 1 => Blue hair
         // type == 2 => Brown hair
         // type == 3 => Gold hair
         const int type;
+        const int x;
+        const int y;
+        const int start;
+        const int end;
+        const bool direction;
     };
 }

@@ -15,18 +15,8 @@ namespace game_framework
         GAMEOVER
     };
 
-    UI::UI() : score(8), counter(10), time_left(90), is_reinforced(false), heart(500, 9), state(INPROGRESS), MaxTime(90)
+    UI::UI() : score(8), heart(500, 9), MaxTime(90)
     {
-        time_start.SetPoint(0, 0);
-        time_end.SetPoint(0, 0);
-        score.SetInteger(0);
-        heart.SetPoint(2000);
-        clock_radius = 30;
-        angle = 0;
-        xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
-        cursor_x = cursor_y = 0;
-        rightButton = leftButton = false;
-        is_muted = false;
     }
 
     void UI::LoadVolume()
@@ -69,6 +59,24 @@ namespace game_framework
         up_hover.LoadBitmap("RES/UI/up_hover.bmp", RGB(255, 255, 255));
         down.LoadBitmap("RES/UI/down.bmp", RGB(255, 255, 255));
         down_hover.LoadBitmap("RES/UI/down_hover.bmp", RGB(255, 255, 255));
+    }
+
+    void UI::OnBeginState()
+    {
+        counter = 10;
+        time_left = 90;
+        is_reinforced = false;
+        state = INPROGRESS;
+        time_start.SetPoint(0, 0);
+        time_end.SetPoint(0, 0);
+        score.SetInteger(0);
+        heart.SetPoint(2000);
+        clock_radius = 30;
+        angle = 0;
+        xform.eDx = xform.eDy = xform.eM11 = xform.eM12 = xform.eM21 = xform.eM22 = 0;
+        cursor_x = cursor_y = 0;
+        rightButton = leftButton = false;
+        is_muted = false;
     }
 
     void UI::OnMove()

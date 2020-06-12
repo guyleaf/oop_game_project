@@ -6,6 +6,7 @@ namespace game_framework
         UI();
         void LoadVolume();
         void LoadBitmap();
+        void OnBeginState();
         void OnMove();
         void OnShow(CGameMap* map);
         void OnMouseMove(CPoint point);

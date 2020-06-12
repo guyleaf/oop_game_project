@@ -8,7 +8,7 @@ namespace game_framework
     class CGameStateOver : public CGameState
     {
     public:
-        CGameStateOver(CGame* g);
+        CGameStateOver(CGame* g, int* score);
         void OnBeginState();							// 設定每次重玩所需的變數
         void OnInit();
     protected:
