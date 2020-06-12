@@ -12,8 +12,8 @@ namespace game_framework
     // 這個class為遊戲的結束狀態(Game Over)
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateOver::CGameStateOver(CGame* g)
-        : CGameState(g)
+    CGameStateOver::CGameStateOver(CGame* g, int* score)
+        : CGameState(g, score)
     {
     }
 

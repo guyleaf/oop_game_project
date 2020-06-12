@@ -12,11 +12,12 @@ namespace game_framework
     // 這個class為遊戲的遊戲開頭畫面物件
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateInit::CGameStateInit(CGame* g) : CGameState(g)
+    CGameStateInit::CGameStateInit(CGame* g, int* score) : CGameState(g, score)
     {
         change = false;
         changeState = false;
         delay_counter = 72;
+        cursor_x1 = cursor_y1 = -1;
     }
 
     void CGameStateInit::OnInit()
@@ -56,8 +57,23 @@ namespace game_framework
         if (volume == 0)
         {
             volume = 0xFFFFFFFF;
-            waveOutSetVolume(0, volume);
+            //waveOutSetVolume(0, volume);
+            change = true;
         }
+        else
+        {
+            change = false;
+        }
+
+        if (*score != -1)
+        {
+            CAudio::Instance()->Play(AUDIO_INIT, true);
+            *score = -1;
+        }
+
+        changeState = false;
+        delay_counter = 72;
+        cursor_x1 = cursor_y1 = -1;
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
