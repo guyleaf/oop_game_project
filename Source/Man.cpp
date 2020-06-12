@@ -22,7 +22,8 @@ namespace game_framework
         ATTACKED_BY_ALL,
         DEAD,
         FOLLOW,
-        LEAVING
+        LEAVING,
+        NONE
     };
 
     int Man::mainGirl = MAINGIRL;
@@ -33,17 +34,9 @@ namespace game_framework
     CMovingBitmap Man::clicking_bar;
     bool Man::bitmapIsLoaded = false;
 
-    Man::Man(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(3)
+    Man::Man()
     {
-        range[0] = start;
-        range[1] = end;
-        status = ALIVE;
-        is_focused = false;
         id = rand();
-        fdirection = false;
-        is_positioned = false;
-        distance = 300;
-        is_reporting = false;
     }
 
     Man::~Man()
@@ -112,26 +105,12 @@ namespace game_framework
                 {
                     man_dead_right.OnMove();
                 }
-                else
-                {
-                    if (is_killed_by == MAINGIRL)
-                        status = FOLLOW;
-                    else
-                        status = LEAVING;
-                }
             }
             else
             {
                 if (!man_dead_left.IsFinalBitmap())
                 {
                     man_dead_left.OnMove();
-                }
-                else
-                {
-                    if (is_killed_by == MAINGIRL)
-                        status = FOLLOW;
-                    else
-                        status = LEAVING;
                 }
             }
         }
@@ -208,6 +187,8 @@ namespace game_framework
 
                 distance -= velocity;
             }
+            else
+                status = NONE;
         }
     }
 
@@ -322,7 +303,6 @@ namespace game_framework
         }
     }
 
-
     void Man::SetDirection(bool direction)
     {
         this->direction = direction;
@@ -358,12 +338,12 @@ namespace game_framework
 
     bool Man::IsAlive()
     {
-        return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING;
+        return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING && this->status != NONE;
     }
 
     bool Man::IsAlreadyDead()
     {
-        return status == FOLLOW;
+        return status == DEAD && (man_dead_right.IsFinalBitmap() || man_dead_left.IsFinalBitmap());
     }
 
     bool Man::IsOver()
@@ -449,6 +429,24 @@ namespace game_framework
         is_killed_by = who;
     }
 
+    bool Man::IsKilledBy(int who)
+    {
+        return is_killed_by == who;
+    }
+
+    void Man::SetIsFollowing(int who)
+    {
+        if (who == mainGirl)
+            this->status = FOLLOW;
+        else if (who == girl)
+            this->status = LEAVING;
+    }
+
+    bool Man::IsFollowing(int who)
+    {
+        return (who == mainGirl && status == FOLLOW) || (who == girl && status == LEAVING);
+    }
+
     void Man::Follow(int x, int y, bool direction)
     {
         GAME_ASSERT(status == FOLLOW, "Man doesn't want to follow someone.");
@@ -498,10 +496,8 @@ namespace game_framework
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
+    NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(), x(x), y(y), start(start), end(end), direction(direction), type(type)
     {
-        HP = 800;
-        score = 1000;
     }
 
     NormalMan::~NormalMan()
@@ -642,14 +638,32 @@ namespace game_framework
         scoreReport.SetDelayCount(3);
     }
 
-    SpecialMan::SpecialMan(int x, int y, int start, int end, bool direction, int type) : type(type), Man(x, y, start, end, direction)
+    void NormalMan::OnBeginState()
     {
         HP = 800;
+        score = 1000;
+        range[0] = start;
+        range[1] = end;
+        status = ALIVE;
+        is_focused = false;
+        fdirection = false;
+        is_positioned = false;
+        distance = 300;
+        is_reporting = false;
+        Man::x = x;
+        Man::y = y;
+        moving = true;
+        Man::direction = direction;
+        velocity = 3;
+        is_killed_by = -1;
+        man_dead_left.Reset();
+        man_dead_right.Reset();
+        scoreReport.Reset();
+        blood.Reset();
+    }
 
-        if (type == 1)
-            score = 25000;
-        else if (type == 2)
-            score = 30000;
+    SpecialMan::SpecialMan(int x, int y, int start, int end, bool direction, int type) : Man(), x(x), y(y), start(start), end(end), direction(direction), type(type)
+    {
     }
 
     SpecialMan::~SpecialMan()
@@ -831,14 +845,46 @@ namespace game_framework
 
         for (int i = 1; i <= 5; i++)
         {
-            if (type == 1)
+            if (type == 1 || type == 2)
                 strcpy(text, ("RES/Man/25000 (" + to_string(i) + ").bmp").c_str());
-            else if (type == 2)
+            else if (type == 3)
                 strcpy(text, ("RES/Man/30000 (" + to_string(i) + ").bmp").c_str());
 
             scoreReport.AddBitmap(text, RGB(255, 255, 255));
         }
 
         scoreReport.SetDelayCount(3);
+    }
+
+    void SpecialMan::OnBeginState()
+    {
+        HP = 800;
+
+        if (type == 1)
+            score = 25000;
+        else if (type == 2)
+            score = 25000;
+        else
+            score = 30000;
+
+        range[0] = start;
+        range[1] = end;
+        status = ALIVE;
+        is_focused = false;
+        id = rand();
+        fdirection = false;
+        is_positioned = false;
+        distance = 300;
+        is_reporting = false;
+        Man::x = x;
+        Man::y = y;
+        moving = true;
+        Man::direction = direction;
+        velocity = 3;
+        is_killed_by = -1;
+        man_dead_left.Reset();
+        man_dead_right.Reset();
+        scoreReport.Reset();
+        blood.Reset();
     }
 }

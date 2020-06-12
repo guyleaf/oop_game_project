@@ -3,9 +3,10 @@ namespace game_framework
     class Girl
     {
     public:
-        Girl(int x, int y, int start, int end, bool direction);
+        Girl();
         virtual ~Girl();
         virtual void LoadBitMap() = 0;
+        virtual void OnBeginState() = 0;
         void SetMoving(bool status);
         void SetDirection(bool direction);
         void OnMove(CGameMap* map, int seed);
@@ -23,6 +24,7 @@ namespace game_framework
         int GetY();
         int GetWidth();
         int GetHeight();
+        virtual bool IsSpecialGirl() = 0;
     protected:
         void DrawBeam(CGameMap* map);
         int x, y;
@@ -33,6 +35,7 @@ namespace game_framework
         bool is_shocking;
         int distance;
         int status;
+        int damage;
         CPoint beam_pos[4];
         CAnimation girl_left, girl_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
@@ -51,8 +54,32 @@ namespace game_framework
         NormalGirl(int x, int y, int start, int end, bool direction, int type);
         ~NormalGirl();
         void LoadBitMap();
+        void OnBeginState();
+        bool IsSpecialGirl();
     private:
         const int type;
+        const int x;
+        const int y;
+        const int start;
+        const int end;
+        const bool direction;
+    };
+
+    class SpecialGirl : public Girl
+    {
+    public:
+        SpecialGirl(int x, int y, int start, int end, bool direction, int type);
+        ~SpecialGirl();
+        void LoadBitMap();
+        void OnBeginState();
+        bool IsSpecialGirl();
+    private:
+        const int type;
+        const int x;
+        const int y;
+        const int start;
+        const int end;
+        const bool direction;
     };
 }
 

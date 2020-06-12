@@ -6,6 +6,7 @@ namespace game_framework
     public:
         CGameMap();
         void LoadBitMap();
+        void OnBeginState();
         void OnMove();
         void OnShow();
         void Addsx(int val);

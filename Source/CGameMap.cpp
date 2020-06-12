@@ -11,12 +11,8 @@ using namespace std;
 
 namespace game_framework
 {
-    CGameMap::CGameMap() : sx(300), sy(0), level(1), width(2894), height(600)
+    CGameMap::CGameMap()
     {
-        left_edge = 236;
-        right_edge = 2688;
-        counter = 25;
-        is_mapChanging = false;
     }
 
     void CGameMap::LoadBitMap()
@@ -25,6 +21,19 @@ namespace game_framework
         secondFloor.LoadBitmap(IDB_SECONDFLOOR);
         thirdFloor.LoadBitmap(IDB_THIRDFLOOR);
         ceiling.LoadBitmap(IDB_CEILING);
+    }
+
+    void CGameMap::OnBeginState()
+    {
+        sx = 300;
+        sy = 0;
+        level = 1;
+        width = 2894;
+        height = 600;
+        left_edge = 236;
+        right_edge = 2688;
+        counter = 25;
+        is_mapChanging = false;
     }
 
     void CGameMap::OnMove()
