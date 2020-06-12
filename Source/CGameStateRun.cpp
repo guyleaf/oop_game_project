@@ -385,7 +385,6 @@ namespace game_framework
                 {
                     mainGirl->AddSlave(man[level - 1][0][i]);
                     man[level - 1][0][i]->SetIsFollowing(Man::mainGirl);
-                    //man[level - 1][0].erase(man[level - 1][0].begin() + i);
                     break;
                 }
                 else
@@ -409,7 +408,17 @@ namespace game_framework
 
                         if (HP <= 0)
                         {
-                            hearts.push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), girlsOnScreen.size()));
+                            int num = 0;
+
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                            {
+                                if (girlsOnScreen[j]->IsSpecialGirl())
+                                    num += 5;
+                                else
+                                    num += 1;
+                            }
+
+                            hearts.push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), num));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -437,8 +446,17 @@ namespace game_framework
                     if (mainGirl->IsClicked())
                     {
                         mainGirl->Attack(man[level - 1][0][i], &map);
-                        ui.AddScore(3 * girlsOnScreen.size());
-                        ui.AddHeartPoints(-18 * girlsOnScreen.size());
+
+                        for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                        {
+                            if (girlsOnScreen[j]->IsSpecialGirl())
+                                ui.AddScore(15);
+                            else
+                                ui.AddScore(3);
+                        }
+
+                        if (!mainGirl->IsReinforced())
+                            ui.AddHeartPoints(-18 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)
@@ -519,7 +537,6 @@ namespace game_framework
                 {
                     mainGirl->AddSlave(man[level - 1][1][i]);
                     man[level - 1][1][i]->SetIsFollowing(Man::mainGirl);
-                    //man[level - 1][1].erase(man[level - 1][1].begin() + i);
                     break;
                 }
                 else
@@ -543,7 +560,17 @@ namespace game_framework
 
                         if (HP <= 0)
                         {
-                            hearts.push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, girlsOnScreen.size()));
+                            int num = 0;
+
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                            {
+                                if (girlsOnScreen[j]->IsSpecialGirl())
+                                    num += 5;
+                                else
+                                    num += 1;
+                            }
+
+                            hearts.push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, num));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -571,8 +598,17 @@ namespace game_framework
                     if (mainGirl->IsClicked())
                     {
                         mainGirl->Attack(man[level - 1][1][i], &map);
-                        ui.AddScore(3 * girlsOnScreen.size());
-                        ui.AddHeartPoints(-19 * girlsOnScreen.size());
+
+                        for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                        {
+                            if (girlsOnScreen[j]->IsSpecialGirl())
+                                ui.AddScore(15);
+                            else
+                                ui.AddScore(3);
+                        }
+
+                        if (!mainGirl->IsReinforced())
+                            ui.AddHeartPoints(-18 * girlsOnScreen.size());
                     }
 
                     for (size_t j = 0; j < girlsOnScreen.size(); j++)

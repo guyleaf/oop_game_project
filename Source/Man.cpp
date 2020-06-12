@@ -863,9 +863,9 @@ namespace game_framework
         if (type == 1)
             score = 25000;
         else if (type == 2)
-            score = 25000;
-        else
             score = 30000;
+        else
+            score = 40000;
 
         range[0] = start;
         range[1] = end;

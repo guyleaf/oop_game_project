@@ -530,7 +530,7 @@ namespace game_framework
 
     void SpecialGirl::OnBeginState()
     {
-        Girl::damage = 15;
+        Girl::damage = 18;
         Girl::x = x;
         Girl::y = y;
         Girl::moving = true;
