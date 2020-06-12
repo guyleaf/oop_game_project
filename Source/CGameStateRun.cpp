@@ -832,6 +832,14 @@ namespace game_framework
             if (mainGirl->IsReinforced() && !mainGirl->IsInAnimation())
                 ui.SetHeartPoints(0);
         }
+        else if (nChar == KEY_RIGHT)
+        {
+            ui.AddScore(1000);
+        }
+        else if (nChar == KEY_LEFT)
+        {
+            ui.SetIsGameOver(true);
+        }
     }
     void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
