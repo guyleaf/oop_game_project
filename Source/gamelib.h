@@ -101,7 +101,12 @@ enum AUDIO_ID  				// 定義各種音效的編號
     AUDIO_PRESS,
     AUDIO_BUMP,
     AUDIO_SUMMARIZE,
-    AUDIO_LOSE
+    AUDIO_LOSE,
+    AUDIO_END1,
+    AUDIO_END2,
+    AUDIO_END3,
+    AUDIO_END4,
+    AUDIO_END5
 };
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
