@@ -29,6 +29,7 @@ namespace game_framework
         CMovingBitmap voice_button_on, voice_button_off, voice_button_on_hover, voice_button_off_hover;
         CMovingBitmap restart, restart_hover;
         CMovingBitmap exit, exit_hover;
+        CMovingBitmap num[10];
     };
 }
 
