@@ -126,7 +126,7 @@ namespace game_framework
 
             for (size_t i = 0; i < man[level][0].size(); i++)
             {
-                if (man[level][0][i]->GetScore() != 30000)
+                if (man[level][0][i]->GetScore() != 40000)
                     man[level][0][i]->OnBeginState();
                 else
                     index = i;
@@ -142,7 +142,7 @@ namespace game_framework
 
             for (size_t i = 0; i < man[level][1].size(); i++)
             {
-                if (man[level][1][i]->GetScore() != 30000)
+                if (man[level][1][i]->GetScore() != 40000)
                     man[level][1][i]->OnBeginState();
                 else
                     index = i;
