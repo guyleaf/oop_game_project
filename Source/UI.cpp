@@ -77,6 +77,7 @@ namespace game_framework
         cursor_x = cursor_y = 0;
         rightButton = leftButton = false;
         is_muted = false;
+        is_win = false;
     }
 
     void UI::OnMove()
@@ -121,6 +122,10 @@ namespace game_framework
             {
                 CAudio::Instance()->Stop(AUDIO_GAME);
                 CAudio::Instance()->Play(AUDIO_BELL, false);
+
+                if (heart.GetPoint() > 0)
+                    is_win = true;
+
                 state = GAMEOVER;
             }
 
@@ -295,7 +300,10 @@ namespace game_framework
     void UI::SetIsGameOver(bool status)
     {
         if (status)
+        {
+            is_win = heart.GetPoint() > 0;
             state = GAMEOVER;
+        }
         else
             state = INPROGRESS;
     }
@@ -316,6 +324,11 @@ namespace game_framework
     bool UI::IsDownButtonHoverd()
     {
         return (rightButton || leftButton) && (down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height()));
+    }
+
+    bool UI::IsWin()
+    {
+        return is_win;
     }
 
     void UI::DrawPie()

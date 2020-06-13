@@ -25,6 +25,7 @@ namespace game_framework
         void SetIsButtonVisible(bool status, bool direction);
         bool IsUpButtonHoverd();
         bool IsDownButtonHoverd();
+        bool IsWin();
     private:
         void DrawPie();
         void RotatePointer();
@@ -32,6 +33,7 @@ namespace game_framework
         const int MaxTime;
         int time_left;
         bool is_reinforced;
+        bool is_win;
         int state;
         int clock_radius;
         float angle;
