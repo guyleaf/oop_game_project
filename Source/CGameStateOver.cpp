@@ -186,6 +186,13 @@ namespace game_framework
         restart_hover.LoadBitmap("RES/end/restart_hover.bmp", RGB(255, 255, 255));
         exit.LoadBitmap("RES/end/exit.bmp", RGB(255, 255, 255));
         exit_hover.LoadBitmap("RES/end/exit_hover.bmp", RGB(255, 255, 255));
+
+        for (int i = 0; i < 10; i++)
+        {
+            strcpy(text, ("RES/end/" + to_string(i) + ".bmp").c_str());
+            num[i].LoadBitmap(text, RGB(255, 255, 255));
+        }
+
         ShowInitProgress(87);
         CAudio::Instance()->Load(AUDIO_END1, "Sounds/end1.mp3");
         CAudio::Instance()->Load(AUDIO_END2, "Sounds/end2.mp3");
@@ -245,6 +252,36 @@ namespace game_framework
         {
             loops[section].SetTopLeft(0, 0);
             loops[section].OnShow();
+        }
+
+        int tmp = *score;
+        int nx = SIZE_X / 2 - 117;
+        int ny = 32;
+
+        for (int i = 7; i >= 0; i--)
+        {
+            int n = tmp / (int)(pow(10, i));
+            tmp %= (int)(pow(10, i));
+
+            if (i >= 5)
+            {
+                num[n].SetTopLeft(nx, ny);
+                num[n].ShowBitmap();
+                ny += (15 - (int)(pow(7 - i, 2)) * 3);
+            }
+            else if (i <= 2)
+            {
+                ny -= (15 - (int)(pow(i, 2)) * 3);
+                num[n].SetTopLeft(nx, ny);
+                num[n].ShowBitmap();
+            }
+            else
+            {
+                num[n].SetTopLeft(nx, ny);
+                num[n].ShowBitmap();
+            }
+
+            nx += (num[n].Width() - 1);
         }
 
         restart.SetTopLeft(155, 520);
