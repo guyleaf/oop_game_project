@@ -53,14 +53,18 @@ namespace game_framework
 
         loop = false;
 
-        if (*score < 1500)
+        if (*score < 3000)
             section = 0;
         else if (*score < 30000)
             section = 1;
         else if (*score < 70000)
             section = 2;
-        else if (*score < 150000)
+        else if (*score < 100000)
             section = 3;
+        else if (*score < 150000)
+            section = 4;
+        else
+            section = 5;
 
         for (int i = 0; i < 4; i++)
         {
@@ -76,6 +80,8 @@ namespace game_framework
             CAudio::Instance()->Play(AUDIO_END3, true);
         else if (section == 3)
             CAudio::Instance()->Play(AUDIO_END4, true);
+        else
+            CAudio::Instance()->Play(AUDIO_END5, true);
 
         cursor_x = cursor_y = -1;
         playAgain = false;
@@ -96,53 +102,77 @@ namespace game_framework
 
         for (int i = 1; i <= 10; i++)
         {
-            strcpy(text, ("RES/end/0/start (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end1/start (" + to_string(i) + ").bmp").c_str());
             starts[0].AddBitmap(text);
         }
 
         for (int i = 1; i <= 5; i++)
         {
-            strcpy(text, ("RES/end/0/loop (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end1/loop (" + to_string(i) + ").bmp").c_str());
             loops[0].AddBitmap(text);
         }
 
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= 6; i++)
         {
-            strcpy(text, ("RES/end/30000/start (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end2/start (" + to_string(i) + ").bmp").c_str());
             starts[1].AddBitmap(text);
         }
 
-        for (int i = 1; i <= 9; i++)
+        for (int i = 1; i <= 8; i++)
         {
-            strcpy(text, ("RES/end/30000/loop (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end2/loop (" + to_string(i) + ").bmp").c_str());
             loops[1].AddBitmap(text);
         }
 
         for (int i = 1; i <= 5; i++)
         {
-            strcpy(text, ("RES/end/70000/start (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end3/start (" + to_string(i) + ").bmp").c_str());
             starts[2].AddBitmap(text);
         }
 
         for (int i = 1; i <= 7; i++)
         {
-            strcpy(text, ("RES/end/70000/loop (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end3/loop (" + to_string(i) + ").bmp").c_str());
             loops[2].AddBitmap(text);
         }
 
         for (int i = 1; i <= 5; i++)
         {
-            strcpy(text, ("RES/end/150000/start (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end4/start (" + to_string(i) + ").bmp").c_str());
             starts[3].AddBitmap(text);
         }
 
         for (int i = 1; i <= 7; i++)
         {
-            strcpy(text, ("RES/end/150000/loop (" + to_string(i) + ").bmp").c_str());
+            strcpy(text, ("RES/end/end4/loop (" + to_string(i) + ").bmp").c_str());
             loops[3].AddBitmap(text);
         }
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/end/end5/start (" + to_string(i) + ").bmp").c_str());
+            starts[4].AddBitmap(text);
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/end/end5/loop (" + to_string(i) + ").bmp").c_str());
+            loops[4].AddBitmap(text);
+        }
+
+        for (int i = 1; i <= 1; i++)
+        {
+            strcpy(text, ("RES/end/end6/start (" + to_string(i) + ").bmp").c_str());
+            starts[5].AddBitmap(text);
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/end/end6/loop (" + to_string(i) + ").bmp").c_str());
+            loops[5].AddBitmap(text);
+        }
+
+        for (int i = 0; i < 6; i++)
         {
             starts[i].SetDelayCount(9);
             loops[i].SetDelayCount(9);
@@ -191,7 +221,7 @@ namespace game_framework
             CAudio::Instance()->Stop(AUDIO_END5);
             CAudio::Instance()->Play(AUDIO_PRESS);
         }
-        else if (380 <= cursor_x && cursor_x <= 575 && 525 <= cursor_y && cursor_y <= 585)
+        else if (380 <= cursor_x && cursor_x <= 575 && 523 <= cursor_y && cursor_y <= 583)
             PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// Ãö³¬¹CÀ¸
         else if (610 <= cursor_x && cursor_x <= 670 && 510 <= cursor_y && cursor_y <= 590)
         {
@@ -219,7 +249,7 @@ namespace game_framework
 
         restart.SetTopLeft(155, 520);
         restart.ShowBitmap();
-        exit.SetTopLeft(380, 525);
+        exit.SetTopLeft(380, 518);
         exit.ShowBitmap();
 
         if (!change)
@@ -238,9 +268,9 @@ namespace game_framework
             restart_hover.SetTopLeft(155, 520);
             restart_hover.ShowBitmap();
         }
-        else if (380 <= cursor_x && cursor_x <= 575 && 525 <= cursor_y && cursor_y <= 585)
+        else if (380 <= cursor_x && cursor_x <= 575 && 523 <= cursor_y && cursor_y <= 583)
         {
-            exit_hover.SetTopLeft(383, 528);
+            exit_hover.SetTopLeft(383, 521);
             exit_hover.ShowBitmap();
         }
         else if (600 <= cursor_x && cursor_x <= 660 && 510 <= cursor_y && cursor_y <= 590)
