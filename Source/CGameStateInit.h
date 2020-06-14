@@ -16,17 +16,18 @@ namespace game_framework
     protected:
         void OnMove();
         void OnShow();									// 顯示這個狀態的遊戲畫面
-        int cursor_x1, cursor_y1, cursor_x2, cursor_y2, view, section;
+        int cursor_x1, cursor_y1, cursor_x2, cursor_y2, view, section,now;
         bool change;
         DWORD volume;
         int delay_counter;
         bool changeState;
     private:
+		CAnimation intro[5];
         CMovingBitmap logo,about;								// csie的logo
         CMovingBitmap button1_1, button1_2, button2_1, button2_2;
         CMovingBitmap voice1, voice2, voice3, voice4;
 		CMovingBitmap about_button, intro_button,next,before;
-		CAnimation intro[5];
+		
     };
 }
 

@@ -5,6 +5,7 @@
 #include "audio.h"
 #include "gamelib.h"
 #include "CGameStateInit.h"
+#include <string>
 
 namespace game_framework
 {
@@ -17,6 +18,7 @@ namespace game_framework
         change = false;
         changeState = false;
 		view = 0;
+		now = 0;
         delay_counter = 72;
     }
 
@@ -42,16 +44,48 @@ namespace game_framework
         voice4.LoadBitmap(IDB_VOICE4);
 		about_button.LoadBitmap(IDB_VOICE2);
 		about.LoadBitmap(IDB_ABOUT);
+		intro_button.LoadBitmap(IDB_VOICE3);
 		next.LoadBitmap("RES/init/next.bmp", RGB(255, 255, 255));
 		before.LoadBitmap("RES/init/before.bmp", RGB(255, 255, 255));
         CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
         CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
         CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
         CAudio::Instance()->Play(AUDIO_INIT, true);
-        //Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
-        //
-        // 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
-        //
+		///////////////////////////////////////////////////////////////
+		char text[150] = { 0 };
+
+		for (int i = 1; i <= 28; i++)
+		{
+			strcpy(text, ("RES/init/intro/intro1/intro1 (" + to_string(i) + ").bmp").c_str());
+			intro[0].AddBitmap(text);
+		}
+		for (int i = 1; i <= 22; i++)
+		{
+			strcpy(text, ("RES/init/intro/intro2/intro2 (" + to_string(i) + ").bmp").c_str());
+			intro[1].AddBitmap(text);
+		}
+		for (int i = 1; i <= 14; i++)
+		{
+			strcpy(text, ("RES/init/intro/intro3/intro3 (" + to_string(i) + ").bmp").c_str());
+			intro[2].AddBitmap(text);
+		}
+		for (int i = 1; i <= 5; i++)
+		{
+			strcpy(text, ("RES/init/intro/intro4/intro4 (" + to_string(i) + ").bmp").c_str());
+			intro[3].AddBitmap(text);
+		}
+		for (int i = 1; i <= 15; i++)
+		{
+			strcpy(text, ("RES/init/intro/intro5/intro5 (" + to_string(i) + ").bmp").c_str());
+			intro[4].AddBitmap(text);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			intro[i].SetDelayCount(5);
+		}
+
+
+
     }
 
     void CGameStateInit::OnBeginState()
@@ -63,6 +97,12 @@ namespace game_framework
             volume = 0xFFFFFFFF;
             waveOutSetVolume(0, volume);
         }
+
+		/*for (int i = 0; i < 5; i++)
+		{
+			intro[i].Reset();
+		}*/
+
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -88,65 +128,75 @@ namespace game_framework
 
     void CGameStateInit::OnMove()
     {
-        if (changeState && --delay_counter <= 0)
-            GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
+		if (view == 0)
+		{
+			if (changeState && --delay_counter <= 0)
+				GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
 
-        if (cursor_x1 >= 180 && cursor_x1 <= 375)
-        {
-            if (cursor_y1 >= 490 && cursor_y1 <= 540)
-            {
-                if (!changeState)
-                {
-                    CAudio::Instance()->Play(AUDIO_PRESS, false);
-                    CAudio::Instance()->Stop(AUDIO_INIT);
-                    CAudio::Instance()->Play(AUDIO_GAME, false);
-                }
+			if (cursor_x1 >= 180 && cursor_x1 <= 375)
+			{
+				if (cursor_y1 >= 490 && cursor_y1 <= 540)
+				{
+					if (!changeState)
+					{
+						CAudio::Instance()->Play(AUDIO_PRESS, false);
+						CAudio::Instance()->Stop(AUDIO_INIT);
+						CAudio::Instance()->Play(AUDIO_GAME, false);
+					}
 
-                changeState = true;
-            }
-        }
+					changeState = true;
+				}
+			}
 
-        if (cursor_x1 >= 420 && cursor_x1 <= 615)
-        {
-            if (cursor_y1 >= 490 && cursor_y1 <= 540)
-            {
-                PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
-            }
-        }
+			if (cursor_x1 >= 420 && cursor_x1 <= 615)
+			{
+				if (cursor_y1 >= 490 && cursor_y1 <= 540)
+				{
+					PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
+				}
+			}
 
-        if (change == false)
-        {
-            if (cursor_x1 >= 630 && cursor_x1 <= 690)
-            {
-                if (cursor_y1 >= 450 && cursor_y1 <= 510)
-                {
-                    change = true;
-                    waveOutGetVolume(0, &volume);
-                    waveOutSetVolume(0, 0);
-                    cursor_x1 = -1;
-                    cursor_y1 = -1;
-                }
-            }
-        }
-        else
-        {
-            if (cursor_x1 >= 630 && cursor_x1 <= 690)
-            {
-                if (cursor_y1 >= 450 && cursor_y1 <= 510)
-                {
-                    change = false;
-                    waveOutSetVolume(0, volume);
-                    cursor_x1 = -1;
-                    cursor_y1 = -1;
-                }
-            }
-        }
+			if (change == false)
+			{
+				if (cursor_x1 >= 630 && cursor_x1 <= 690)
+				{
+					if (cursor_y1 >= 450 && cursor_y1 <= 510)
+					{
+						change = true;
+						waveOutGetVolume(0, &volume);
+						waveOutSetVolume(0, 0);
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+				}
+			}
+			else
+			{
+				if (cursor_x1 >= 630 && cursor_x1 <= 690)
+				{
+					if (cursor_y1 >= 450 && cursor_y1 <= 510)
+					{
+						change = false;
+						waveOutSetVolume(0, volume);
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+				}
+			}
+		}
 		//////////////////////////////////////////////////////////////////////////
 		if (view == 0) {
 			if (cursor_x1 >= 630 && cursor_x1 <= 690) {
 				if (cursor_y1 >= 350 && cursor_y1 <= 410) {
 					view = 1;
 
+				}
+			}
+			if (cursor_x1 >= 630 && cursor_x1 <= 690) {
+				if (cursor_y1 >= 250 && cursor_y1 <= 310) {
+					intro[now].OnMove();
+					view = 2;
+					
 				}
 			}
 		}
@@ -158,6 +208,31 @@ namespace game_framework
 				}
 			}
 		}
+		if (view == 2) {
+			if (cursor_x1 >= 50 && cursor_x1 <= 90)
+			{
+				if (cursor_y1 >= 300 && cursor_y1 <= 360)
+				{
+					if (now != 0) {
+						now-=1;
+						intro[now].OnMove();
+					}
+					
+					
+				}
+			}
+			if (cursor_x1 >= 730 && cursor_x1 <= 770)
+			{
+				if (cursor_y1 >= 300 && cursor_y1 <= 360)
+				{
+					if (now != 4) {
+						now+=1;
+						intro[now].OnMove();
+					}
+				}
+			}
+		}
+		
 		
 
 
@@ -175,6 +250,7 @@ namespace game_framework
 
     void CGameStateInit::OnShow()
     {
+		//int i = 0;
         if (changeState)
         {
             CDDraw::BltBackColor(RGB(0, 0, 0));
@@ -195,6 +271,8 @@ namespace game_framework
         voice1.ShowBitmap();
 		about_button.SetTopLeft(630, 350);
 		about_button.ShowBitmap();
+		intro_button.SetTopLeft(630, 250);
+		intro_button.ShowBitmap();
 
         if (cursor_x2 >= 180 && cursor_x2 <= 375)
         {
@@ -253,6 +331,29 @@ namespace game_framework
 			about.ShowBitmap();
 			before.SetTopLeft(50, 300);
 			before.ShowBitmap();
+		}
+
+		if (view == 2) {
+			intro[now].SetTopLeft(0, 0);
+			intro[now].OnShow();
+			if (cursor_x2 >= 50 && cursor_x2 <= 90)
+			{
+				if (cursor_y2 >= 300 && cursor_y2 <= 360)
+				{
+					before.SetTopLeft(50, 300);
+					before.ShowBitmap();
+				}
+			}
+			if (cursor_x2 >= 730 && cursor_x2 <= 770)
+			{
+				if (cursor_y2 >= 300 && cursor_y2 <= 360)
+				{
+					next.SetTopLeft(730, 300);
+					next.ShowBitmap();
+				}
+			}
+			
+			
 		}
 
 
