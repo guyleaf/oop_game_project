@@ -130,6 +130,16 @@ IDB_VOICE3              BITMAP                  "..\\RES\\voice3.bmp"
 
 IDB_VOICE4              BITMAP                  "..\\RES\\voice4.bmp"
 
+IDB_ABOUT               BITMAP                  "..\\RES\\About_oop.bmp"
+
+IDB_ABOUT_BUTTON        BITMAP                  "..\\RES\\init\\about_icon.bmp"
+
+IDB_ABOUT_BUTTON_HOVER  BITMAP                  "..\\RES\\init\\about_icon_hover.bmp"
+
+IDB_INTRO_BUTTON        BITMAP                  "..\\RES\\init\\intro_icon.bmp"
+
+IDB_INTRO_BUTTON_HOVER  BITMAP                  "..\\RES\\init\\intro_icon_hover.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
