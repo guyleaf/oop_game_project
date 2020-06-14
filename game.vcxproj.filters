@@ -291,5 +291,8 @@
     <Image Include="RES\voice4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\About_oop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

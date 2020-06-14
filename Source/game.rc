@@ -128,6 +128,8 @@ IDB_VOICE3              BITMAP                  "..\\RES\\voice3.bmp"
 
 IDB_VOICE4              BITMAP                  "..\\RES\\voice4.bmp"
 
+IDB_ABOUT               BITMAP                  "..\\RES\\About_oop.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

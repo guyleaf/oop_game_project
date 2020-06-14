@@ -16,6 +16,7 @@ namespace game_framework
     {
         change = false;
         changeState = false;
+		view = 0;
         delay_counter = 72;
     }
 
@@ -39,6 +40,10 @@ namespace game_framework
         voice2.LoadBitmap(IDB_VOICE2);
         voice3.LoadBitmap(IDB_VOICE3);
         voice4.LoadBitmap(IDB_VOICE4);
+		about_button.LoadBitmap(IDB_VOICE2);
+		about.LoadBitmap(IDB_ABOUT);
+		next.LoadBitmap("RES/init/next.bmp", RGB(255, 255, 255));
+		before.LoadBitmap("RES/init/before.bmp", RGB(255, 255, 255));
         CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
         CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
         CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
@@ -136,6 +141,30 @@ namespace game_framework
                 }
             }
         }
+		//////////////////////////////////////////////////////////////////////////
+		if (view == 0) {
+			if (cursor_x1 >= 630 && cursor_x1 <= 690) {
+				if (cursor_y1 >= 350 && cursor_y1 <= 410) {
+					view = 1;
+
+				}
+			}
+		}
+		if (view == 1) {
+			if (cursor_x1 >= 50 && cursor_x1 <= 80) {
+				if (cursor_y1 >= 300 && cursor_y1 <= 340) {
+					GotoGameState(GAME_STATE_INIT);
+					view = 0;
+				}
+			}
+		}
+		
+
+
+
+
+
+
     }
     void CGameStateInit::OnMouseMove(UINT nFlags, CPoint point)
     {
@@ -164,6 +193,8 @@ namespace game_framework
         button2_1.ShowBitmap();
         voice1.SetTopLeft(630, 450);
         voice1.ShowBitmap();
+		about_button.SetTopLeft(630, 350);
+		about_button.ShowBitmap();
 
         if (cursor_x2 >= 180 && cursor_x2 <= 375)
         {
@@ -214,6 +245,26 @@ namespace game_framework
                 }
             }
         }
+
+		////////////////////////////////////////////////////////////////////////
+		
+		if (view == 1) {
+			about.SetTopLeft((SIZE_X - about.Width()) / 2, (SIZE_Y - about.Height()) / 8);
+			about.ShowBitmap();
+			before.SetTopLeft(50, 300);
+			before.ShowBitmap();
+		}
+
+
+
+
+
+
+
+
+
+
+
 
         //
         // Demo螢幕字型的使用，不過開發時請盡量避免直接使用字型，改用CMovingBitmap比較好

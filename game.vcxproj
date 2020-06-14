@@ -333,6 +333,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="RES\About_oop.bmp" />
     <Image Include="RES\button (1).bmp" />
     <Image Include="RES\button (2).bmp" />
     <Image Include="RES\button (3).bmp" />
