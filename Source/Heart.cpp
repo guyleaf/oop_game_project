@@ -30,8 +30,16 @@ namespace game_framework
                 HP = 5000;
                 break;
 
-            default:
+            case 4:
                 HP = 10000;
+                break;
+
+            case 5:
+                HP = 25000;
+                break;
+
+            default:
+                HP = 1000000;
                 break;
         }
     }

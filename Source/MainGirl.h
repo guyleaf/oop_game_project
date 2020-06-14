@@ -5,6 +5,9 @@ namespace game_framework
     {
     public:
         MainGirl();
+        ~MainGirl();
+
+        void OnBeginState();
         void LoadBitMap();
         void OnMouseMove(CPoint point);
         int GetCursorX();
@@ -13,8 +16,8 @@ namespace game_framework
         int GetPositionY();
         int Height();
         int Width();
-        void OnMove(CGameMap* map);
-        void OnShow(CGameMap* map);
+        void OnMove(CGameMap* map, UI* ui);
+        void OnShow(CGameMap* map, UI* ui);
         void Attack(Man* man, CGameMap* map);
         void ShowFocus();
         void SetIsFocusing(bool status);
@@ -28,11 +31,13 @@ namespace game_framework
         bool IsFocusing();
         bool IsFocusPerson(Man* man);
         bool IsAttacking();
+        bool IsReporting();
         void Lose();
         void Click();
         bool IsClicked();
         void AddSlave(Man* man);
     private:
+        void InitializeReinforcing();
         void SetVelocity(CGameMap* map);
         void DrawBeam(CGameMap* map);
         int x, y;
@@ -47,6 +52,7 @@ namespace game_framework
         int focus_id;
         bool is_bump;
         bool is_reinforced;
+        bool is_reporting;
         int state;
         int delay_counter;
         CAnimation girl_walk_left, girl_walk_right;
@@ -57,9 +63,12 @@ namespace game_framework
         CAnimation girl_right_reinforcing, girl_left_reinforcing;
         CAnimation focus_point_on, focus_point_off;
         CAnimation bump_left, bump_right;
-        CAnimation reinforcing[3];
+        CAnimation reinforcing[2];
+        CBitmap m_memBitmap;
         CPoint beam_pos[4];
         vector<Man*> slaves;
+        CAnimation surprising_left, surprising_right;
+        CAnimation fun;
     };
 }
 

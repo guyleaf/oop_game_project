@@ -22,7 +22,8 @@ namespace game_framework
         ATTACKED_BY_ALL,
         DEAD,
         FOLLOW,
-        LEAVING
+        LEAVING,
+        NONE
     };
 
     int Man::mainGirl = MAINGIRL;
@@ -33,27 +34,22 @@ namespace game_framework
     CMovingBitmap Man::clicking_bar;
     bool Man::bitmapIsLoaded = false;
 
-    Man::Man(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(3)
+    Man::Man()
     {
-        range[0] = start;
-        range[1] = end;
-        status = ALIVE;
-        is_focused = false;
         id = rand();
-        fdirection = false;
-        is_positioned = false;
-        distance = 300;
     }
 
     Man::~Man()
     {
     }
 
-    void Man::OnMove()
+    void Man::OnMove(int seed)
     {
         if (status == ALIVE)
         {
-            if (moving)
+            moving = seed % 2;
+
+            if (moving && !is_focused)
             {
                 if (direction)
                 {
@@ -99,6 +95,7 @@ namespace game_framework
             flash_multi.OnMove();
             weakening.OnMove();
             clicking.OnMove();
+            blood.Reset();
         }
         else if (status == DEAD)
         {
@@ -108,26 +105,12 @@ namespace game_framework
                 {
                     man_dead_right.OnMove();
                 }
-                else
-                {
-                    if (is_killed_by == MAINGIRL)
-                        status = FOLLOW;
-                    else
-                        status = LEAVING;
-                }
             }
             else
             {
                 if (!man_dead_left.IsFinalBitmap())
                 {
                     man_dead_left.OnMove();
-                }
-                else
-                {
-                    if (is_killed_by == MAINGIRL)
-                        status = FOLLOW;
-                    else
-                        status = LEAVING;
                 }
             }
         }
@@ -178,6 +161,14 @@ namespace game_framework
                 man_following_right.OnMove();
             else
                 man_following_left.OnMove();
+
+            if (is_reporting)
+            {
+                if (scoreReport.IsFinalBitmap())
+                    is_reporting = false;
+                else
+                    scoreReport.OnMove();
+            }
         }
         else if (status == LEAVING)
         {
@@ -196,6 +187,8 @@ namespace game_framework
 
                 distance -= velocity;
             }
+            else
+                status = NONE;
         }
     }
 
@@ -284,6 +277,16 @@ namespace game_framework
                 man_following_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                 man_following_left.OnShow();
             }
+
+            if (is_reporting)
+            {
+                if (direction)
+                    scoreReport.SetTopLeft(map->ScreenX(x) + 50, map->ScreenY(y) - 30);
+                else
+                    scoreReport.SetTopLeft(map->ScreenX(x) - 13, map->ScreenY(y) - 30);
+
+                scoreReport.OnShow();
+            }
         }
         else if (status == LEAVING)
         {
@@ -299,7 +302,6 @@ namespace game_framework
             }
         }
     }
-
 
     void Man::SetDirection(bool direction)
     {
@@ -336,12 +338,12 @@ namespace game_framework
 
     bool Man::IsAlive()
     {
-        return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING;
+        return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING && this->status != NONE;
     }
 
     bool Man::IsAlreadyDead()
     {
-        return status == FOLLOW;
+        return status == DEAD && (man_dead_right.IsFinalBitmap() || man_dead_left.IsFinalBitmap());
     }
 
     bool Man::IsOver()
@@ -352,6 +354,9 @@ namespace game_framework
     void Man::SetIsFocused(bool status)
     {
         is_focused = status;
+
+        if (status == false)
+            this->status = ALIVE;
     }
 
     void Man::SetIsAttackedBy(int who)
@@ -424,12 +429,40 @@ namespace game_framework
         is_killed_by = who;
     }
 
+    bool Man::IsKilledBy(int who)
+    {
+        return is_killed_by == who;
+    }
+
+    void Man::SetIsFollowing(int who)
+    {
+        if (who == mainGirl)
+            this->status = FOLLOW;
+        else if (who == girl)
+            this->status = LEAVING;
+    }
+
+    bool Man::IsFollowing(int who)
+    {
+        return (who == mainGirl && status == FOLLOW) || (who == girl && status == LEAVING);
+    }
+
     void Man::Follow(int x, int y, bool direction)
     {
         GAME_ASSERT(status == FOLLOW, "Man doesn't want to follow someone.");
         fx = x;
         fy = y;
         fdirection = direction;
+    }
+
+    void Man::Report()
+    {
+        is_reporting = true;
+    }
+
+    bool Man::IsReporting()
+    {
+        return is_reporting;
     }
 
     int Man::GetId()
@@ -440,6 +473,11 @@ namespace game_framework
     double Man::GetHP()
     {
         return HP;
+    }
+
+    int Man::GetScore()
+    {
+        return score;
     }
 
     void Man::DrawBeam(CGameMap* map)
@@ -458,9 +496,8 @@ namespace game_framework
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(x, y, start, end, direction), type(type)
+    NormalMan::NormalMan(int x, int y, int start, int end, bool direction, int type) : Man(), x(x), y(y), start(start), end(end), direction(direction), type(type)
     {
-        HP = 800;
     }
 
     NormalMan::~NormalMan()
@@ -591,6 +628,263 @@ namespace game_framework
 
         man_following_girl_left.SetDelayCount(8);
         man_following_girl_right.SetDelayCount(8);
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Man/1000 (" + to_string(i) + ").bmp").c_str());
+            scoreReport.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        scoreReport.SetDelayCount(3);
     }
 
+    void NormalMan::OnBeginState()
+    {
+        HP = 800;
+        score = 1000;
+        range[0] = start;
+        range[1] = end;
+        status = ALIVE;
+        is_focused = false;
+        fdirection = false;
+        is_positioned = false;
+        distance = 300;
+        is_reporting = false;
+        Man::x = x;
+        Man::y = y;
+        moving = true;
+        Man::direction = direction;
+        velocity = 3;
+        is_killed_by = -1;
+        man_dead_left.Reset();
+        man_dead_right.Reset();
+        scoreReport.Reset();
+        blood.Reset();
+    }
+
+    SpecialMan::SpecialMan(int x, int y, int start, int end, bool direction, int type) : Man(), x(x), y(y), start(start), end(end), direction(direction), type(type)
+    {
+    }
+
+    SpecialMan::~SpecialMan()
+    {
+    }
+
+    void SpecialMan::LoadBitMap()
+    {
+        char text[100] = {0};
+        strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
+
+        if (type != 3)
+            man_left_stand.LoadBitmap(text, RGB(0, 0, 0));
+        else
+            man_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+
+        strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
+
+        if (type != 3)
+            man_right_stand.LoadBitmap(text, RGB(0, 0, 0));
+        else
+            man_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+
+        if (type == 1)
+        {
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_right.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_right.SetDelayCount(13);
+
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_left.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_left.SetDelayCount(13);
+        }
+        else if (type == 2)
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_right.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_right.SetDelayCount(13);
+
+            for (int i = 1; i <= 5; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_left.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            man_left.SetDelayCount(13);
+        }
+        else if (type == 3)
+        {
+            for (int i = 1; i <= 6; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_right.AddBitmap(text, RGB(255, 255, 255));
+            }
+
+            man_right.SetDelayCount(13);
+
+            for (int i = 1; i <= 6; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
+                man_left.AddBitmap(text, RGB(255, 255, 255));
+            }
+
+            man_left.SetDelayCount(13);
+        }
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Man/flash (" + to_string(i) + ").bmp").c_str());
+            flash.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Man/flash_multiple (" + to_string(i) + ").bmp").c_str());
+            flash_multi.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        for (int i = 1; i <= 2; i++)
+        {
+            strcpy(text, ("RES/Man/weakening (" + to_string(i) + ").bmp").c_str());
+            weakening.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 14; i++)
+        {
+            strcpy(text, ("RES/Man/blood (" + to_string(i) + ").bmp").c_str());
+            blood.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        blood.SetDelayCount(1);
+
+        if (type == 1 || type == 3)
+        {
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/left/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_left.AddBitmap(text, RGB(255, 255, 255));
+            }
+
+            for (int i = 1; i <= 7; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/right/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_right.AddBitmap(text, RGB(255, 255, 255));
+            }
+        }
+        else if (type == 2)
+        {
+            for (int i = 1; i <= 6; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/left/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_left.AddBitmap(text, RGB(255, 255, 255));
+            }
+
+            for (int i = 1; i <= 6; i++)
+            {
+                strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/dead/right/slave (" + to_string(i) + ").bmp").c_str());
+                man_dead_right.AddBitmap(text, RGB(255, 255, 255));
+            }
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/left/slave (" + to_string(i) + ").bmp").c_str());
+            man_following_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/right/slave (" + to_string(i) + ").bmp").c_str());
+            man_following_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        man_dead_left.SetDelayCount(8);
+        man_dead_right.SetDelayCount(8);
+        man_following_left.SetDelayCount(8);
+        man_following_right.SetDelayCount(8);
+
+        if (!bitmapIsLoaded)
+        {
+            for (int i = 1; i <= 2; i++)
+            {
+                strcpy(text, ("RES/Man/clicking (" + to_string(i) + ").bmp").c_str());
+                clicking.AddBitmap(text, RGB(0, 0, 0));
+            }
+
+            clicking.SetDelayCount(2);
+            strcpy(text, "RES/Man/clicking_bar.bmp");
+            clicking_bar.LoadBitmap(text, RGB(255, 255, 255));
+            bitmapIsLoaded = true;
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/left/slave_girl (" + to_string(i) + ").bmp").c_str());
+            man_following_girl_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/follow/right/slave_girl (" + to_string(i) + ").bmp").c_str());
+            man_following_girl_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        man_following_girl_left.SetDelayCount(8);
+        man_following_girl_right.SetDelayCount(8);
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (type == 1 || type == 2)
+                strcpy(text, ("RES/Man/25000 (" + to_string(i) + ").bmp").c_str());
+            else if (type == 3)
+                strcpy(text, ("RES/Man/30000 (" + to_string(i) + ").bmp").c_str());
+
+            scoreReport.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        scoreReport.SetDelayCount(3);
+    }
+
+    void SpecialMan::OnBeginState()
+    {
+        HP = 800;
+
+        if (type == 1)
+            score = 25000;
+        else if (type == 2)
+            score = 30000;
+        else
+            score = 40000;
+
+        range[0] = start;
+        range[1] = end;
+        status = ALIVE;
+        is_focused = false;
+        id = rand();
+        fdirection = false;
+        is_positioned = false;
+        distance = 300;
+        is_reporting = false;
+        Man::x = x;
+        Man::y = y;
+        moving = true;
+        Man::direction = direction;
+        velocity = 3;
+        is_killed_by = -1;
+        man_dead_left.Reset();
+        man_dead_right.Reset();
+        scoreReport.Reset();
+        blood.Reset();
+    }
 }

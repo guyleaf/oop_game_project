@@ -302,6 +302,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ObjectFileName>
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ProgramDataBaseFileName>
     </ClCompile>
+    <ClCompile Include="Source\Teacher.cpp" />
     <ClCompile Include="Source\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +324,7 @@
     <ClInclude Include="Source\Resource.h" />
     <ClInclude Include="Source\StdAfx.h" />
     <ClInclude Include="Source\gamelib.h" />
+    <ClInclude Include="Source\Teacher.h" />
     <ClInclude Include="Source\UI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -333,17 +335,23 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="RES\About_oop.bmp" />
     <Image Include="RES\button (1).bmp" />
     <Image Include="RES\button (2).bmp" />
     <Image Include="RES\button (3).bmp" />
     <Image Include="RES\button (4).bmp" />
     <Image Include="RES\classroom.bmp" />
     <Image Include="RES\initScreen2.bmp" />
+    <Image Include="RES\init\about_icon.bmp" />
+    <Image Include="RES\init\about_icon_hover.bmp" />
+    <Image Include="RES\init\intro_icon.bmp" />
+    <Image Include="RES\init\intro_icon_hover.bmp" />
     <Image Include="RES\left_girl.bmp" />
     <Image Include="RES\loding.bmp" />
     <Image Include="RES\map1.bmp" />
     <Image Include="RES\map2.bmp" />
     <Image Include="RES\map3.bmp" />
+    <Image Include="RES\map4.bmp" />
     <Image Include="RES\UI\number\number (0).bmp" />
     <Image Include="RES\UI\number\number (1).bmp" />
     <Image Include="RES\UI\number\number (2).bmp" />

@@ -17,13 +17,8 @@ namespace game_framework
         DEAD
     };
 
-    Girl::Girl(int x, int y, int start, int end, bool direction) : x(x), y(y), moving(true), direction(direction), velocity(5)
+    Girl::Girl()
     {
-        range[0] = start;
-        range[1] = end;
-        is_shocking = false;
-        status = ALIVE;
-        distance = 500;
     }
 
     Girl::~Girl()
@@ -40,7 +35,7 @@ namespace game_framework
         this->moving = status;
     }
 
-    void Girl::OnMove(CGameMap* map)
+    void Girl::OnMove(CGameMap* map, int seed)
     {
         if (status == ALIVE)
         {
@@ -54,7 +49,9 @@ namespace game_framework
                     surprising_left.OnMove();
             }
 
-            if (moving)
+            moving = seed % 2;
+
+            if (moving && !is_shocking)
             {
                 if (direction)
                 {
@@ -104,17 +101,17 @@ namespace game_framework
             {
                 if (direction)
                 {
-                    x += velocity;
+                    x += 5;
                     leaving_right.OnMove();
                 }
                 else
                 {
-                    x -= velocity;
+                    x -= 5;
                     leaving_left.OnMove();
                 }
 
                 fun.OnMove();
-                distance -= velocity;
+                distance -= 5;
             }
             else
                 status = DEAD;
@@ -213,6 +210,8 @@ namespace game_framework
                     shooting_left.ShowBitmap();
                 }
             }
+
+            status = ALIVE;
         }
         else if (status == FLYING)
         {
@@ -263,7 +262,7 @@ namespace game_framework
 
     void Girl::Attack(Man* man, CGameMap* map)
     {
-        man->LoseHP(-3);
+        man->LoseHP(-damage);
         status = ATTACKING;
     }
 
@@ -328,7 +327,7 @@ namespace game_framework
     }
     ////////////////////////////////////////////////////////////////////////////////////
 
-    NormalGirl::NormalGirl(int x, int y, int start, int end, bool direction, int type) : Girl(x, y, start, end, direction), type(type)
+    NormalGirl::NormalGirl(int x, int y, int start, int end, bool direction, int type) : Girl(), x(x), y(y), start(start), end(end), direction(direction), type(type)
     {
     }
 
@@ -396,18 +395,6 @@ namespace game_framework
         strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/notice.bmp").c_str());
         notice_right.LoadBitmap(text, RGB(255, 255, 255));
 
-        for (int i = 1; i <= 4; i++)
-        {
-            strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/left/win (" + to_string(i) + ").bmp").c_str());
-            leaving_left.AddBitmap(text, RGB(255, 255, 255));
-        }
-
-        for (int i = 1; i <= 4; i++)
-        {
-            strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/win (" + to_string(i) + ").bmp").c_str());
-            leaving_right.AddBitmap(text, RGB(255, 255, 255));
-        }
-
         for (int i = 1; i <= 7; i++)
         {
             strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/left/win (" + to_string(i) + ").bmp").c_str());
@@ -427,5 +414,140 @@ namespace game_framework
         }
 
         fun.SetDelayCount(5);
+    }
+
+    void NormalGirl::OnBeginState()
+    {
+        Girl::damage = 3;
+        Girl::x = x;
+        Girl::y = y;
+        Girl::moving = true;
+        Girl::direction = direction;
+        Girl::velocity = 2;
+        range[0] = start;
+        range[1] = end;
+        is_shocking = false;
+        status = ALIVE;
+        distance = 500;
+        exclamation.Reset();
+        flying_left.Reset();
+        flying_right.Reset();
+    }
+
+    bool NormalGirl::IsSpecialGirl()
+    {
+        return false;
+    }
+
+    SpecialGirl::SpecialGirl(int x, int y, int start, int end, bool direction, int type) : Girl(), x(x), y(y), start(start), end(end), direction(direction), type(type)
+    {
+    }
+
+    SpecialGirl::~SpecialGirl()
+    {
+    }
+
+    void SpecialGirl::LoadBitMap()
+    {
+        char text[100] = { 0 };
+        strcpy(text, "RES/Girl/specialGirl/left/stand.bmp");
+        girl_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/specialGirl/right/stand.bmp");
+        girl_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Girl/specialGirl/right/specialGirl (" + to_string(i) + ").bmp").c_str());
+            girl_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Girl/specialGirl/left/specialGirl (" + to_string(i) + ").bmp").c_str());
+            girl_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i < 5; i++)
+        {
+            strcpy(text, ("RES/Girl/exclamation (" + to_string(i) + ").bmp").c_str());
+            exclamation.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        exclamation.SetDelayCount(4);
+        strcpy(text, "RES/Girl/surprising_left.bmp");
+        surprising_left.AddBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/blank.bmp");
+        surprising_left.AddBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/surprising_right.bmp");
+        surprising_right.AddBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/blank.bmp");
+        surprising_right.AddBitmap(text, RGB(255, 255, 255));
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Girl/specialGirl/left/flying (" + to_string(i) + ").bmp").c_str());
+            flying_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        flying_left.SetDelayCount(1);
+
+        for (int i = 1; i <= 4; i++)
+        {
+            strcpy(text, ("RES/Girl/specialGirl/right/flying (" + to_string(i) + ").bmp").c_str());
+            flying_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        flying_right.SetDelayCount(1);
+        strcpy(text, "RES/Girl/specialGirl/left/shooting.bmp");
+        shooting_left.LoadBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/specialGirl/right/shooting.bmp");
+        shooting_right.LoadBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/specialGirl/left/notice.bmp");
+        notice_left.LoadBitmap(text, RGB(255, 255, 255));
+        strcpy(text, "RES/Girl/specialGirl/right/notice.bmp");
+        notice_right.LoadBitmap(text, RGB(255, 255, 255));
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Girl/specialGirl/left/win (" + to_string(i) + ").bmp").c_str());
+            leaving_left.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/Girl/specialGirl/right/win (" + to_string(i) + ").bmp").c_str());
+            leaving_right.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        for (int i = 1; i <= 7; i++)
+        {
+            strcpy(text, ("RES/Girl/fun (" + to_string(i) + ").bmp").c_str());
+            fun.AddBitmap(text, RGB(255, 255, 255));
+        }
+
+        fun.SetDelayCount(5);
+    }
+
+    void SpecialGirl::OnBeginState()
+    {
+        Girl::damage = 18;
+        Girl::x = x;
+        Girl::y = y;
+        Girl::moving = true;
+        Girl::direction = direction;
+        Girl::velocity = 2;
+        range[0] = start;
+        range[1] = end;
+        is_shocking = false;
+        status = ALIVE;
+        distance = 500;
+        exclamation.Reset();
+        flying_left.Reset();
+        flying_right.Reset();
+    }
+
+    bool SpecialGirl::IsSpecialGirl()
+    {
+        return true;
     }
 }
