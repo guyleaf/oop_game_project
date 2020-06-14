@@ -300,5 +300,20 @@
     <Image Include="RES\voice4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="RES\About_oop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\init\about_icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\init\about_icon_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\init\intro_icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\init\intro_icon_hover.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
