@@ -21,6 +21,7 @@ namespace game_framework
         view = 0;
         now = 0;
         cursor_x1 = cursor_y1 = -1;
+        isLoaded = false;
     }
 
     void CGameStateInit::OnInit()
@@ -93,6 +94,8 @@ namespace game_framework
         {
             intro[i].SetDelayCount(5);
         }
+
+        isLoaded = true;
     }
 
     void CGameStateInit::OnBeginState()
@@ -110,19 +113,20 @@ namespace game_framework
             change = false;
         }
 
-        if (*score != -1)
-        {
-            CAudio::Instance()->Play(AUDIO_INIT, true);
-            *score = -1;
-        }
-
+        *score = -1;
         changeState = false;
         delay_counter = 72;
         cursor_x1 = cursor_y1 = -1;
-        /*for (int i = 0; i < 5; i++)
+
+        if (isLoaded)
         {
-        	intro[i].Reset();
-        }*/
+            CAudio::Instance()->Play(AUDIO_INIT, true);
+
+            for (int i = 0; i < 5; i++)
+            {
+                intro[i].Reset();
+            }
+        }
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)

@@ -20,6 +20,7 @@ namespace game_framework
         DWORD volume;
         int delay_counter;
         bool changeState;
+        bool isLoaded;
     private:
         CAnimation intro[5];
         CMovingBitmap logo, about;								// csieªºlogo
