@@ -9,48 +9,52 @@
 
 namespace game_framework
 {
-    /////////////////////////////////////////////////////////////////////////////
-    // 這個class為遊戲的遊戲開頭畫面物件
-    /////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////
+	// 這個class為遊戲的遊戲開頭畫面物件
+	/////////////////////////////////////////////////////////////////////////////
 
-    CGameStateInit::CGameStateInit(CGame* g) : CGameState(g)
-    {
-        change = false;
-        changeState = false;
+	CGameStateInit::CGameStateInit(CGame* g) : CGameState(g)
+	{
+		change = false;
+		changeState = false;
 		view = 0;
 		now = 0;
-        delay_counter = 72;
-    }
+		delay_counter = 72;
+	}
 
-    void CGameStateInit::OnInit()
-    {
-        //
-        // 當圖很多時，OnInit載入所有的圖要花很多時間。為避免玩遊戲的人
-        //     等的不耐煩，遊戲會出現「Loading ...」，顯示Loading的進度。
-        //
-        ShowInitProgress(0);	// 一開始的loading進度為0%
-        //
-        // 開始載入資料
-        //
-        //CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
-        logo.LoadBitmap(IDB_INITSCREEN);
-        button1_1.LoadBitmap(IDB_BUTTON1_1);
-        button1_2.LoadBitmap(IDB_BUTTON1_2);
-        button2_1.LoadBitmap(IDB_BUTTON2_1);
-        button2_2.LoadBitmap(IDB_BUTTON2_2);
-        voice1.LoadBitmap(IDB_VOICE1);
-        voice2.LoadBitmap(IDB_VOICE2);
-        voice3.LoadBitmap(IDB_VOICE3);
-        voice4.LoadBitmap(IDB_VOICE4);
-		about_button.LoadBitmap(IDB_VOICE2);
+	void CGameStateInit::OnInit()
+	{
+		//
+		// 當圖很多時，OnInit載入所有的圖要花很多時間。為避免玩遊戲的人
+		//     等的不耐煩，遊戲會出現「Loading ...」，顯示Loading的進度。
+		//
+		ShowInitProgress(0);	// 一開始的loading進度為0%
+		//
+		// 開始載入資料
+		//
+		//CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
+		logo.LoadBitmap(IDB_INITSCREEN);
+		button1_1.LoadBitmap(IDB_BUTTON1_1);
+		button1_2.LoadBitmap(IDB_BUTTON1_2);
+		button2_1.LoadBitmap(IDB_BUTTON2_1);
+		button2_2.LoadBitmap(IDB_BUTTON2_2);
+		voice1.LoadBitmap(IDB_VOICE1);
+		voice2.LoadBitmap(IDB_VOICE2);
+		voice3.LoadBitmap(IDB_VOICE3);
+		voice4.LoadBitmap(IDB_VOICE4);
+		about_button.LoadBitmap(IDB_ABOUT_BUTTON);
+		about_button_hover.LoadBitmap(IDB_ABOUT_BUTTON_HOVER);
 		about.LoadBitmap(IDB_ABOUT);
-		intro_button.LoadBitmap(IDB_VOICE3);
+		intro_button.LoadBitmap(IDB_INTRO_BUTTON);
+		intro_button_hover.LoadBitmap(IDB_INTRO_BUTTON_HOVER);
+		backInit.LoadBitmap(IDB_BUTTON1_1);
+		backInit_hover.LoadBitmap(IDB_BUTTON1_2);
 		next.LoadBitmap("RES/init/next.bmp", RGB(255, 255, 255));
 		before.LoadBitmap("RES/init/before.bmp", RGB(255, 255, 255));
-        CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
-        CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
-        CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
-        CAudio::Instance()->Play(AUDIO_INIT, true);
+		CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
+		CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
+		CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
+		CAudio::Instance()->Play(AUDIO_INIT, true);
 		///////////////////////////////////////////////////////////////
 		char text[150] = { 0 };
 
@@ -86,48 +90,48 @@ namespace game_framework
 
 
 
-    }
+	}
 
-    void CGameStateInit::OnBeginState()
-    {
-        waveOutGetVolume(0, &volume);
+	void CGameStateInit::OnBeginState()
+	{
+		waveOutGetVolume(0, &volume);
 
-        if (volume == 0)
-        {
-            volume = 0xFFFFFFFF;
-            waveOutSetVolume(0, volume);
-        }
+		if (volume == 0)
+		{
+			volume = 0xFFFFFFFF;
+			waveOutSetVolume(0, volume);
+		}
 
 		/*for (int i = 0; i < 5; i++)
 		{
 			intro[i].Reset();
 		}*/
 
-    }
+	}
 
-    void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
-    {
-        const char KEY_ESC = 27;
-        const char KEY_SPACE = ' ';
+	void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+	{
+		const char KEY_ESC = 27;
+		const char KEY_SPACE = ' ';
 
-        if (nChar == KEY_SPACE)
-            GotoGameState(GAME_STATE_RUN);						// 切換至GAME_STATE_RUN
-        else if (nChar == KEY_ESC)								// Demo 關閉遊戲的方法
-            PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
-    }
+		if (nChar == KEY_SPACE)
+			GotoGameState(GAME_STATE_RUN);						// 切換至GAME_STATE_RUN
+		else if (nChar == KEY_ESC)								// Demo 關閉遊戲的方法
+			PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
+	}
 
-    void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
-    {
-    }
+	void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
+	{
+	}
 
-    void CGameStateInit::OnLButtonUp(UINT nFlags, CPoint point)
-    {
-        cursor_x1 = point.x;
-        cursor_y1 = point.y;
-    }
+	void CGameStateInit::OnLButtonUp(UINT nFlags, CPoint point)
+	{
+		cursor_x1 = point.x;
+		cursor_y1 = point.y;
+	}
 
-    void CGameStateInit::OnMove()
-    {
+	void CGameStateInit::OnMove()
+	{
 		if (view == 0)
 		{
 			if (changeState && --delay_counter <= 0)
@@ -183,20 +187,24 @@ namespace game_framework
 					}
 				}
 			}
+
 		}
 		//////////////////////////////////////////////////////////////////////////
 		if (view == 0) {
-			if (cursor_x1 >= 630 && cursor_x1 <= 690) {
-				if (cursor_y1 >= 350 && cursor_y1 <= 410) {
+			
+			if (cursor_x1 >= 640 && cursor_x1 <= 695)
+			{
+				if (cursor_y1 >= 390 && cursor_y1 <= 435)
+				{
 					view = 1;
-
 				}
 			}
-			if (cursor_x1 >= 630 && cursor_x1 <= 690) {
-				if (cursor_y1 >= 250 && cursor_y1 <= 310) {
-					intro[now].OnMove();
+
+			if (cursor_x1 >= 640 && cursor_x1 <= 695)
+			{
+				if (cursor_y1 >= 320 && cursor_y1 <= 365)
+				{
 					view = 2;
-					
 				}
 			}
 		}
@@ -209,38 +217,114 @@ namespace game_framework
 			}
 		}
 		if (view == 2) {
-			if (cursor_x1 >= 50 && cursor_x1 <= 90)
+			intro[now].OnMove();
+			if (cursor_x1 >= 720 && cursor_x1 <= 770)
 			{
-				if (cursor_y1 >= 300 && cursor_y1 <= 360)
+				if (cursor_y1 >= 310 && cursor_y1 <= 370)
 				{
-					if (now != 0) {
-						now-=1;
-						intro[now].OnMove();
+					if (now == 3)
+					{
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+						now = 4;
+
 					}
-					
-					
+					if (now == 2)
+					{
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+						now = 3;
+					}
+					if (now == 1)
+					{
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+						now = 2;
+					}
+					if (now == 0)
+					{
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+						now = 1;
+					}
+	
 				}
 			}
-			if (cursor_x1 >= 730 && cursor_x1 <= 770)
+			if (cursor_x1 >= 35 && cursor_x1 <= 75)
 			{
-				if (cursor_y1 >= 300 && cursor_y1 <= 360)
+				if (cursor_y1 >= 310 && cursor_y1 <= 370)
 				{
-					if (now != 4) {
-						now+=1;
-						intro[now].OnMove();
+					if (now == 1)
+					{
+						now = 0;
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+					if (now == 2)
+					{
+						now = 1;
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+					if (now == 3)
+					{
+						now = 2;
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+					if (now == 4)
+					{
+						now = 3;
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+
+				}
+			}
+
+			if (cursor_x1 >= 300 && cursor_x1 <= 495)
+			{
+				if (cursor_y1 >= 530 && cursor_y1 <= 580)
+				{
+					GotoGameState(GAME_STATE_INIT);
+					view = 0;
+
+				}
+			}
+
+			if (change == false)
+			{
+				if (cursor_x1 >= 580 && cursor_x1 <= 640)
+				{
+					if (cursor_y1 >= 520 && cursor_y1 <= 580)
+					{
+						change = true;
+						waveOutGetVolume(0, &volume);
+						waveOutSetVolume(0, 0);
+						cursor_x1 = -1;
+						cursor_y1 = -1;
 					}
 				}
 			}
+			else
+			{
+				if (cursor_x1 >= 580 && cursor_x1 <= 640)
+				{
+					if (cursor_y1 >= 520 && cursor_y1 <= 580)
+					{
+						change = false;
+						waveOutSetVolume(0, volume);
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+				}
+			}
+		
+			
 		}
-		
-		
+	}
 
 
-
-
-
-
-    }
     void CGameStateInit::OnMouseMove(UINT nFlags, CPoint point)
     {
         cursor_x2 = point.x;
@@ -269,9 +353,9 @@ namespace game_framework
         button2_1.ShowBitmap();
         voice1.SetTopLeft(630, 450);
         voice1.ShowBitmap();
-		about_button.SetTopLeft(630, 350);
+		about_button.SetTopLeft(640, 390);
 		about_button.ShowBitmap();
-		intro_button.SetTopLeft(630, 250);
+		intro_button.SetTopLeft(640, 320);
 		intro_button.ShowBitmap();
 
         if (cursor_x2 >= 180 && cursor_x2 <= 375)
@@ -291,6 +375,25 @@ namespace game_framework
                 button2_2.ShowBitmap();
             }
         }
+
+		if (cursor_x2 >= 640 && cursor_x2 <= 695)
+		{
+			if (cursor_y2 >= 390 && cursor_y2 <= 435)
+			{
+				about_button_hover.SetTopLeft(640, 390);
+				about_button_hover.ShowBitmap();
+			}
+		}
+
+		if (cursor_x2 >= 640 && cursor_x2 <= 695)
+		{
+			if (cursor_y2 >= 320 && cursor_y2 <= 365)
+			{
+				intro_button_hover.SetTopLeft(640, 320);
+				intro_button_hover.ShowBitmap();
+			}
+		}
+		
 
         ////////////////////////////////////////////////////////////////////
 
@@ -336,20 +439,68 @@ namespace game_framework
 		if (view == 2) {
 			intro[now].SetTopLeft(0, 0);
 			intro[now].OnShow();
-			if (cursor_x2 >= 50 && cursor_x2 <= 90)
+			backInit.SetTopLeft(300,530);
+			backInit.ShowBitmap();
+
+			if (cursor_x2 >= 35 && cursor_x2 <= 75)
 			{
-				if (cursor_y2 >= 300 && cursor_y2 <= 360)
+				if (cursor_y2 >= 310 && cursor_y2 <= 370)
 				{
-					before.SetTopLeft(50, 300);
-					before.ShowBitmap();
+					if (now > 0) {
+						before.SetTopLeft(35, 310);
+						before.ShowBitmap();
+					}
+					
 				}
 			}
-			if (cursor_x2 >= 730 && cursor_x2 <= 770)
+			if (cursor_x2 >= 720 && cursor_x2 <= 770)
 			{
-				if (cursor_y2 >= 300 && cursor_y2 <= 360)
+				if (cursor_y2 >= 310 && cursor_y2 <= 370)
 				{
-					next.SetTopLeft(730, 300);
-					next.ShowBitmap();
+					if (now < 4) {
+						next.SetTopLeft(720, 310);
+						next.ShowBitmap();
+					}
+					
+				}
+			}
+			if (cursor_x2 >= 300 && cursor_x2 <= 495)
+			{
+				if (cursor_y2 >= 530 && cursor_y2 <= 580)
+				{
+					backInit_hover.SetTopLeft(300, 530);
+					backInit_hover.ShowBitmap();
+
+				}
+			}
+
+			if (change == false)
+			{
+				voice1.SetTopLeft(580, 520);
+				voice1.ShowBitmap();
+
+				if (cursor_x2 >= 580 && cursor_x2 <= 640)
+				{
+					if (cursor_y2 >= 520 && cursor_y2 <= 580)
+					{
+						voice2.SetTopLeft(580, 520);
+						voice2.ShowBitmap();
+					}
+				}
+			}
+
+			if (change == true)
+			{
+				voice4.SetTopLeft(580, 520);
+				voice4.ShowBitmap();
+
+				if (cursor_x2 >= 580 && cursor_x2 <= 640)
+				{
+					if (cursor_y2 >= 520 && cursor_y2 <= 580)
+					{
+						voice3.SetTopLeft(580, 520);
+						voice3.ShowBitmap();
+					}
 				}
 			}
 			

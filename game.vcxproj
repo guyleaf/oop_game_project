@@ -340,6 +340,10 @@
     <Image Include="RES\button (4).bmp" />
     <Image Include="RES\classroom.bmp" />
     <Image Include="RES\initScreen2.bmp" />
+    <Image Include="RES\init\about_icon.bmp" />
+    <Image Include="RES\init\about_icon_hover.bmp" />
+    <Image Include="RES\init\intro_icon.bmp" />
+    <Image Include="RES\init\intro_icon_hover.bmp" />
     <Image Include="RES\left_girl.bmp" />
     <Image Include="RES\loding.bmp" />
     <Image Include="RES\map1.bmp" />
