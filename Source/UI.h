@@ -6,8 +6,9 @@ namespace game_framework
         UI();
         void LoadVolume();
         void LoadBitmap();
+        void OnBeginState();
         void OnMove();
-        void OnShow();
+        void OnShow(CGameMap* map);
         void OnMouseMove(CPoint point);
         void AddScore(int num);
         void Toggle();
@@ -20,6 +21,11 @@ namespace game_framework
         int GetHeartPoints();
         void GotoHRState(int state);
         bool IsGameOver();
+        void SetIsGameOver(bool status);
+        void SetIsButtonVisible(bool status, bool direction);
+        bool IsUpButtonHoverd();
+        bool IsDownButtonHoverd();
+        bool IsWin();
     private:
         void DrawPie();
         void RotatePointer();
@@ -27,6 +33,7 @@ namespace game_framework
         const int MaxTime;
         int time_left;
         bool is_reinforced;
+        bool is_win;
         int state;
         int clock_radius;
         float angle;
@@ -44,6 +51,10 @@ namespace game_framework
         int cursor_x, cursor_y;
         bool is_muted;
         DWORD volume;
+        CMovingBitmap up, up_hover;
+        CMovingBitmap down, down_hover;
+        bool rightButton;
+        bool leftButton;
     };
 }
 

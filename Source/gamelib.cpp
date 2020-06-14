@@ -437,9 +437,10 @@ namespace game_framework
     // 這個class為遊戲的各種狀態之Base class(是一個abstract class)
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameState::CGameState(CGame* g)
+    CGameState::CGameState(CGame* g, int* score)
     {
         game = g; 	// 設定game的pointer
+        this->score = score; //設定score的pointer
     }
 
     void CGameState::GotoGameState(int state)
@@ -517,9 +518,10 @@ namespace game_framework
     {
         running = true;
         suspended = false;
-        gameStateTable[GAME_STATE_INIT] = new CGameStateInit(this);
-        gameStateTable[GAME_STATE_RUN]  = new CGameStateRun(this);
-        gameStateTable[GAME_STATE_OVER] = new CGameStateOver(this);
+        score = -1;
+        gameStateTable[GAME_STATE_INIT] = new CGameStateInit(this, &score);
+        gameStateTable[GAME_STATE_RUN]  = new CGameStateRun(this, &score);
+        gameStateTable[GAME_STATE_OVER] = new CGameStateOver(this, &score);
         gameState = NULL;
     }
 

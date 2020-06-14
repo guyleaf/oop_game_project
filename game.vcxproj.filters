@@ -150,6 +150,9 @@
     <ClCompile Include="Source\CHeartPoint.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Teacher.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\audio.h">
@@ -209,6 +212,9 @@
     <ClInclude Include="Source\CHeartPoint.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Teacher.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\game.rc">
@@ -226,6 +232,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="RES\map3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\map4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="RES\left_girl.bmp">
