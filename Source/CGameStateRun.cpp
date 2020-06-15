@@ -724,6 +724,7 @@ namespace game_framework
 
             if (counter <= 0)
             {
+				*isDead = true;
                 *score = ui.GetScore();
                 counter = 280;
                 ChangeGameState(GAME_STATE_OVER);
@@ -766,6 +767,7 @@ namespace game_framework
                 if (counter <= 0)
                 {
                     counter = 20;
+					*isDead = true;
                     *score = ui.GetScore();
                     ChangeGameState(GAME_STATE_OVER);
                 }
