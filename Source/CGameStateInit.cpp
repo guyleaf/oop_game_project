@@ -12,7 +12,7 @@ namespace game_framework
     // 這個class為遊戲的遊戲開頭畫面物件
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateInit::CGameStateInit(CGame* g, int* score) : CGameState(g, score)
+    CGameStateInit::CGameStateInit(CGame* g, int* score, bool* isDead) : CGameState(g, score, isDead)
     {
         change = false;
         changeState = false;
