@@ -311,7 +311,7 @@ namespace game_framework
     class CGameState
     {
     public:
-        CGameState(CGame* g, int* score);
+        CGameState(CGame* g, int* score, bool* isDead);
         void OnDraw();			// Template Method
         void OnCycle();			// Template Method
         //
@@ -337,6 +337,7 @@ namespace game_framework
         virtual void OnShow() = 0;								// 顯示這個狀態的遊戲畫面
         CGame* game;
         int* score;
+		bool* isDead;
     };
 
     /////////////////////////////////////////////////////////////////////////////
@@ -376,6 +377,7 @@ namespace game_framework
         CGameState*		gameStateTable[3];	// 遊戲狀態物件的pointer
         static CGame	instance;			// 遊戲唯一的instance
         int score;
+		bool isDead;
     };
 
 }

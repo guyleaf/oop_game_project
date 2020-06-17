@@ -11,7 +11,7 @@ namespace game_framework
     class CGameStateRun : public CGameState
     {
     public:
-        CGameStateRun(CGame* g, int* score);
+        CGameStateRun(CGame* g, int* score, bool* isDead);
         ~CGameStateRun();
         void OnBeginState();							// 設定每次重玩所需的變數
         void OnInit();  								// 遊戲的初值及圖形設定
