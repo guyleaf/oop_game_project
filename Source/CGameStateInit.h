@@ -21,6 +21,7 @@ namespace game_framework
         int delay_counter;
         bool changeState;
         bool isLoaded;
+        bool isPlaying;
     private:
         CAnimation intro[5];
         CMovingBitmap logo, about;								// csieªºlogo

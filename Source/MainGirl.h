@@ -49,6 +49,7 @@ namespace game_framework
         bool is_attacking;
         bool is_locked;
         bool is_clicked;
+        bool is_interrupted;
         int focus_id;
         bool is_bump;
         bool is_reinforced;

@@ -724,7 +724,7 @@ namespace game_framework
 
             if (counter <= 0)
             {
-				*isDead = true;
+                *isDead = true;
                 *score = ui.GetScore();
                 counter = 280;
                 ChangeGameState(GAME_STATE_OVER);
@@ -767,7 +767,7 @@ namespace game_framework
                 if (counter <= 0)
                 {
                     counter = 20;
-					*isDead = true;
+                    *isDead = true;
                     *score = ui.GetScore();
                     ChangeGameState(GAME_STATE_OVER);
                 }
@@ -776,7 +776,7 @@ namespace game_framework
 
         mainGirl->OnMove(&map, &ui);
 
-        if (!ui.IsGameOver())
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
             if (map.IsEmpty(mainGirl->GetPositionX(), mainGirl->GetPositionY()) && map.IsEmpty(mainGirl->GetPositionX() + mainGirl->Width(), mainGirl->GetPositionY()))
             {
@@ -848,10 +848,13 @@ namespace game_framework
         if (ui.IsAudioButtonHoverd())
             ui.Toggle();
 
-        if (map.GetLevel() != 4 && ui.IsUpButtonHoverd())
-            map.SetLevel(map.GetLevel() + 1);
-        else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
-            map.SetLevel(map.GetLevel() - 1);
+        if (!map.IsMapChanging())
+        {
+            if (map.GetLevel() != 4 && ui.IsUpButtonHoverd())
+                map.SetLevel(map.GetLevel() + 1);
+            else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
+                map.SetLevel(map.GetLevel() - 1);
+        }
     }
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
