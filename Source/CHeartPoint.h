@@ -9,8 +9,8 @@ namespace game_framework
         void LoadBitmap();			// 載入愛心量條之圖形
         void SetPoint(int);			// 設定Point值
         void SetTopLeft(int, int);	// 將動畫的左上角座標移至 (x,y)
-        void OnMove();
-        void OnShow(int counter);			// 將動畫貼到螢幕
+        void OnMove(UI* ui);
+        void OnShow(UI* ui, int counter);			// 將動畫貼到螢幕
         void GotoHRState(int state);
         static int normal;
         static int reinforcing;
