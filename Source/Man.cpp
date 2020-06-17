@@ -248,7 +248,7 @@ namespace game_framework
             if (color_point[1].x < color_point[0].x)
                 color_point[1].x = color_point[0].x;
 
-            DrawBeam(map);
+            DrawClickingProgress(map);
             clicking.SetTopLeft(int(clicking_bar.Left() - clicking.Width() / 2 + (abs(800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
             clicking.OnShow();
         }
@@ -306,16 +306,6 @@ namespace game_framework
     void Man::SetDirection(bool direction)
     {
         this->direction = direction;
-    }
-
-    void Man::SetMoving(bool status)
-    {
-        moving = status;
-    }
-
-    void Man::SetVelocity(int speed)
-    {
-        velocity = speed;
     }
 
     bool Man::HitMainGirl(CGameMap* map, MainGirl* girl)
@@ -480,7 +470,7 @@ namespace game_framework
         return score;
     }
 
-    void Man::DrawBeam(CGameMap* map)
+    void Man::DrawClickingProgress(CGameMap* map)
     {
         CDC* pDC = CDDraw::GetBackCDC();			// ¨ú±o Back Plain ªº CDC
         CPen pen(PS_SOLID, 1, RGB(255, 0, 255));

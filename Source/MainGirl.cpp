@@ -10,8 +10,8 @@ namespace game_framework
 {
     enum state
     {
-        INNORMAL,
-        INANIMATION
+        INNORMAL, // 正常狀態
+        INANIMATION // 過場動畫
     };
 
     MainGirl::MainGirl()
