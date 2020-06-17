@@ -20,10 +20,6 @@ namespace game_framework
 
     MainGirl::~MainGirl()
     {
-        /*for (size_t i = 0; i < slaves.size(); i++)
-        {
-            delete slaves[i];
-        }*/
     }
 
     void MainGirl::OnBeginState()
@@ -43,7 +39,10 @@ namespace game_framework
         is_attacking = false;
         is_locked = false;
         is_clicked = false;
+        is_interrupted = false;
         slaves.erase(slaves.begin(), slaves.end());
+        focus_point_on.SetTopLeft(-100, -100);
+        focus_point_off.SetTopLeft(-100, -100);
         focus_point_on.Reset();
         focus_point_off.Reset();
         bump_left.Reset();
@@ -384,6 +383,7 @@ namespace game_framework
                 }
             else
             {
+                is_interrupted = false;
                 focus_point_on.Reset();
                 focus_point_off.Reset();
             }
@@ -874,11 +874,9 @@ namespace game_framework
             {
                 focus_point_on.OnShow();
             }
-            else
+            else if (!is_interrupted && !focus_point_off.IsFinalBitmap())
             {
-                //避免電死男生時，準星出現的情況
-                if (!focus_point_off.IsFinalBitmap() && (slaves.size() == 0 || (*(slaves.end() - 1))->GetId() != focus_id))
-                    focus_point_off.OnShow();
+                focus_point_off.OnShow();
             }
         }
     }
@@ -898,7 +896,10 @@ namespace game_framework
         is_reinforced = status;
 
         if (status == true)
+        {
+            is_interrupted = true;
             state = INANIMATION;
+        }
     }
 
     bool MainGirl::IsInAnimation()
@@ -928,6 +929,8 @@ namespace game_framework
     void MainGirl::Lose()
     {
         is_bump = true;
+        focus_id = -1;
+        is_interrupted = true;
         state = INANIMATION;
     }
 

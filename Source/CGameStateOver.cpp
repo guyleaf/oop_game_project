@@ -13,8 +13,8 @@ namespace game_framework
     // 這個class為遊戲的結束狀態(Game Over)
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateOver::CGameStateOver(CGame* g, int* score)
-        : CGameState(g, score)
+    CGameStateOver::CGameStateOver(CGame* g, int* score, bool* isDead)
+        : CGameState(g, score, isDead)
     {
     }
 
@@ -53,7 +53,7 @@ namespace game_framework
 
         loop = false;
 
-        if (*score < 3000)
+        if (*isDead || *score < 3000)
             section = 0;
         else if (*score < 30000)
             section = 1;

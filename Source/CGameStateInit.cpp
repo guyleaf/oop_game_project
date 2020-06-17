@@ -13,7 +13,7 @@ namespace game_framework
     // 這個class為遊戲的遊戲開頭畫面物件
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateInit::CGameStateInit(CGame* g, int* score) : CGameState(g, score)
+    CGameStateInit::CGameStateInit(CGame* g, int* score, bool* isDead) : CGameState(g, score, isDead)
     {
         change = false;
         changeState = false;
@@ -22,6 +22,7 @@ namespace game_framework
         now = 0;
         cursor_x1 = cursor_y1 = -1;
         isLoaded = false;
+        isPlaying = false;
     }
 
     void CGameStateInit::OnInit()
@@ -57,6 +58,7 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
         CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
         CAudio::Instance()->Play(AUDIO_INIT, true);
+        isPlaying = true;
         ///////////////////////////////////////////////////////////////
         char text[150] = { 0 };
 
@@ -118,7 +120,7 @@ namespace game_framework
         delay_counter = 72;
         cursor_x1 = cursor_y1 = -1;
 
-        if (isLoaded)
+        if (isLoaded && !isPlaying)
         {
             CAudio::Instance()->Play(AUDIO_INIT, true);
 
@@ -126,17 +128,16 @@ namespace game_framework
             {
                 intro[i].Reset();
             }
+
+            isPlaying = true;
         }
     }
 
     void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     {
         const char KEY_ESC = 27;
-        const char KEY_SPACE = ' ';
 
-        if (nChar == KEY_SPACE)
-            GotoGameState(GAME_STATE_RUN);						// 切換至GAME_STATE_RUN
-        else if (nChar == KEY_ESC)								// Demo 關閉遊戲的方法
+        if (nChar == KEY_ESC)								// Demo 關閉遊戲的方法
             PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
     }
 
@@ -163,6 +164,7 @@ namespace game_framework
                 {
                     if (!changeState)
                     {
+                        isPlaying = false;
                         CAudio::Instance()->Play(AUDIO_PRESS, false);
                         CAudio::Instance()->Stop(AUDIO_INIT);
                         CAudio::Instance()->Play(AUDIO_GAME, false);
@@ -180,7 +182,8 @@ namespace game_framework
                 }
             }
 
-            if (change == false)
+            // 聲音靜音按鈕部分
+            if (change == false) // 沒靜音
             {
                 if (cursor_x1 >= 630 && cursor_x1 <= 690)
                 {
@@ -194,7 +197,7 @@ namespace game_framework
                     }
                 }
             }
-            else
+            else // 靜音
             {
                 if (cursor_x1 >= 630 && cursor_x1 <= 690)
                 {
