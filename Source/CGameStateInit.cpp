@@ -234,7 +234,7 @@ namespace game_framework
 
         if (view == 1)
         {
-            if (cursor_x1 >= 50 && cursor_x1 <= 80)
+            if (cursor_x1 >= 50 && cursor_x1 <= 90)
             {
                 if (cursor_y1 >= 300 && cursor_y1 <= 340)
                 {
