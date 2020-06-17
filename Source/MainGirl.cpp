@@ -161,7 +161,7 @@ namespace game_framework
     {
         if (state == INANIMATION)
         {
-            if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
+            if (ui->IsGameOver() && ui->GetHeartPoints() > 0) // 結算動作
             {
                 static int count = 40;
                 static unsigned int startIndex = 0;
@@ -181,7 +181,7 @@ namespace game_framework
 
                     fun.OnMove();
 
-                    if (count <= 0 && startIndex < slaves.size())
+                    if (count <= 0 && startIndex < slaves.size()) // 奴隸總分結算
                     {
                         if (startIndex == 0)
                         {
@@ -205,9 +205,9 @@ namespace game_framework
                     if (startIndex >= slaves.size() && count <= 0)
                         is_reporting = false;
                 }
-                else
+                else // 站立
                 {
-                    if (count > 0)
+                    if (count > 0) // 注意鐘聲
                     {
                         if (direction)
                         {
@@ -350,7 +350,7 @@ namespace game_framework
         }
         else if (state == INNORMAL)
         {
-            if (is_reinforced)
+            if (is_reinforced) // 特殊時間周圍特效
             {
                 reinforcing[0].OnMove();
 
@@ -366,7 +366,7 @@ namespace game_framework
                 girl_right_reinforcing.Reset();
             }
 
-            if (!is_attacking)
+            if (!is_attacking) // 準星動畫
                 if (is_focusing)
                 {
                     focus_point_off.Reset();
@@ -391,9 +391,9 @@ namespace game_framework
             bump_left.Reset();
             bump_right.Reset();
 
-            if (!is_focusing)
+            if (!is_focusing) // 非鎖定狀態，判斷走路部分
             {
-                if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) //滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
+                if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) // 滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
                 {
                     moving = true;
                     direction = true;
@@ -419,7 +419,7 @@ namespace game_framework
 
                 if (!is_locked)
                 {
-                    //調整鎖定時的瞄準方向
+                    // 調整鎖定時的瞄準方向
                     if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
                         direction = true;
                     else
@@ -427,7 +427,7 @@ namespace game_framework
                 }
             }
 
-            if (moving)  //檢查是否正在移動
+            if (moving)  // 檢查是否正在移動
             {
                 if (direction)
                 {
@@ -466,7 +466,7 @@ namespace game_framework
                 }
             }
 
-            if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
+            if (ui->IsGameOver() && ui->GetHeartPoints() > 0) // 進入結算動作
             {
                 is_reporting = true;
                 state = INANIMATION;
@@ -481,7 +481,7 @@ namespace game_framework
         else
             sx = x + girl_left_stand.Width() + 20;
 
-        for (size_t i = 0; i < slaves.size(); i++)
+        for (size_t i = 0; i < slaves.size(); i++) // 命令奴隸跟著指定座標
         {
             if (direction)
             {
@@ -536,17 +536,17 @@ namespace game_framework
 
     void MainGirl::SetVelocity(CGameMap* map)
     {
-        if (!moving) //沒有正在移動則退出
+        if (!moving) // 沒有正在移動則退出
             return;
 
-        int distance; //滑鼠的螢幕點座標到人物的距離
+        int distance; // 滑鼠的螢幕點座標到人物的距離
 
-        if (direction) //false => 往左, true => 往右
+        if (direction) // false => 往左, true => 往右
             distance = cursor_x - (map->ScreenX(x) + girl_right_stand.Width());
         else
             distance = map->ScreenX(x) - cursor_x;
 
-        if (distance > 300) //距離越遠速度越快
+        if (distance > 300) // 距離越遠速度越快
         {
             velocity = 12;
         }
@@ -568,7 +568,7 @@ namespace game_framework
     {
         if (state == INANIMATION)
         {
-            if (ui->IsGameOver() && ui->GetHeartPoints() > 0)
+            if (ui->IsGameOver() && ui->GetHeartPoints() > 0) // 結算動作
             {
                 if (moving)
                 {
@@ -607,7 +607,7 @@ namespace game_framework
                     }
                 }
             }
-            else if (is_bump)
+            else if (is_bump) // 擊飛畫面
             {
                 if (direction)
                 {
@@ -620,8 +620,9 @@ namespace game_framework
                     bump_left.OnShow();
                 }
             }
-            else if (is_reinforced)
+            else if (is_reinforced) // 特殊時間
             {
+                // 20張以前顯示變身光束
                 if (girl_right_reinforcing.GetCurrentBitmapNumber() < 20 && girl_left_reinforcing.GetCurrentBitmapNumber() < 20)
                 {
                     CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
@@ -660,40 +661,40 @@ namespace game_framework
         }
         else if (state == INNORMAL)
         {
-            if (is_locked)
+            if (is_locked) // 鎖定狀態 (與其他女生搶)
             {
-                if (direction)
+                if (direction) // 右邊
                 {
-                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y) // 下方
                     {
                         girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_right_focusing_front.ShowBitmap();
 
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
                     }
-                    else
+                    else // 上方
                     {
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
 
                         girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_right_focusing_behind.ShowBitmap();
                     }
                 }
-                else
+                else // 左邊
                 {
                     if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
                     {
                         girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_left_focusing_front.ShowBitmap();
 
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
                     }
                     else
                     {
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
 
                         girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -701,46 +702,48 @@ namespace game_framework
                     }
                 }
             }
-            else if (is_focusing)
+            else if (is_focusing) // 單人鎖定狀態
             {
-                if (direction)
+                if (direction) // 右邊
                 {
+                    // 設定光束末端位置
                     beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 40, map->ScreenY(y) + girl_left_stand.Height() / 5);
                     beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2, map->ScreenY(y) + girl_left_stand.Height() / 5);
 
-                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y) // 下方
                     {
                         girl_right_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_right_focusing_front.ShowBitmap();
 
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
                     }
-                    else
+                    else // 上方
                     {
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
 
                         girl_right_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_right_focusing_behind.ShowBitmap();
                     }
                 }
-                else
+                else // 左邊
                 {
+                    // 設定光束末端位置
                     beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 10, map->ScreenY(y) + girl_left_stand.Height() / 5);
                     beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 20, map->ScreenY(y) + girl_left_stand.Height() / 5);
 
-                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y)
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= cursor_y) // 下方
                     {
                         girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_left_focusing_front.ShowBitmap();
 
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
                     }
-                    else
+                    else // 上方
                     {
-                        if (is_attacking)
+                        if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
 
                         girl_left_focusing_behind.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -752,12 +755,12 @@ namespace game_framework
             {
                 if (direction) //false => 往左, true => 往右
                 {
-                    if (velocity != 12)
+                    if (velocity != 12) // 走路
                     {
                         girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_walk_right.OnShow();
                     }
-                    else
+                    else // 跑步
                     {
                         girl_run_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_run_right.OnShow();
@@ -777,7 +780,7 @@ namespace game_framework
                     }
                 }
             }
-            else
+            else // 站力
             {
                 if (direction) //false => 往左, true => 往右
                 {
@@ -791,7 +794,7 @@ namespace game_framework
                 }
             }
 
-            if (is_reinforced)
+            if (is_reinforced) // 特殊時間周圍效果
             {
                 reinforcing[0].SetTopLeft(map->ScreenX(x - girl_left_stand.Width() / 2), map->ScreenY(y + 80));
                 reinforcing[0].OnShow();
@@ -812,17 +815,18 @@ namespace game_framework
 
     void MainGirl::Attack(Man* man, CGameMap* map)
     {
+        // 設定雷射發射端位置
         beam_pos[0].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 - 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
         beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
 
-        if (!is_locked)
+        if (!is_locked) // 單人攻擊時
         {
             if (is_reinforced)
                 man->LoseHP(50);
             else
                 man->LoseHP(15);
         }
-        else
+        else // 鎖定攻擊時 (與其他女生搶)
         {
             if (is_reinforced)
                 man->LoseHP(100);
@@ -830,7 +834,7 @@ namespace game_framework
                 man->LoseHP(70);
         }
 
-        if (is_locked)
+        if (is_locked) // 鎖定狀態時，每點一次攻擊一次，功能為解除觸發
             is_clicked = false;
     }
 
@@ -866,15 +870,15 @@ namespace game_framework
         focus_id = man->GetId();
     }
 
-    void MainGirl::ShowFocus()
+    void MainGirl::ShowFocus() // 顯示準星
     {
-        if (!is_attacking && !is_bump && state != INANIMATION)
+        if (!is_attacking && !is_bump && state != INANIMATION) // 無過場動畫/擊飛/不在攻擊狀態時
         {
-            if (is_focusing)
+            if (is_focusing) // 顯示鎖定準星動畫
             {
                 focus_point_on.OnShow();
             }
-            else if (!is_interrupted && !focus_point_off.IsFinalBitmap())
+            else if (!is_interrupted && !focus_point_off.IsFinalBitmap()) // 顯示收準星動畫
             {
                 focus_point_off.OnShow();
             }
