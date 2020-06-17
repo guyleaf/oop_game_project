@@ -19,11 +19,13 @@ namespace game_framework
         const int NUMHEARTS;			// 共顯示NUMDIGITS個位數
         const int NUMPOINTSPERHEART;
         CMovingBitmap hearts[20];		// 儲存愛心量條之圖形(bitmap)
+        CAnimation warning;
         CAnimation star, reinforced_bar;
         int state;
         int x, y;						// 顯示的座標
         int n;							// Point值
         bool isBmpLoaded;				// 是否已經載入圖形
+        bool isWarned;
     };
 }
 

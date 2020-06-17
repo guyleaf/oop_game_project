@@ -22,6 +22,7 @@ namespace game_framework
     CHeartPoint::CHeartPoint(int points, int hearts) : NUMPOINTSPERHEART(points), NUMHEARTS(hearts)
     {
         isBmpLoaded = false;
+        isWarned = false;
         state = NORMAL;
     }
 
@@ -65,6 +66,14 @@ namespace game_framework
         }
 
         reinforced_bar.SetDelayCount(3);
+
+        for (int i = 1; i <= 5; i++)
+        {
+            strcpy(text, ("RES/UI/heart/warning (" + to_string(i) + ").bmp").c_str());
+            warning.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        warning.SetDelayCount(3);
         isBmpLoaded = true;
     }
 
@@ -92,6 +101,18 @@ namespace game_framework
         {
             star.Reset();
             reinforced_bar.Reset();
+
+            if (n <= 1000)
+            {
+                if (!isWarned)
+                {
+                    isWarned = true;
+                }
+
+                warning.OnMove();
+            }
+            else
+                isWarned = false;
         }
     }
 
@@ -123,6 +144,12 @@ namespace game_framework
                     hearts[d].SetTopLeft(nx, y);
                     hearts[d].ShowBitmap();
                     nx += hearts[d].Width() - 2;
+                }
+
+                if (n <= 1000)
+                {
+                    warning.SetTopLeft(nx - 5, y - 5);
+                    warning.OnShow();
                 }
 
                 MSB -= NUMPOINTSPERHEART;
