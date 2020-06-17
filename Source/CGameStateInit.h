@@ -26,7 +26,7 @@ namespace game_framework
         CAnimation intro[5];
         CMovingBitmap logo, about;								// csieªºlogo
         CMovingBitmap button1_1, button1_2, button2_1, button2_2;
-        CMovingBitmap voice1, voice2, voice3, voice4;
+        CMovingBitmap voice1, voice2, voice3, voice4, init_voice1, init_voice2, init_voice3, init_voice4;
         CMovingBitmap about_button, about_button_hover, intro_button, intro_button_hover, next, before, backInit, backInit_hover;
     };
 }
