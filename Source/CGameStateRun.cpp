@@ -126,7 +126,7 @@ namespace game_framework
 
             for (size_t i = 0; i < man[level][0].size(); i++)
             {
-                if (man[level][0][i]->GetScore() != 30000)
+                if (man[level][0][i]->GetScore() != 40000)
                     man[level][0][i]->OnBeginState();
                 else
                     index = i;
@@ -142,7 +142,7 @@ namespace game_framework
 
             for (size_t i = 0; i < man[level][1].size(); i++)
             {
-                if (man[level][1][i]->GetScore() != 30000)
+                if (man[level][1][i]->GetScore() != 40000)
                     man[level][1][i]->OnBeginState();
                 else
                     index = i;
@@ -307,32 +307,12 @@ namespace game_framework
         {
             for (vector<Man*>::iterator person = man[i][0].begin(); person != man[i][0].end(); person++)
             {
-                /*if ((*person)->IsOver())
-                {
-                    delete (*person);
-                    person = man[i][0].erase(person);
-
-                    if (person != man[i][0].end())
-                        continue;
-                    else
-                        break;
-                }*/
                 if (!(*person)->IsFollowing(Man::mainGirl))
                     (*person)->OnMove(rand());
             }
 
             for (vector<Man*>::iterator person = man[i][1].begin(); person != man[i][1].end(); person++)
             {
-                /*if ((*person)->IsOver())
-                {
-                    delete (*person);
-                    person = man[i][1].erase(person);
-
-                    if (person != man[i][1].end())
-                        continue;
-                    else
-                        break;
-                }*/
                 if (!(*person)->IsFollowing(Man::mainGirl))
                     (*person)->OnMove(rand());
             }
@@ -684,29 +664,17 @@ namespace game_framework
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (size_t i = 0; i < girl[level - 1][0].size(); i++)
         {
-            /*if (girl[level - 1][0][i]->IsAlreadyDead())
-            {
-                delete girl[level - 1][0][i];
-                girl[level - 1][0].erase(girl[level - 1][0].begin() + i);
-                break;
-            }*/
             girl[level - 1][0][i]->OnMove(&map, rand());
         }
 
         for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
-            /*if (girl[level - 1][1][i]->IsAlreadyDead())
-            {
-                delete girl[level - 1][1][i];
-                girl[level - 1][1].erase(girl[level - 1][1].begin() + i);
-                break;
-            }*/
             girl[level - 1][1][i]->OnMove(&map, rand());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // special mode
-        if (!mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
+        if (!ui.IsGameOver() && !mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
         {
             ui.Pause();
             ui.GotoHRState(CHeartPoint::reinforcing);
@@ -750,12 +718,13 @@ namespace game_framework
             mainGirl->SetIsReinforced(false);
         }
 
-        if (ui.IsGameOver() && ui.GetHeartPoints() <= 0 && mainGirl->IsInAnimation())
+        if (ui.IsGameOver() && !ui.IsWin() && mainGirl->IsInAnimation())
         {
             static int counter = 280;
 
             if (counter <= 0)
             {
+                *isDead = true;
                 *score = ui.GetScore();
                 counter = 280;
                 ChangeGameState(GAME_STATE_OVER);
@@ -763,7 +732,7 @@ namespace game_framework
 
             counter--;
         }
-        else if (ui.IsGameOver() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
+        else if (ui.IsGameOver() && ui.IsWin() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
         {
             static bool isPlayed = false;
             static int counter = 20;
@@ -784,22 +753,30 @@ namespace game_framework
                     ui.AddScore(5);
                 }
             }
-
-            if (ui.GetHeartPoints() <= 0)
+            else
             {
-                counter = 20;
-                isPlayed = false;
-                CAudio::Instance()->Stop(AUDIO_SUMMARIZE);
-                *score = ui.GetScore();
-                ChangeGameState(GAME_STATE_OVER);
-            }
+                if (isPlayed)
+                {
+                    CAudio::Instance()->Stop(AUDIO_SUMMARIZE);
+                    isPlayed = false;
+                    counter = 40;
+                }
+                else
+                    counter--;
 
-            //Add audio
+                if (counter <= 0)
+                {
+                    counter = 20;
+                    *isDead = true;
+                    *score = ui.GetScore();
+                    ChangeGameState(GAME_STATE_OVER);
+                }
+            }
         }
 
         mainGirl->OnMove(&map, &ui);
 
-        if (!ui.IsGameOver())
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
             if (map.IsEmpty(mainGirl->GetPositionX(), mainGirl->GetPositionY()) && map.IsEmpty(mainGirl->GetPositionX() + mainGirl->Width(), mainGirl->GetPositionY()))
             {
@@ -871,10 +848,13 @@ namespace game_framework
         if (ui.IsAudioButtonHoverd())
             ui.Toggle();
 
-        if (map.GetLevel() != 4 && ui.IsUpButtonHoverd())
-            map.SetLevel(map.GetLevel() + 1);
-        else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
-            map.SetLevel(map.GetLevel() - 1);
+        if (!map.IsMapChanging())
+        {
+            if (map.GetLevel() != 4 && ui.IsUpButtonHoverd())
+                map.SetLevel(map.GetLevel() + 1);
+            else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
+                map.SetLevel(map.GetLevel() - 1);
+        }
     }
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
@@ -942,7 +922,7 @@ namespace game_framework
         {
             static int counter = 120;
 
-            if (ui.GetHeartPoints() <= 0)
+            if (!ui.IsWin())
             {
                 CRect rect;
                 CDDraw::GetClientRect(rect);
