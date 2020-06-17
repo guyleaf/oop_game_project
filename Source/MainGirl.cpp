@@ -22,7 +22,7 @@ namespace game_framework
     {
     }
 
-    void MainGirl::OnBeginState()
+    void MainGirl::OnBeginState() // 初始化狀態
     {
         is_bump = false;
         is_reinforced = false;
@@ -157,6 +157,17 @@ namespace game_framework
         fun.SetDelayCount(7);
     }
 
+    /*
+    	遊戲結束方法有兩種
+    		1. 擊飛時，heart沒了 (死亡)
+    		2. 時間到，進行結算
+
+    	is_interrupted的詳細使用用途
+    	用於準星顯示，是否被中斷
+    	以下變換狀態時，會設定為true
+    		1. 被擊飛時
+    		2. 進入特殊時間過場動畫
+    */
     void MainGirl::OnMove(CGameMap* map, UI* ui)
     {
         if (state == INANIMATION)
@@ -166,7 +177,7 @@ namespace game_framework
                 static int count = 40;
                 static unsigned int startIndex = 0;
 
-                if (moving)
+                if (moving) //進行結算移動
                 {
                     if (direction)
                     {
@@ -228,8 +239,9 @@ namespace game_framework
                     }
                 }
             }
-            else if (is_bump)
+            else if (is_bump) // 擊飛狀態
             {
+                // 負責擊飛狀態的移動軌跡
                 if (direction)
                 {
                     if (bump_right.GetCurrentBitmapNumber() <= 3)
@@ -271,13 +283,14 @@ namespace game_framework
                     }
                 }
 
+                // 負責更新擊飛動畫
                 if (ui->GetHeartPoints() > 0)
                 {
                     if (direction)
                     {
                         if (!bump_right.IsFinalBitmap())
                             bump_right.OnMove();
-                        else
+                        else // 結束後，跳回正常狀態
                         {
                             is_bump = false;
                             state = INNORMAL;
@@ -287,14 +300,14 @@ namespace game_framework
                     {
                         if (!bump_left.IsFinalBitmap())
                             bump_left.OnMove();
-                        else
+                        else // 結束後，跳回正常狀態
                         {
                             is_bump = false;
                             state = INNORMAL;
                         }
                     }
                 }
-                else
+                else // 擊飛中，heart無時，則播放死亡音效並進入結束
                 {
                     if (bump_right.GetCurrentBitmapNumber() <= 11 && bump_left.GetCurrentBitmapNumber() <= 11)
                     {
@@ -312,7 +325,7 @@ namespace game_framework
                     }
                 }
             }
-            else if (is_reinforced)
+            else if (is_reinforced) // 特殊時間
             {
                 if (direction)
                 {
@@ -320,10 +333,10 @@ namespace game_framework
                     {
                         girl_right_reinforcing.OnMove();
 
-                        if (girl_right_reinforcing.GetCurrentBitmapNumber() == 20)
+                        if (girl_right_reinforcing.GetCurrentBitmapNumber() == 20) // 特殊時間變身音效
                             CAudio::Instance()->Play(AUDIO_BLINK, false);
                     }
-                    else
+                    else // 結束後，跳回正常狀態
                     {
                         state = INNORMAL;
                         CAudio::Instance()->Stop(AUDIO_FLYING);
@@ -336,10 +349,10 @@ namespace game_framework
                     {
                         girl_left_reinforcing.OnMove();
 
-                        if (girl_left_reinforcing.GetCurrentBitmapNumber() == 20)
+                        if (girl_left_reinforcing.GetCurrentBitmapNumber() == 20) // 特殊時間變身音效
                             CAudio::Instance()->Play(AUDIO_BLINK, false);
                     }
-                    else
+                    else // 結束後，跳回正常狀態
                     {
                         state = INNORMAL;
                         CAudio::Instance()->Stop(AUDIO_FLYING);
@@ -350,7 +363,7 @@ namespace game_framework
         }
         else if (state == INNORMAL)
         {
-            if (is_reinforced) // 特殊時間周圍特效
+            if (is_reinforced) // 特殊時間的周圍特效
             {
                 reinforcing[0].OnMove();
 
@@ -391,7 +404,7 @@ namespace game_framework
             bump_left.Reset();
             bump_right.Reset();
 
-            if (!is_focusing) // 非鎖定狀態，判斷走路部分
+            if (!is_focusing) // 非鎖定狀態，用於判斷走路部分
             {
                 if (cursor_x - (map->ScreenX(x) + girl_right_stand.Width()) > 0) // 滑鼠座標與人物最右邊的座標相減(螢幕的點座標) 需大於0
                 {
@@ -413,11 +426,11 @@ namespace game_framework
 
                 SetVelocity(map);
             }
-            else
+            else // 鎖定狀態
             {
                 moving = false;
 
-                if (!is_locked)
+                if (!is_locked) // 尚未進入鎖死前，依游標位置決定面向左右
                 {
                     // 調整鎖定時的瞄準方向
                     if (map->ScreenX(x) + girl_left_stand.Width() / 2 <= cursor_x)
@@ -498,13 +511,13 @@ namespace game_framework
         }
     }
 
-    void MainGirl::OnMouseMove(CPoint point)
+    void MainGirl::OnMouseMove(CPoint point) // 處理滑鼠移動
     {
         cursor_x = point.x;
         cursor_y = point.y;
     }
 
-    void MainGirl::InitializeReinforcing()
+    void MainGirl::InitializeReinforcing() // 初始化特殊時間參數
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CDC ImageDC;
@@ -534,7 +547,7 @@ namespace game_framework
         CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
     }
 
-    void MainGirl::SetVelocity(CGameMap* map)
+    void MainGirl::SetVelocity(CGameMap* map) // 設定移動速度
     {
         if (!moving) // 沒有正在移動則退出
             return;
@@ -684,7 +697,7 @@ namespace game_framework
                 }
                 else // 左邊
                 {
-                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y)
+                    if (map->ScreenY(y) + girl_left_stand.Height() / 2 <= beam_pos[0].y) // 下方
                     {
                         girl_left_focusing_front.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_left_focusing_front.ShowBitmap();
@@ -692,7 +705,7 @@ namespace game_framework
                         if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
                     }
-                    else
+                    else // 上方
                     {
                         if (is_attacking) // 攻擊時顯示雷射
                             DrawBeam(map);
@@ -768,12 +781,12 @@ namespace game_framework
                 }
                 else
                 {
-                    if (velocity != 12)
+                    if (velocity != 12) // 走路
                     {
                         girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_walk_left.OnShow();
                     }
-                    else
+                    else // 跑步
                     {
                         girl_run_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                         girl_run_left.OnShow();
@@ -848,22 +861,22 @@ namespace game_framework
         return cursor_y;
     }
 
-    void MainGirl::SetIsFocusing(bool status)
+    void MainGirl::SetIsFocusing(bool status) // 設定鎖定狀態 (單人)
     {
         is_focusing = status;
     }
 
-    bool MainGirl::IsFocusing()
+    bool MainGirl::IsFocusing() // 是否鎖定
     {
         return is_focusing;
     }
 
-    bool MainGirl::IsFocusPerson(Man* man)
+    bool MainGirl::IsFocusPerson(Man* man) // 是否為鎖定對象
     {
         return focus_id == man->GetId();
     }
 
-    void MainGirl::SetFocusPerson(CGameMap* map, Man* man)
+    void MainGirl::SetFocusPerson(CGameMap* map, Man* man) // 設定鎖定的男生
     {
         focus_point_on.SetTopLeft(map->ScreenX(man->GetX()) + 10, map->ScreenY(man->GetY()) + 3);
         focus_point_off.SetTopLeft(map->ScreenX(man->GetX()) + 10, map->ScreenY(man->GetY()) + 3);
@@ -885,52 +898,52 @@ namespace game_framework
         }
     }
 
-    void MainGirl::SetIsAttacking(bool status)
+    void MainGirl::SetIsAttacking(bool status) // 設定攻擊狀態
     {
         is_attacking = status;
     }
 
-    void MainGirl::SetIsLocked(bool status)
+    void MainGirl::SetIsLocked(bool status) // 設定鎖死狀態 (與其他女生搶)
     {
         is_locked = status;
     }
 
-    void MainGirl::SetIsReinforced(bool status)
+    void MainGirl::SetIsReinforced(bool status) // 設定特殊時間模式
     {
         is_reinforced = status;
 
         if (status == true)
         {
-            is_interrupted = true;
+            is_interrupted = true; // 設定攻擊中斷
             state = INANIMATION;
         }
     }
 
-    bool MainGirl::IsInAnimation()
+    bool MainGirl::IsInAnimation() // 是否正在過場動畫
     {
         return state == INANIMATION;
     }
 
-    bool MainGirl::IsReinforced()
+    bool MainGirl::IsReinforced() // 是否是特殊時間模式
     {
         return is_reinforced;
     }
 
-    bool MainGirl::IsLocked()
+    bool MainGirl::IsLocked() // 是否鎖死
     {
         return is_locked;
     }
-    bool MainGirl::IsAttacking()
+    bool MainGirl::IsAttacking() // 是否正在攻擊
     {
         return is_attacking;
     }
 
-    bool MainGirl::IsReporting()
+    bool MainGirl::IsReporting() // 是否正在結算分數
     {
         return is_reporting;
     }
 
-    void MainGirl::Lose()
+    void MainGirl::Lose() // 輸掉
     {
         is_bump = true;
         focus_id = -1;
@@ -938,22 +951,22 @@ namespace game_framework
         state = INANIMATION;
     }
 
-    void MainGirl::Click()
+    void MainGirl::Click() // 鎖死狀態時生效，每按一次攻擊一次
     {
         is_clicked = true;
     }
 
-    bool MainGirl::IsClicked()
+    bool MainGirl::IsClicked() // 鎖定狀態時生效，是否按下滑鼠
     {
         return is_clicked;
     }
 
-    void MainGirl::AddSlave(Man* man)
+    void MainGirl::AddSlave(Man* man) // 將搶到的男生，加入奴隸行列
     {
         slaves.insert(slaves.begin(), man);
     }
 
-    void MainGirl::DrawBeam(CGameMap* map)
+    void MainGirl::DrawBeam(CGameMap* map) // 畫出雷射
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CPen pen(PS_SOLID, 1, RGB(255, 0, 255));

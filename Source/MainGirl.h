@@ -38,8 +38,8 @@ namespace game_framework
         void AddSlave(Man* man);										// 將搶到的男生，加入奴隸行列
     private:
         void InitializeReinforcing();									// 初始化特殊時間參數
-        void SetVelocity(CGameMap* map);								// 設定速度
-        void DrawBeam(CGameMap* map);									// 劃出雷射
+        void SetVelocity(CGameMap* map);								// 設定移動速度
+        void DrawBeam(CGameMap* map);									// 畫出雷射
         int x, y;														// 女主角位置 (地圖座標)
         int cursor_x, cursor_y;											// 滑鼠游標位置 (視窗座標)
         bool moving;													//是否正在移動
@@ -55,7 +55,7 @@ namespace game_framework
         bool is_reinforced;												// 特殊時間狀態
         bool is_reporting;												// 結算狀態
         int state;														// 狀態，正常and過場動畫
-        int delay_counter;												// 延長時間用
+        int delay_counter;												// 特殊時間周圍特效延遲
         CAnimation girl_walk_left, girl_walk_right;
         CAnimation girl_run_left, girl_run_right;
         CMovingBitmap girl_left_stand, girl_right_stand;
