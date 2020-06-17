@@ -58,6 +58,7 @@ namespace game_framework
 		backInit_hover.LoadBitmap("RES/init/back2.bmp", RGB(255, 255, 255));
 		next.LoadBitmap("RES/init/next.bmp", RGB(255, 255, 255));
 		before.LoadBitmap("RES/init/before.bmp", RGB(255, 255, 255));
+		before_hover.LoadBitmap("RES/init/before_hover.bmp", RGB(255, 255, 255));
 		CAudio::Instance()->Load(AUDIO_INIT, "sounds\\init.mp3");
 		CAudio::Instance()->Load(AUDIO_PRESS, "sounds\\press.mp3");
 		CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");
@@ -96,9 +97,15 @@ namespace game_framework
 			intro[4].AddBitmap(text);
 		}
 
+		for (int i = 1; i <= 4; i++)
+		{
+			strcpy(text, ("RES/init/intro/intro6/intro6 (" + to_string(i) + ").bmp").c_str());
+			intro[5].AddBitmap(text);
+		}
+
 		for (int i = 0; i < 5; i++)
 		{
-			intro[i].SetDelayCount(5);
+			intro[i].SetDelayCount(4);
 		}
 
 		isLoaded = true;
@@ -238,9 +245,9 @@ namespace game_framework
 
 		if (view == 1)
 		{
-			if (cursor_x1 >= 50 && cursor_x1 <= 80)
+			if (cursor_x1 >= 50 && cursor_x1 <= 95)
 			{
-				if (cursor_y1 >= 300 && cursor_y1 <= 340)
+				if (cursor_y1 >= 300 && cursor_y1 <= 350)
 				{
 					GotoGameState(GAME_STATE_INIT);
 					view = 0;
@@ -256,6 +263,13 @@ namespace game_framework
 			{
 				if (cursor_y1 >= 310 && cursor_y1 <= 370)
 				{
+					if (now == 4)
+					{
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+						now = 5;
+					}
+					
 					if (now == 3)
 					{
 						cursor_x1 = -1;
@@ -314,6 +328,12 @@ namespace game_framework
 					if (now == 4)
 					{
 						now = 3;
+						cursor_x1 = -1;
+						cursor_y1 = -1;
+					}
+					if (now == 5)
+					{
+						now = 4;
 						cursor_x1 = -1;
 						cursor_y1 = -1;
 					}
@@ -469,6 +489,14 @@ namespace game_framework
 			about.ShowBitmap();
 			before.SetTopLeft(50, 300);
 			before.ShowBitmap();
+			if (cursor_x2 >= 50 && cursor_x2 <= 95)
+			{
+				if (cursor_y2 >= 300 && cursor_y2 <= 350)
+				{
+					before_hover.SetTopLeft(50, 300);
+					before_hover.ShowBitmap();
+				}
+			}
 		}
 
 		if (view == 2)
@@ -494,7 +522,7 @@ namespace game_framework
 			{
 				if (cursor_y2 >= 310 && cursor_y2 <= 370)
 				{
-					if (now < 4)
+					if (now < 5)
 					{
 						next.SetTopLeft(720, 310);
 						next.ShowBitmap();
