@@ -155,6 +155,24 @@ namespace game_framework
         }
 
         fun.SetDelayCount(7);
+        over_notice_left.LoadBitmap("RES/mainGirl/left/over_notice.bmp", RGB(0, 0, 0));
+        over_notice_right.LoadBitmap("RES/mainGirl/right/over_notice.bmp", RGB(0, 0, 0));
+
+        for (int i = 1; i <= 9; i++)
+        {
+            strcpy(text, ("RES/mainGirl/left/over_walking (" + to_string(i) + ").bmp").c_str());
+            over_walking_left .AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        over_walking_left.SetDelayCount(5);
+
+        for (int i = 1; i <= 9; i++)
+        {
+            strcpy(text, ("RES/mainGirl/right/over_walking (" + to_string(i) + ").bmp").c_str());
+            over_walking_right.AddBitmap(text, RGB(0, 0, 0));
+        }
+
+        over_walking_right.SetDelayCount(5);
     }
 
     void MainGirl::OnMove(CGameMap* map, UI* ui)
@@ -171,12 +189,12 @@ namespace game_framework
                     if (direction)
                     {
                         x += 5;
-                        girl_walk_right.OnMove();
+                        over_walking_right.OnMove();
                     }
                     else
                     {
                         x -= 5;
-                        girl_walk_left.OnMove();
+                        over_walking_left.OnMove();
                     }
 
                     fun.OnMove();
@@ -574,35 +592,32 @@ namespace game_framework
                 {
                     if (direction)
                     {
-                        girl_walk_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_walk_right.OnShow();
+                        over_walking_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        over_walking_right.OnShow();
                     }
                     else
                     {
-                        girl_walk_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_walk_left.OnShow();
+                        over_walking_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        over_walking_left.OnShow();
                     }
 
-                    if (slaves.size() != 0)
-                    {
-                        fun.SetTopLeft(map->ScreenX(x) + 12, map->ScreenY(y) - 5);
-                        fun.OnShow();
-                    }
+                    fun.SetTopLeft(map->ScreenX(x) + 12, map->ScreenY(y) - 5);
+                    fun.OnShow();
                 }
                 else
                 {
                     if (direction) //false => 往左, true => 往右
                     {
-                        girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_right_stand.ShowBitmap();
-                        surprising_right.SetTopLeft(map->ScreenX(x + girl_left_stand.Width()), map->ScreenY(y));
+                        over_notice_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        over_notice_right.ShowBitmap();
+                        surprising_right.SetTopLeft(map->ScreenX(x + over_notice_right.Width()) - 5, map->ScreenY(y) - 5);
                         surprising_right.OnShow();
                     }
                     else
                     {
-                        girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_left_stand.ShowBitmap();
-                        surprising_left.SetTopLeft(map->ScreenX(x) - 26, map->ScreenY(y));
+                        over_notice_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        over_notice_left.ShowBitmap();
+                        surprising_left.SetTopLeft(map->ScreenX(x) - 22, map->ScreenY(y) - 5);
                         surprising_left.OnShow();
                     }
                 }
