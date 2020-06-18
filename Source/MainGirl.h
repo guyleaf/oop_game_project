@@ -70,6 +70,8 @@ namespace game_framework
         vector<Man*> slaves;
         CAnimation surprising_left, surprising_right;
         CAnimation fun;
+        CMovingBitmap over_notice_left, over_notice_right;
+        CAnimation over_walking_left, over_walking_right;
     };
 }
 

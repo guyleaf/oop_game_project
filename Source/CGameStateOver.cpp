@@ -53,7 +53,7 @@ namespace game_framework
 
         loop = false;
 
-        if (*isDead || *score < 3000)
+        if (*isDead || *score <= 2000)
             section = 0;
         else if (*score < 30000)
             section = 1;

@@ -22,6 +22,7 @@ namespace game_framework
     CHeartPoint::CHeartPoint(int points, int hearts) : NUMPOINTSPERHEART(points), NUMHEARTS(hearts)
     {
         isBmpLoaded = false;
+        isWarned = false;
         state = NORMAL;
     }
 
@@ -65,6 +66,13 @@ namespace game_framework
         }
 
         reinforced_bar.SetDelayCount(3);
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/UI/heart/warning (" + to_string(i) + ").bmp").c_str());
+            warning.AddBitmap(text, RGB(0, 0, 0));
+        }
+
         isBmpLoaded = true;
     }
 
@@ -79,7 +87,7 @@ namespace game_framework
         this->y = y;
     }
 
-    void CHeartPoint::OnMove()
+    void CHeartPoint::OnMove(UI* ui)
     {
         if (state == REINFORCED)
         {
@@ -92,10 +100,23 @@ namespace game_framework
         {
             star.Reset();
             reinforced_bar.Reset();
+
+            if (!ui->IsGameOver() && n <= 1000)
+            {
+                if (!isWarned)
+                {
+                    CAudio::Instance()->Play(AUDIO_WARNING, false);
+                    isWarned = true;
+                }
+
+                warning.OnMove();
+            }
+            else
+                isWarned = false;
         }
     }
 
-    void CHeartPoint::OnShow(int counter)
+    void CHeartPoint::OnShow(UI* ui, int counter)
     {
         GAME_ASSERT(isBmpLoaded, "CHeartPoint: 請先執行LoadBitmap，然後才能ShowBitmap");
         static int index = 0;
@@ -115,16 +136,21 @@ namespace game_framework
                 {
                     hearts[19].SetTopLeft(nx, y);
                     hearts[19].ShowBitmap();
-                    nx += hearts[19].Width() - 2;
                 }
                 else
                 {
                     int d = MSB / 25;
                     hearts[d].SetTopLeft(nx, y);
                     hearts[d].ShowBitmap();
-                    nx += hearts[d].Width() - 2;
                 }
 
+                if (!ui->IsGameOver() && n <= 1000)
+                {
+                    warning.SetTopLeft(nx - 6, y - 7);
+                    warning.OnShow();
+                }
+
+                nx += hearts[19].Width();
                 MSB -= NUMPOINTSPERHEART;
             }
         }
