@@ -916,7 +916,7 @@ namespace game_framework
         }
 
         mainGirl->ShowFocus();
-        static int counter = 120;
+        static int counter = 80;
 
         if (ui.IsGameOver())
         {
@@ -939,28 +939,30 @@ namespace game_framework
                 pDC->AlphaBlend(0, 0, rect.Width(), rect.Height(), &bkDC, 0, 0, rect.Width(), rect.Height(), bf);
                 bkDC.SelectObject(pOldBitmap);
                 bkDC.DeleteDC();
-
-                if (counter <= 20)
-                {
-                    CFont f, *fp;
-                    CSize size;
-                    f.CreatePointFont(6000 * counter, "Times New Roman");	// 產生 font f; 160表示16 point的字
-                    LOGFONT logFont;
-                    f.GetLogFont(&logFont);
-                    logFont.lfWeight = FW_BOLD;
-                    f.DeleteObject();
-                    f.CreatePointFontIndirect(&logFont);
-                    fp = pDC->SelectObject(&f);					// 選用 font f
-                    size = pDC->GetTextExtent("菜");
-                    pDC->SetBkMode(TRANSPARENT);
-                    char str[80];								// Demo 數字對字串的轉換
-                    sprintf(str, "菜");
-                    pDC->SetTextColor(RGB(187, 13, 13));
-                    pDC->TextOut(rect.CenterPoint().x - size.cx / 2 - 3, rect.CenterPoint().y - size.cy / 2 - 3, str);
-                    pDC->SetTextColor(RGB(255, 0, 0));
-                    pDC->TextOut(rect.CenterPoint().x - size.cx / 2, rect.CenterPoint().y - size.cy / 2, str);
-                    pDC->SelectObject(fp);						// 放掉 font f (千萬不要漏了放掉)
-                }
+                CFont f, *fp;
+                CSize size;
+                f.CreatePointFont(8000, "Times New Roman");	// 產生 font f; 160表示16 point的字
+                LOGFONT logFont;
+                f.GetLogFont(&logFont);
+                logFont.lfWeight = FW_BOLD;
+                f.DeleteObject();
+                f.CreatePointFontIndirect(&logFont);
+                fp = pDC->SelectObject(&f);					// 選用 font f
+                size = pDC->GetTextExtent("菜");
+                pDC->SetBkMode(TRANSPARENT);
+                char str[80];								// Demo 數字對字串的轉換
+                sprintf(str, "菜");
+                pDC->SetTextColor(RGB(max(175 + counter, 220), counter, counter));
+                pDC->TextOut(rect.CenterPoint().x - size.cx / 2, rect.CenterPoint().y - size.cy / 2, str);
+                pDC->SelectObject(fp);
+                f.DeleteObject();
+                f.CreatePointFont(200, "Times New Roman");
+                fp = pDC->SelectObject(&f);
+                pDC->SetTextCharacterExtra(2);
+                size = pDC->GetTextExtent("NOOB");
+                sprintf(str, "NOOB");
+                pDC->TextOut(rect.CenterPoint().x - size.cx / 2, rect.CenterPoint().y - size.cy / 2 + 110, str);
+                pDC->SelectObject(fp);						// 放掉 font f (千萬不要漏了放掉)
 
                 if (counter > 1)
                     counter--;
@@ -969,7 +971,7 @@ namespace game_framework
             }
         }
         else
-            counter = 120;
+            counter = 80;
 
         if (map.IsMapChanging())
             CDDraw::BltBackColor(RGB(0, 0, 0));
