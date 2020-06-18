@@ -82,11 +82,6 @@ namespace game_framework
 
     void UI::OnMove()
     {
-        if (is_muted)
-            waveOutSetVolume(0, 0);
-        else
-            waveOutSetVolume(0, volume);
-
         if (state == INPROGRESS)
         {
             if (is_reinforced)
@@ -242,6 +237,11 @@ namespace game_framework
     void UI::Toggle()
     {
         is_muted = !is_muted;
+
+        if (is_muted)
+            waveOutSetVolume(0, 0);
+        else
+            waveOutSetVolume(0, volume);
     }
 
     void UI::Pause()
