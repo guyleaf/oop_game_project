@@ -82,11 +82,6 @@ namespace game_framework
 
     void UI::OnMove()
     {
-        if (is_muted)
-            waveOutSetVolume(0, 0);
-        else
-            waveOutSetVolume(0, volume);
-
         if (state == INPROGRESS)
         {
             if (is_reinforced)
@@ -189,40 +184,43 @@ namespace game_framework
             }
         }
 
-        if (rightButton || leftButton)
+        if (state == INPROGRESS)
         {
-            if (rightButton)
+            if (rightButton || leftButton)
             {
-                up.SetTopLeft(680 - up.Width(), 150);
-                up_hover.SetTopLeft(680 - up_hover.Width(), 150);
-                down.SetTopLeft(692 - down.Width(), 300);
-                down_hover.SetTopLeft(692 - down_hover.Width(), 300);
-            }
-            else
-            {
-                up.SetTopLeft(120, 150);
-                up_hover.SetTopLeft(120, 150);
-                down.SetTopLeft(130, 300);
-                down_hover.SetTopLeft(130, 300);
-            }
-
-            if (map->GetLevel() != 1)
-            {
-                down.ShowBitmap();
-
-                if ((down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height())))
+                if (rightButton)
                 {
-                    down_hover.ShowBitmap();
+                    up.SetTopLeft(680 - up.Width(), 150);
+                    up_hover.SetTopLeft(680 - up_hover.Width(), 150);
+                    down.SetTopLeft(692 - down.Width(), 300);
+                    down_hover.SetTopLeft(692 - down_hover.Width(), 300);
                 }
-            }
-
-            if (map->GetLevel() != 4)
-            {
-                up.ShowBitmap();
-
-                if ((up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height()))
+                else
                 {
-                    up_hover.ShowBitmap();
+                    up.SetTopLeft(120, 150);
+                    up_hover.SetTopLeft(120, 150);
+                    down.SetTopLeft(130, 300);
+                    down_hover.SetTopLeft(130, 300);
+                }
+
+                if (map->GetLevel() != 1)
+                {
+                    down.ShowBitmap();
+
+                    if ((down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height())))
+                    {
+                        down_hover.ShowBitmap();
+                    }
+                }
+
+                if (map->GetLevel() != 4)
+                {
+                    up.ShowBitmap();
+
+                    if ((up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height()))
+                    {
+                        up_hover.ShowBitmap();
+                    }
                 }
             }
         }
@@ -242,6 +240,11 @@ namespace game_framework
     void UI::Toggle()
     {
         is_muted = !is_muted;
+
+        if (is_muted)
+            waveOutSetVolume(0, 0);
+        else
+            waveOutSetVolume(0, volume);
     }
 
     void UI::Pause()
