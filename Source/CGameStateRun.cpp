@@ -722,6 +722,10 @@ namespace game_framework
         if (ui.IsGameOver() && mainGirl->IsReinforced())
         {
             ui.GotoHRState(CHeartPoint::normal);
+
+            if (ui.GetHeartPoints() < 2000)
+                ui.SetHeartPoints(2000);
+
             mainGirl->SetIsReinforced(false);
         }
 
