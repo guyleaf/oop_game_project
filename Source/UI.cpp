@@ -95,7 +95,7 @@ namespace game_framework
                 heart.Add(-3);
             }
 
-            heart.OnMove();
+            heart.OnMove(this);
 
             if (time_left >= 0)
             {
@@ -147,7 +147,7 @@ namespace game_framework
         heartPointBoard.SetTopLeft(0, 0);
         heartPointBoard.ShowBitmap();
         heart.SetTopLeft(20, heartPointBoard.Height() / 2);
-        heart.OnShow(counter);
+        heart.OnShow(this, counter);
         clock_background.SetTopLeft(clock_center.x - clock_radius, clock_center.y - clock_radius);
         clock_background.ShowBitmap();
 
