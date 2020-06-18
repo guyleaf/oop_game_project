@@ -1,19 +1,15 @@
 namespace game_framework
 {
-    class Man
+    class Man : public Role
     {
     public:
         Man();
         virtual ~Man();
 
         virtual void LoadBitMap() = 0;
-        void OnMove(int seed);
-        void OnShow(CGameMap* map);
+        void OnMove(int seed);																// 處理動作更新邏輯
+        void OnShow(CGameMap* map);															// 處理顯示邏輯
         virtual void OnBeginState() = 0;													// 初始化狀態
-        int GetX();																			// 取得男生X座標 (地圖座標)
-        int GetY();																			// 取得男生Y座標 (地圖座標)
-        int GetWidth();																		// 取得男生寬度
-        int GetHeight();																	// 取得男生高度
         int GetId();																		// 取得男生ID
         double GetHP();																		// 取得男生血量
         int GetScore();																		// 取得該男生的分數
@@ -43,23 +39,14 @@ namespace game_framework
         void DrawClickingProgress(CGameMap* map);											// 畫出搶奪進度條
         int id;																				// ID
         int score;																			// 該男生的分數
-        int x, y;																			// 男生位置
         int fx, fy;																			// 跟隨的終點位置
         bool fdirection;																	// 跟隨的最終移動方向
         bool is_positioned;																	// 是否跟隨到定點
-        bool moving;																		// 是否正在移動
-        bool direction;																		// false => 往左, true => 往右
-        int velocity;																		// 移動速度
         double HP;																			// 血量
-        int range[2];																		// 移動範圍
-        int status;																			// 狀態
         int is_killed_by;																	// 被誰殺死
         bool is_focused;																	// 是否被鎖定
         static bool bitmapIsLoaded;															// bitmap素材是否已載入
-        int distance;																		// 與其他女生離開的剩餘距離
         bool is_reporting;																	// 是否正在回報分數
-        CAnimation man_left, man_right;
-        CMovingBitmap man_left_stand, man_right_stand;
         CAnimation man_dead_left, man_dead_right;
         CAnimation man_following_left, man_following_right;
         CAnimation flash, flash_multi, weakening;

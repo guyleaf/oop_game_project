@@ -7,6 +7,7 @@ namespace game_framework
 
     class CGameMap;
     class MainGirl;
+    class Role;
     class Man;
     class Girl;
     class Heart;
@@ -16,6 +17,7 @@ namespace game_framework
 }
 #include "CGameMap.h"
 #include "MainGirl.h"
+#include "Role.h"
 #include "Man.h"
 #include "Girl.h"
 #include "Heart.h"

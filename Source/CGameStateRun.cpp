@@ -232,7 +232,9 @@ namespace game_framework
 
         if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
-            if (teacher->IsInLevel(level) && teacher->HitMainGirl(mainGirl))
+            static int delay_counter = -1;
+
+            if (teacher->IsInLevel(level) && teacher->HitMainGirl(mainGirl) && delay_counter == -1)
             {
                 if (mainGirl->IsAttacking())
                     CAudio::Instance()->Stop(AUDIO_LASER);
@@ -246,6 +248,7 @@ namespace game_framework
 
                 CAudio::Instance()->Play(AUDIO_FLYING, false);
                 mainGirl->Lose();
+                delay_counter = 30;
             }
             else if (mainGirl->IsAttacking() && !mainGirl->IsReinforced() && ui.GetHeartPoints() <= 0)
             {
@@ -258,6 +261,9 @@ namespace game_framework
                 CAudio::Instance()->Play(AUDIO_FLYING, false);
                 mainGirl->Lose();
             }
+
+            if (delay_counter != -1)
+                delay_counter--;
         }
 
         teacher->OnMove(&map);
@@ -768,7 +774,7 @@ namespace game_framework
                 if (counter <= 0)
                 {
                     counter = 20;
-                    *isDead = true;
+                    *isDead = false;
                     *score = ui.GetScore();
                     ChangeGameState(GAME_STATE_OVER);
                 }
@@ -859,32 +865,20 @@ namespace game_framework
     }
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
-        // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
         mainGirl->OnMouseMove(point);
         ui.OnMouseMove(point);
     }
+
     void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
-        //waveOutSetVolume(0, 0x0000);
-        //CAudio::Instance()->Pause();
     }
 
     void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
-        //waveOutSetVolume(0, 0x0FFF);
-        //CAudio::Instance()->Resume();
     }
 
     void CGameStateRun::OnShow()
     {
-        //
-        //  注意：Show裡面千萬不要移動任何物件的座標，移動座標的工作應由Move做才對，
-        //        否則當視窗重新繪圖時(OnDraw)，物件就會移動，看起來會很怪。換個術語
-        //        說，Move負責MVC中的Model，Show負責View，而View不應更動Model。
-        //
-        //
-        //  貼上背景圖、撞擊數、球、擦子、彈跳的球
-        //
         int level = map.GetLevel();
         map.OnShow();
         ui.OnShow(&map);
@@ -918,11 +912,10 @@ namespace game_framework
         }
 
         mainGirl->ShowFocus();
+        static int counter = 120;
 
         if (ui.IsGameOver())
         {
-            static int counter = 120;
-
             if (!ui.IsWin())
             {
                 CRect rect;
@@ -954,10 +947,10 @@ namespace game_framework
                     f.DeleteObject();
                     f.CreatePointFontIndirect(&logFont);
                     fp = pDC->SelectObject(&f);					// 選用 font f
-                    size = pDC->GetTextExtent("死");
+                    size = pDC->GetTextExtent("菜");
                     pDC->SetBkMode(TRANSPARENT);
                     char str[80];								// Demo 數字對字串的轉換
-                    sprintf(str, "死");
+                    sprintf(str, "菜");
                     pDC->SetTextColor(RGB(187, 13, 13));
                     pDC->TextOut(rect.CenterPoint().x - size.cx / 2 - 3, rect.CenterPoint().y - size.cy / 2 - 3, str);
                     pDC->SetTextColor(RGB(255, 0, 0));
@@ -970,9 +963,9 @@ namespace game_framework
 
                 CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
             }
-            else
-                counter = 120;
         }
+        else
+            counter = 120;
 
         if (map.IsMapChanging())
             CDDraw::BltBackColor(RGB(0, 0, 0));

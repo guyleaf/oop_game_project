@@ -38,7 +38,7 @@ namespace game_framework
 
     void Teacher::OnMove(CGameMap* map)
     {
-        if (!map->IsEmpty(x, y))
+        if (!map->IsEmpty(x, y)) // 只在地圖邊界範圍內移動
             direction = !direction;
 
         if (direction)
@@ -70,11 +70,11 @@ namespace game_framework
         }
     }
 
-    bool Teacher::HitMainGirl(MainGirl* girl)
+    bool Teacher::HitMainGirl(MainGirl* girl) // 判斷是否與女主角接觸
     {
         return girl->GetPositionX() <= x && x <= girl->GetPositionX() + girl->Width();
     }
-    bool Teacher::IsInLevel(int level)
+    bool Teacher::IsInLevel(int level) // 老師是否在level層
     {
         return this->level == level;
     }

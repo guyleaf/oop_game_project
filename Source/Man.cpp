@@ -8,7 +8,7 @@
 
 namespace game_framework
 {
-    enum Role // 腳色
+    enum Type // 腳色
     {
         MAINGIRL, // 女主角
         GIRL, // 女生
@@ -68,11 +68,11 @@ namespace game_framework
 
                 if (direction)
                 {
-                    man_right.OnMove();
+                    right.OnMove();
                 }
                 else
                 {
-                    man_left.OnMove();
+                    left.OnMove();
                 }
             }
         }
@@ -197,26 +197,26 @@ namespace game_framework
             {
                 if (direction) //false => 往左, true => 往右
                 {
-                    man_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_right.OnShow();
+                    right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    right.OnShow();
                 }
                 else
                 {
-                    man_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_left.OnShow();
+                    left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    left.OnShow();
                 }
             }
             else
             {
                 if (direction) //false => 往左, true => 往右
                 {
-                    man_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_right_stand.ShowBitmap();
+                    right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    right_stand.ShowBitmap();
                 }
                 else
                 {
-                    man_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_left_stand.ShowBitmap();
+                    left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    left_stand.ShowBitmap();
                 }
             }
         }
@@ -309,10 +309,10 @@ namespace game_framework
     {
         int cursor_x = girl->GetCursorX();
         int cursor_y = girl->GetCursorY();
-        int x2 = x + man_left_stand.Width();
-        int y2 = y + man_left_stand.Height();
+        int x2 = x + left_stand.Width();
+        int y2 = y + left_stand.Height();
         return (cursor_x >= map->ScreenX(x) && cursor_y >= map->ScreenY(y)
-                && cursor_x <= map->ScreenX(x2) && cursor_y <= (map->ScreenY(y2) - man_left_stand.Height() / 2));
+                && cursor_x <= map->ScreenX(x2) && cursor_y <= (map->ScreenY(y2) - left_stand.Height() / 2));
     }
 
     void Man::SetIsAlive(bool status) // 設定存亡
@@ -367,26 +367,6 @@ namespace game_framework
     bool Man::IsFocused() // 是否被鎖定
     {
         return is_focused;
-    }
-
-    int Man::GetX() // 取得男生X座標 (地圖座標)
-    {
-        return x;
-    }
-
-    int Man::GetY() // 取得男生Y座標 (地圖座標)
-    {
-        return y;
-    }
-
-    int Man::GetWidth() // 取得男生寬度
-    {
-        return man_left_stand.Width();
-    }
-
-    int Man::GetHeight() // 取得男生高度
-    {
-        return man_left_stand.Height();
     }
 
     void Man::LoseHP(double value) // 扣除血量
@@ -493,25 +473,25 @@ namespace game_framework
     {
         char text[100] = { 0 };
         strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
-        man_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+        left_stand.LoadBitmap(text, RGB(255, 255, 255));
         strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
-        man_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+        right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/right/normalMan (" + to_string(i) + ").bmp").c_str());
-            man_right.AddBitmap(text, RGB(255, 255, 255));
+            right.AddBitmap(text, RGB(255, 255, 255));
         }
 
-        man_right.SetDelayCount(13);
+        right.SetDelayCount(13);
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/left/normalMan (" + to_string(i) + ").bmp").c_str());
-            man_left.AddBitmap(text, RGB(255, 255, 255));
+            left.AddBitmap(text, RGB(255, 255, 255));
         }
 
-        man_left.SetDelayCount(13);
+        left.SetDelayCount(13);
 
         for (int i = 1; i <= 4; i++)
         {
@@ -661,70 +641,70 @@ namespace game_framework
         strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
 
         if (type != 3)
-            man_left_stand.LoadBitmap(text, RGB(0, 0, 0));
+            left_stand.LoadBitmap(text, RGB(0, 0, 0));
         else
-            man_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+            left_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
 
         if (type != 3)
-            man_right_stand.LoadBitmap(text, RGB(0, 0, 0));
+            right_stand.LoadBitmap(text, RGB(0, 0, 0));
         else
-            man_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+            right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         if (type == 1)
         {
             for (int i = 1; i <= 7; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_right.AddBitmap(text, RGB(0, 0, 0));
+                right.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_right.SetDelayCount(13);
+            right.SetDelayCount(13);
 
             for (int i = 1; i <= 7; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_left.AddBitmap(text, RGB(0, 0, 0));
+                left.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_left.SetDelayCount(13);
+            left.SetDelayCount(13);
         }
         else if (type == 2)
         {
             for (int i = 1; i <= 5; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_right.AddBitmap(text, RGB(0, 0, 0));
+                right.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_right.SetDelayCount(13);
+            right.SetDelayCount(13);
 
             for (int i = 1; i <= 5; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_left.AddBitmap(text, RGB(0, 0, 0));
+                left.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_left.SetDelayCount(13);
+            left.SetDelayCount(13);
         }
         else if (type == 3)
         {
             for (int i = 1; i <= 6; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_right.AddBitmap(text, RGB(255, 255, 255));
+                right.AddBitmap(text, RGB(255, 255, 255));
             }
 
-            man_right.SetDelayCount(13);
+            right.SetDelayCount(13);
 
             for (int i = 1; i <= 6; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_left.AddBitmap(text, RGB(255, 255, 255));
+                left.AddBitmap(text, RGB(255, 255, 255));
             }
 
-            man_left.SetDelayCount(13);
+            left.SetDelayCount(13);
         }
 
         for (int i = 1; i <= 4; i++)
