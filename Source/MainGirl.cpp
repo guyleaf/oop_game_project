@@ -195,7 +195,7 @@ namespace game_framework
                 static int count = 40;
                 static unsigned int startIndex = 0;
 
-                if (moving) //進行結算移動
+                if (moving) // 進行結算移動
                 {
                     if (direction)
                     {
@@ -325,7 +325,7 @@ namespace game_framework
                         }
                     }
                 }
-                else // 擊飛中，heart無時，則播放死亡音效並進入結束
+                else // 擊飛過程中，heart為空時，則播放死亡音效並進入結束
                 {
                     if (bump_right.GetCurrentBitmapNumber() <= 11 && bump_left.GetCurrentBitmapNumber() <= 11)
                     {

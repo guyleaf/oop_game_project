@@ -40,7 +40,7 @@ namespace game_framework
         static int girl;																	// 女生
     protected:
         void SetDirection(bool direction);													// 設定移動方向
-        void DrawClickingProgress(CGameMap* map);											// 畫出爭奪進度條
+        void DrawClickingProgress(CGameMap* map);											// 畫出搶奪進度條
         int id;																				// ID
         int score;																			// 該男生的分數
         int x, y;																			// 男生位置
@@ -66,7 +66,7 @@ namespace game_framework
         CAnimation blood;
         CAnimation man_following_girl_left, man_following_girl_right;
         CAnimation scoreReport;
-        static CAnimation clicking;															// 搶奪用動畫
+        static CAnimation clicking;															// 搶奪用量條動畫
         static CMovingBitmap clicking_bar;													// 搶奪用量條
         CPoint color_point[2];
     };
