@@ -810,10 +810,12 @@ namespace game_framework
 
         for (int i = 1; i <= 5; i++)
         {
-            if (type == 1 || type == 2)
+            if (type == 1)
                 strcpy(text, ("RES/Man/25000 (" + to_string(i) + ").bmp").c_str());
-            else if (type == 3)
+            else if (type == 2)
                 strcpy(text, ("RES/Man/30000 (" + to_string(i) + ").bmp").c_str());
+            else if (type == 3)
+                strcpy(text, ("RES/Man/40000 (" + to_string(i) + ").bmp").c_str());
 
             scoreReport.AddBitmap(text, RGB(255, 255, 255));
         }

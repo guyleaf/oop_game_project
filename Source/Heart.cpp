@@ -12,7 +12,7 @@ namespace game_framework
     {
         LoadBitmap();
 
-        switch (numberOfPeople)
+        switch (numberOfPeople) // 依人數決定愛心量
         {
             case 0:
                 HP = 500;
@@ -94,12 +94,12 @@ namespace game_framework
         heart.OnShow();
     }
 
-    bool Heart::HitMainGirl(MainGirl* girl)
+    bool Heart::HitMainGirl(MainGirl* girl) // 是否與女主角接觸
     {
         return girl->GetPositionX() <= this->x && this->x <= girl->GetPositionX() + girl->Width();
     }
 
-    int Heart::GetHP()
+    int Heart::GetHP() // 取得愛心量
     {
         return HP;
     }

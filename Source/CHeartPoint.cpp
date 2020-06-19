@@ -10,9 +10,9 @@ namespace game_framework
 {
     enum state
     {
-        NORMAL,
-        REINFORCING,
-        REINFORCED
+        NORMAL, // 正常模式
+        REINFORCING, // 特殊時間過場狀態
+        REINFORCED // 特殊時間狀態
     };
 
     int CHeartPoint::normal = NORMAL;
@@ -26,7 +26,7 @@ namespace game_framework
         state = NORMAL;
     }
 
-    void CHeartPoint::Add(int x)
+    void CHeartPoint::Add(int x) // 增加Point值
     {
         if (this->n + x < 0)
             this->n = 0;
@@ -36,7 +36,7 @@ namespace game_framework
             this->n = NUMHEARTS * NUMPOINTSPERHEART;
     }
 
-    int CHeartPoint::GetPoint()
+    int CHeartPoint::GetPoint() // 回傳Point值
     {
         return n;
     }
@@ -76,12 +76,12 @@ namespace game_framework
         isBmpLoaded = true;
     }
 
-    void CHeartPoint::SetPoint(int n)
+    void CHeartPoint::SetPoint(int n) // 設定Point值
     {
         this->n = n;
     }
 
-    void CHeartPoint::SetTopLeft(int x, int y)
+    void CHeartPoint::SetTopLeft(int x, int y) // 將動畫的左上角座標移至 (x,y)
     {
         this->x = x;
         this->y = y;
@@ -89,7 +89,7 @@ namespace game_framework
 
     void CHeartPoint::OnMove(UI* ui)
     {
-        if (state == REINFORCED)
+        if (state == REINFORCED) // 特殊時間狀態
         {
             if (!reinforced_bar.IsFinalBitmap())
                 reinforced_bar.OnMove();
@@ -101,7 +101,7 @@ namespace game_framework
             star.Reset();
             reinforced_bar.Reset();
 
-            if (!ui->IsGameOver() && n <= 1000)
+            if (!ui->IsGameOver() && n <= 1000) // 小於1000時，發出警告
             {
                 if (!isWarned)
                 {
@@ -125,7 +125,7 @@ namespace game_framework
         MSB = n;
         nx = x;
 
-        if (state == NORMAL)
+        if (state == NORMAL) // 正常模式
         {
             for (int i = 0; i < NUMHEARTS; i++)
             {
@@ -154,7 +154,7 @@ namespace game_framework
                 MSB -= NUMPOINTSPERHEART;
             }
         }
-        else if (state == REINFORCING)
+        else if (state == REINFORCING) // 特殊時間過場狀態
         {
             index = (index + 1) % NUMHEARTS;
 
@@ -174,12 +174,12 @@ namespace game_framework
                 }
             }
         }
-        else if (state == REINFORCED)
+        else if (state == REINFORCED) // 特殊時間狀態
         {
             reinforced_bar.SetTopLeft(x, y - 10);
             reinforced_bar.OnShow();
 
-            if (reinforced_bar.IsFinalBitmap())
+            if (reinforced_bar.IsFinalBitmap()) // 控制量條
             {
                 CDC* pDC = CDDraw::GetBackCDC();
                 CPen ppen(PS_SOLID, 0, RGB(253, 165, 253));

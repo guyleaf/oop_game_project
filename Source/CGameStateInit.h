@@ -27,7 +27,7 @@ namespace game_framework
         CMovingBitmap button1_1, button1_2, button2_1, button2_2;												// 主要按鈕:開始與結束遊戲
         CMovingBitmap voice1, voice2, voice3, voice4, init_voice1, init_voice2, init_voice3, init_voice4;		// 音樂控制鍵
         CMovingBitmap about_button, about_button_hover, intro_button, intro_button_hover;						// 進入遊戲說明與About的icon按鈕
-		CMovingBitmap next, before, next_hover, before_hover, backInit, backInit_hover;							// 上一個與下一個按鈕
+        CMovingBitmap next, before, next_hover, before_hover, backInit, backInit_hover;							// 上一個與下一個按鈕
     };
 }
 
