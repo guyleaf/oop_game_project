@@ -28,9 +28,6 @@ namespace game_framework
     void CGameStateInit::OnInit()
     {
         ShowInitProgress(0);																					// 一開始的loading進度為0%
-        //
-        // 開始載入資料
-        //
         logo.LoadBitmap(IDB_INITSCREEN);																		// 開始載入需要的圖片素材及音效
         button1_1.LoadBitmap(IDB_BUTTON1_1);
         button1_2.LoadBitmap(IDB_BUTTON1_2);
@@ -143,10 +140,6 @@ namespace game_framework
 
         if (nChar == KEY_ESC)																					// 按ESC鍵關閉遊戲
             PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);												// 關閉遊戲
-    }
-
-    void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
-    {
     }
 
     void CGameStateInit::OnLButtonUp(UINT nFlags, CPoint point)													// 定位鼠標左鍵動作位置

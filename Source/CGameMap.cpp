@@ -38,6 +38,7 @@ namespace game_framework
 
     void CGameMap::OnMove()
     {
+        // 延遲轉場時間
         if (counter == 0)
         {
             counter = 25;
