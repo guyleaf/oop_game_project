@@ -510,18 +510,28 @@ namespace game_framework
         if (direction)
             sx = x - 30;
         else
-            sx = x + girl_left_stand.Width() + 20;
+        {
+            sx = x + girl_left_stand.Width() + 38;
+        }
 
         for (size_t i = 0; i < slaves.size(); i++) // 命令奴隸跟著指定座標
         {
             if (direction)
             {
                 sx -= (girl_left_stand.Width() + 8);
-                slaves[i]->Follow(sx, y, direction);
+
+                if (is_bump)
+                    slaves[i]->Follow(sx, -1, direction);
+                else
+                    slaves[i]->Follow(sx, y, direction);
             }
             else
             {
-                slaves[i]->Follow(sx, y, direction);
+                if (is_bump)
+                    slaves[i]->Follow(sx, -1, direction);
+                else
+                    slaves[i]->Follow(sx, y, direction);
+
                 sx += (girl_left_stand.Width() + 8);
             }
 

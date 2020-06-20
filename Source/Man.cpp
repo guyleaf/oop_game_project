@@ -416,7 +416,10 @@ namespace game_framework
     {
         GAME_ASSERT(status == FOLLOW, "Man doesn't want to follow someone.");
         fx = x;
-        fy = y;
+
+        if (y != -1)
+            fy = y;
+
         fdirection = direction;
     }
 
