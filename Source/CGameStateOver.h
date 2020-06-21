@@ -31,4 +31,3 @@ namespace game_framework
         CMovingBitmap num[10];
     };
 }
-

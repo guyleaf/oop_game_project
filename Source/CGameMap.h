@@ -30,5 +30,3 @@ namespace game_framework
         bool is_mapChanging;												// 是否地圖正在切換
     };
 }
-
-

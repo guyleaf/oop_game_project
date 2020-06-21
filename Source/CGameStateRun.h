@@ -5,7 +5,6 @@ namespace game_framework
 {
     /////////////////////////////////////////////////////////////////////////////
     // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
-    // 每個Member function的Implementation都要弄懂
     /////////////////////////////////////////////////////////////////////////////
 
     class CGameStateRun : public CGameState
@@ -37,4 +36,3 @@ namespace game_framework
         bool isGoldBoyShowUp;
     };
 }
-

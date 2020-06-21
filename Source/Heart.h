@@ -17,5 +17,3 @@ namespace game_framework
         CAnimation heart;
     };
 }
-
-

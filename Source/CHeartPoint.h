@@ -28,4 +28,3 @@ namespace game_framework
         bool isWarned;								// 是否寫量低於1000
     };
 }
-
