@@ -164,14 +164,14 @@ namespace game_framework
                 {
                     hearts[0].SetTopLeft(nx, y);
                     hearts[0].ShowBitmap();
-                    nx += hearts[0].Width() - 2;
                 }
                 else
                 {
                     hearts[19].SetTopLeft(nx, y);
                     hearts[19].ShowBitmap();
-                    nx += hearts[19].Width() - 2;
                 }
+
+                nx += hearts[19].Width();
             }
         }
         else if (state == REINFORCED) // ¯S®í®É¶¡ª¬ºA

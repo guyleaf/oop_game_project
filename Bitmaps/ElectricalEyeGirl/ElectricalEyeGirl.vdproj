@@ -27113,9 +27113,9 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ElectricEyeGirl"
-        "ProductCode" = "8:{0F340D20-A99E-4FFA-9CEC-A7DFB15FCB74}"
+        "ProductCode" = "8:{0B39DA81-EA21-4C97-8886-F39FFCED6E69}"
         "PackageCode" = "8:{13BD8F12-0907-4FC4-84AD-6B73A4C8F4B8}"
-        "UpgradeCode" = "8:{C35D8382-744E-4902-851E-21FD679D3601}"
+        "UpgradeCode" = "8:{B6CFA16C-7EAE-479F-A901-8AD598C38C5E}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
