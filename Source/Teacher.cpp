@@ -79,4 +79,3 @@ namespace game_framework
         return this->level == level;
     }
 }
-

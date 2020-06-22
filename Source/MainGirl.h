@@ -74,5 +74,3 @@ namespace game_framework
         CAnimation over_walking_left, over_walking_right;
     };
 }
-
-

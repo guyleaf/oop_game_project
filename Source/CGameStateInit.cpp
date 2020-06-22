@@ -120,6 +120,7 @@ namespace game_framework
         changeState = false; // false為還未切換狀態
         delay_counter = 72;
         cursor_x1 = cursor_y1 = -1;	// 將鼠標位置重置
+		now = 0; //將說明圖片狀態重置
 
         if (isLoaded && !isPlaying)
         {

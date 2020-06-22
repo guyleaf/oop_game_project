@@ -57,5 +57,3 @@ namespace game_framework
         bool leftButton;													// 地圖最左邊樓梯按鈕
     };
 }
-
-

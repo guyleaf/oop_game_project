@@ -19,5 +19,3 @@ namespace game_framework
         CMovingBitmap left_stand, right_stand;
     };
 }
-
-
