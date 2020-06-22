@@ -248,13 +248,16 @@ namespace game_framework
                         }
 
                         count--;
+
+                        if (count == 0)
+                        {
+                            startIndex = 0;
+                            moving = true;
+                            count = 50;
+                        }
                     }
                     else
-                    {
-                        startIndex = 0;
-                        moving = true;
-                        count = 50;
-                    }
+                        count = 40;
                 }
             }
             else if (is_bump) // 擊飛狀態
