@@ -795,6 +795,8 @@ namespace game_framework
             mainGirl->SetIsReinforced(false);
         }
 
+        mainGirl->OnMove(&map, &ui);
+
         if (ui.IsGameOver() && !ui.IsWin() && mainGirl->IsInAnimation()) // 遊戲結束，女主角死了的部分
         {
             static int counter = 280; // 延遲
@@ -850,8 +852,6 @@ namespace game_framework
                 }
             }
         }
-
-        mainGirl->OnMove(&map, &ui);
 
         // 上下樓梯按鈕的部分
         if (!ui.IsGameOver() && !mainGirl->IsInAnimation())

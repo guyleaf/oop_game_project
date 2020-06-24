@@ -191,10 +191,18 @@ namespace game_framework
     {
         if (state == INANIMATION)
         {
+            if (ui->IsGameOver() && is_bump)
+            {
+                is_reporting = true;
+                is_bump = false;
+                moving = false;
+            }
+
             if (ui->IsGameOver() && ui->GetHeartPoints() > 0) // 結算動作
             {
                 static int count = 40;
                 static unsigned int startIndex = 0;
+                y = ny;
 
                 if (moving) // 進行結算移動
                 {
@@ -975,6 +983,7 @@ namespace game_framework
     void MainGirl::Lose() // 輸掉
     {
         is_bump = true;
+        moving = false;
         focus_id = -1;
         ny = y;
         is_interrupted = true;
