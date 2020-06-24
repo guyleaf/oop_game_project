@@ -29,7 +29,7 @@ namespace game_framework
         MainGirl* mainGirl;
         vector<Man*> man[4][2];
         vector<Girl*> girl[4][2];
-        vector<Heart*> hearts;
+        vector<Heart*> hearts[4];
         vector<Girl*> girlsOnScreen;
         UI ui;
         Teacher* teacher;

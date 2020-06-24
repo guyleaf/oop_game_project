@@ -40,6 +40,7 @@ namespace game_framework
         void InitializeReinforcing();									// 初始化特殊時間參數
         void SetVelocity(CGameMap* map);								// 設定移動速度
         void DrawBeam(CGameMap* map);									// 畫出雷射
+        int ny;															// 擊飛前的最後y位置
         int x, y;														// 女主角位置 (地圖座標)
         int cursor_x, cursor_y;											// 滑鼠游標位置 (視窗座標)
         bool moving;													//是否正在移動
