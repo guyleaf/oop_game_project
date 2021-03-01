@@ -8,18 +8,18 @@
 
 namespace game_framework
 {
-    enum State
+    enum State // 狀態
     {
-        PAUSE,
-        INPROGRESS,
-        GAMEOVER
+        PAUSE, // 暫停
+        INPROGRESS, // 進行中
+        GAMEOVER // 遊戲結束
     };
 
     UI::UI() : score(8), heart(500, 9), MaxTime(90)
     {
     }
 
-    void UI::LoadVolume()
+    void UI::LoadVolume() // 讀取聲音狀態
     {
         waveOutGetVolume(0, &volume);
 
@@ -61,7 +61,7 @@ namespace game_framework
         down_hover.LoadBitmap("RES/UI/down_hover.bmp", RGB(255, 255, 255));
     }
 
-    void UI::OnBeginState()
+    void UI::OnBeginState() // 初始化狀態
     {
         counter = 10;
         time_left = 90;
@@ -82,22 +82,14 @@ namespace game_framework
 
     void UI::OnMove()
     {
-        if (is_muted)
-            waveOutSetVolume(0, 0);
-        else
-            waveOutSetVolume(0, volume);
-
         if (state == INPROGRESS)
         {
-            if (is_reinforced)
-            {
-                //Special mode
+            if (is_reinforced) // 特殊時間，用於扣除特殊時間量值
                 heart.Add(-3);
-            }
 
-            heart.OnMove();
+            heart.OnMove(this);
 
-            if (time_left >= 0)
+            if (time_left >= 0) // 剩餘時間 >= 0，時鐘旋轉
             {
                 angle = (float)((MaxTime - time_left) / 0.25);
 
@@ -118,7 +110,7 @@ namespace game_framework
                     xform.eDy = (float)(clock_center.y - cos(radian) * clock_center.y - sin(radian) * clock_center.x);
                 }
             }
-            else
+            else // 時間到鐘聲響起，並GAMEOVER
             {
                 CAudio::Instance()->Stop(AUDIO_GAME);
                 CAudio::Instance()->Play(AUDIO_BELL, false);
@@ -137,9 +129,6 @@ namespace game_framework
             else
                 counter++;
         }
-        else if (state == GAMEOVER)
-        {
-        }
     }
 
     void UI::OnShow(CGameMap* map)
@@ -147,7 +136,7 @@ namespace game_framework
         heartPointBoard.SetTopLeft(0, 0);
         heartPointBoard.ShowBitmap();
         heart.SetTopLeft(20, heartPointBoard.Height() / 2);
-        heart.OnShow(counter);
+        heart.OnShow(this, counter);
         clock_background.SetTopLeft(clock_center.x - clock_radius, clock_center.y - clock_radius);
         clock_background.ShowBitmap();
 
@@ -189,72 +178,80 @@ namespace game_framework
             }
         }
 
-        if (rightButton || leftButton)
+        if (state == INPROGRESS)
         {
-            if (rightButton)
+            if (rightButton || leftButton)
             {
-                up.SetTopLeft(680 - up.Width(), 150);
-                up_hover.SetTopLeft(680 - up_hover.Width(), 150);
-                down.SetTopLeft(692 - down.Width(), 300);
-                down_hover.SetTopLeft(692 - down_hover.Width(), 300);
-            }
-            else
-            {
-                up.SetTopLeft(120, 150);
-                up_hover.SetTopLeft(120, 150);
-                down.SetTopLeft(130, 300);
-                down_hover.SetTopLeft(130, 300);
-            }
-
-            if (map->GetLevel() != 1)
-            {
-                down.ShowBitmap();
-
-                if ((down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height())))
+                if (rightButton)
                 {
-                    down_hover.ShowBitmap();
+                    up.SetTopLeft(680 - up.Width(), 150);
+                    up_hover.SetTopLeft(680 - up_hover.Width(), 150);
+                    down.SetTopLeft(692 - down.Width(), 300);
+                    down_hover.SetTopLeft(692 - down_hover.Width(), 300);
                 }
-            }
-
-            if (map->GetLevel() != 4)
-            {
-                up.ShowBitmap();
-
-                if ((up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height()))
+                else
                 {
-                    up_hover.ShowBitmap();
+                    up.SetTopLeft(120, 150);
+                    up_hover.SetTopLeft(120, 150);
+                    down.SetTopLeft(130, 300);
+                    down_hover.SetTopLeft(130, 300);
+                }
+
+                if (map->GetLevel() != 1)
+                {
+                    down.ShowBitmap();
+
+                    if ((down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height())))
+                    {
+                        down_hover.ShowBitmap();
+                    }
+                }
+
+                if (map->GetLevel() != 4)
+                {
+                    up.ShowBitmap();
+
+                    if ((up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height()))
+                    {
+                        up_hover.ShowBitmap();
+                    }
                 }
             }
         }
     }
 
-    void UI::OnMouseMove(CPoint point)
+    void UI::OnMouseMove(CPoint point) // 處理滑鼠移動邏輯
     {
         cursor_x = point.x;
         cursor_y = point.y;
     }
 
-    void UI::AddScore(int num)
+    void UI::AddScore(int num) // 加分數
     {
         score.Add(num);
     }
 
-    void UI::Toggle()
+    void UI::Toggle() // 靜音按鈕
     {
         is_muted = !is_muted;
+
+        if (is_muted)
+            waveOutSetVolume(0, 0);
+        else
+            waveOutSetVolume(0, volume);
     }
 
-    void UI::Pause()
+    void UI::Pause() // 暫停
     {
         state = PAUSE;
     }
 
-    void UI::Resume()
+    void UI::Resume() // 開始
     {
         state = INPROGRESS;
     }
 
-    bool UI::IsAudioButtonHoverd()
+    bool UI::IsAudioButtonHoverd() // 檢查滑鼠是否在按鈕上
     {
         if (is_muted)
             return (audio_button_off.Left() <= cursor_x && cursor_x <= audio_button_off.Left() + audio_button_off.Width()) && (audio_button_off.Top() <= cursor_y && cursor_y <= audio_button_off.Top() + audio_button_off.Height());
@@ -262,27 +259,27 @@ namespace game_framework
             return (audio_button_on.Left() <= cursor_x && cursor_x <= audio_button_on.Left() + audio_button_on.Width()) && (audio_button_on.Top() <= cursor_y && cursor_y <= audio_button_on.Top() + audio_button_on.Height());
     }
 
-    int UI::GetScore()
+    int UI::GetScore() // 取得當前分數
     {
         return score.GetInteger();
     }
 
-    void UI::AddHeartPoints(int points)
+    void UI::AddHeartPoints(int points) // 補充愛心
     {
         heart.Add(points);
     }
 
-    void UI::SetHeartPoints(int points)
+    void UI::SetHeartPoints(int points) // 設定愛心數量
     {
         heart.SetPoint(points);
     }
 
-    int UI::GetHeartPoints()
+    int UI::GetHeartPoints() // 取得愛心
     {
         return heart.GetPoint();
     }
 
-    void UI::GotoHRState(int state)
+    void UI::GotoHRState(int state) // 愛心記分板進入state模式
     {
         heart.GotoHRState(state);
 
@@ -292,12 +289,12 @@ namespace game_framework
             is_reinforced = false;
     }
 
-    bool UI::IsGameOver()
+    bool UI::IsGameOver() // 是否遊戲結束
     {
         return state == GAMEOVER;
     }
 
-    void UI::SetIsGameOver(bool status)
+    void UI::SetIsGameOver(bool status) // 設定遊戲結束
     {
         if (status)
         {
@@ -308,7 +305,7 @@ namespace game_framework
             state = INPROGRESS;
     }
 
-    void UI::SetIsButtonVisible(bool status, bool direction)
+    void UI::SetIsButtonVisible(bool status, bool direction) // 設定是否顯示上下樓按鈕
     {
         if (direction)
             rightButton = status;
@@ -316,22 +313,22 @@ namespace game_framework
             leftButton = status;
     }
 
-    bool UI::IsUpButtonHoverd()
+    bool UI::IsUpButtonHoverd() // 上樓按鈕
     {
         return (rightButton || leftButton) && (up.Left() <= cursor_x && cursor_x <= up.Left() + up.Width()) && (up.Top() <= cursor_y && cursor_y <= up.Top() + up.Height());
     }
 
-    bool UI::IsDownButtonHoverd()
+    bool UI::IsDownButtonHoverd() // 下樓按鈕
     {
         return (rightButton || leftButton) && (down.Left() <= cursor_x && cursor_x <= (down.Left() + down.Width())) && (down.Top() <= cursor_y && cursor_y <= (down.Top() + down.Height()));
     }
 
-    bool UI::IsWin()
+    bool UI::IsWin() // 贏的狀態下結束遊戲
     {
         return is_win;
     }
 
-    void UI::DrawPie()
+    void UI::DrawPie() // 畫時鐘背景
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CPen pen(PS_SOLID, 1, RGB(255, 214, 255));
@@ -344,7 +341,7 @@ namespace game_framework
         CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
     }
 
-    void UI::RotatePointer()
+    void UI::RotatePointer() // 旋轉時鐘指針
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CDC ImageDC;

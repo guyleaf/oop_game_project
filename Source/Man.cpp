@@ -8,35 +8,35 @@
 
 namespace game_framework
 {
-    enum Role
+    enum Type // 腳色
     {
-        MAINGIRL,
-        GIRL,
-        ALL
+        MAINGIRL, // 女主角
+        GIRL, // 女生
+        ALL // 全體
     };
 
-    enum State
+    enum State // 狀態
     {
-        ALIVE,
-        ATTACKED_BY_MAINGIRL,
-        ATTACKED_BY_ALL,
-        DEAD,
-        FOLLOW,
-        LEAVING,
-        NONE
+        ALIVE, // 存活
+        ATTACKED_BY_MAINGIRL, // 被女主角攻擊
+        ATTACKED_BY_ALL, // 被全體攻擊
+        DEAD, // 死亡
+        FOLLOW, // 跟隨模式
+        LEAVING, // 離開
+        NONE // 無 (單純不顯示)
     };
 
     int Man::mainGirl = MAINGIRL;
     int Man::all = ALL;
     int Man::girl = GIRL;
 
-    CAnimation Man::clicking;
-    CMovingBitmap Man::clicking_bar;
+    CAnimation Man::clicking; // 搶奪用量條動畫
+    CMovingBitmap Man::clicking_bar; // 搶奪用量條
     bool Man::bitmapIsLoaded = false;
 
     Man::Man()
     {
-        id = rand();
+        id = rand(); // ID亂數生成
     }
 
     Man::~Man()
@@ -45,11 +45,11 @@ namespace game_framework
 
     void Man::OnMove(int seed)
     {
-        if (status == ALIVE)
+        if (status == ALIVE) // 存活
         {
-            moving = seed % 2;
+            moving = seed % 2; // 隨機走動
 
-            if (moving && !is_focused)
+            if (moving && !is_focused) // 當沒有被鎖定時，正常走動
             {
                 if (direction)
                 {
@@ -68,15 +68,15 @@ namespace game_framework
 
                 if (direction)
                 {
-                    man_right.OnMove();
+                    right.OnMove();
                 }
                 else
                 {
-                    man_left.OnMove();
+                    left.OnMove();
                 }
             }
         }
-        else if (status == ATTACKED_BY_MAINGIRL)
+        else if (status == ATTACKED_BY_MAINGIRL) // 被女主角攻擊
         {
             flash.OnMove();
             weakening.OnMove();
@@ -90,14 +90,14 @@ namespace game_framework
 
             status = ALIVE;
         }
-        else if (status == ATTACKED_BY_ALL)
+        else if (status == ATTACKED_BY_ALL) // 被全體攻擊
         {
             flash_multi.OnMove();
             weakening.OnMove();
             clicking.OnMove();
             blood.Reset();
         }
-        else if (status == DEAD)
+        else if (status == DEAD) // 死亡
         {
             if (direction)
             {
@@ -114,12 +114,9 @@ namespace game_framework
                 }
             }
         }
-        else if (status == FOLLOW)
+        else if (status == FOLLOW) // 跟隨女主角
         {
-            //velocity = 20;
-
-            //待修正 after demo
-            if (is_positioned && direction != fdirection)
+            if (is_positioned && direction != fdirection) // 就定位時，只依據女主角左右方向換朝向方向
             {
                 if (fdirection)
                     x = fx + 80;
@@ -162,7 +159,7 @@ namespace game_framework
             else
                 man_following_left.OnMove();
 
-            if (is_reporting)
+            if (is_reporting) // 回報分數動畫
             {
                 if (scoreReport.IsFinalBitmap())
                     is_reporting = false;
@@ -170,7 +167,7 @@ namespace game_framework
                     scoreReport.OnMove();
             }
         }
-        else if (status == LEAVING)
+        else if (status == LEAVING) // 與其他女生離開
         {
             if (distance > 0)
             {
@@ -194,36 +191,36 @@ namespace game_framework
 
     void Man::OnShow(CGameMap* map)
     {
-        if (status == ALIVE)
+        if (status == ALIVE) // 存活
         {
             if (moving) //是否正在移動
             {
                 if (direction) //false => 往左, true => 往右
                 {
-                    man_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_right.OnShow();
+                    right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    right.OnShow();
                 }
                 else
                 {
-                    man_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_left.OnShow();
+                    left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    left.OnShow();
                 }
             }
             else
             {
                 if (direction) //false => 往左, true => 往右
                 {
-                    man_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_right_stand.ShowBitmap();
+                    right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    right_stand.ShowBitmap();
                 }
                 else
                 {
-                    man_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                    man_left_stand.ShowBitmap();
+                    left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                    left_stand.ShowBitmap();
                 }
             }
         }
-        else if (status == ATTACKED_BY_MAINGIRL)
+        else if (status == ATTACKED_BY_MAINGIRL) // 被女主角攻擊
         {
             flash.SetTopLeft(map->ScreenX(x) - 18, map->ScreenY(y));
             flash.OnShow();
@@ -232,7 +229,7 @@ namespace game_framework
             blood.SetTopLeft(map->ScreenX(x), map->ScreenY(y) - blood.Height());
             blood.OnShow();
         }
-        else if (status == ATTACKED_BY_ALL)
+        else if (status == ATTACKED_BY_ALL) // 被全體攻擊
         {
             flash_multi.SetTopLeft(map->ScreenX(x) - 40, map->ScreenY(y) - 25);
             flash_multi.OnShow();
@@ -248,11 +245,11 @@ namespace game_framework
             if (color_point[1].x < color_point[0].x)
                 color_point[1].x = color_point[0].x;
 
-            DrawBeam(map);
+            DrawClickingProgress(map);
             clicking.SetTopLeft(int(clicking_bar.Left() - clicking.Width() / 2 + (abs(800 - HP) / 40) * 10.5), map->ScreenY(y) - clicking.Height());
             clicking.OnShow();
         }
-        else if (status == DEAD)
+        else if (status == DEAD) // 死亡
         {
             if (direction)
             {
@@ -265,7 +262,7 @@ namespace game_framework
                 man_dead_left.OnShow();
             }
         }
-        else if (status == FOLLOW)
+        else if (status == FOLLOW) // 跟隨女主角
         {
             if (direction)
             {
@@ -278,7 +275,7 @@ namespace game_framework
                 man_following_left.OnShow();
             }
 
-            if (is_reporting)
+            if (is_reporting) // 回報分數動畫
             {
                 if (direction)
                     scoreReport.SetTopLeft(map->ScreenX(x) + 50, map->ScreenY(y) - 30);
@@ -288,7 +285,7 @@ namespace game_framework
                 scoreReport.OnShow();
             }
         }
-        else if (status == LEAVING)
+        else if (status == LEAVING) // 與其他女生離開
         {
             if (direction)
             {
@@ -303,32 +300,22 @@ namespace game_framework
         }
     }
 
-    void Man::SetDirection(bool direction)
+    void Man::SetDirection(bool direction) // 設定移動方向
     {
         this->direction = direction;
     }
 
-    void Man::SetMoving(bool status)
-    {
-        moving = status;
-    }
-
-    void Man::SetVelocity(int speed)
-    {
-        velocity = speed;
-    }
-
-    bool Man::HitMainGirl(CGameMap* map, MainGirl* girl)
+    bool Man::HitMainGirl(CGameMap* map, MainGirl* girl) // 是否與女主角接觸
     {
         int cursor_x = girl->GetCursorX();
         int cursor_y = girl->GetCursorY();
-        int x2 = x + man_left_stand.Width();
-        int y2 = y + man_left_stand.Height();
+        int x2 = x + left_stand.Width();
+        int y2 = y + left_stand.Height();
         return (cursor_x >= map->ScreenX(x) && cursor_y >= map->ScreenY(y)
-                && cursor_x <= map->ScreenX(x2) && cursor_y <= (map->ScreenY(y2) - man_left_stand.Height() / 2));
+                && cursor_x <= map->ScreenX(x2) && cursor_y <= (map->ScreenY(y2) - left_stand.Height() / 2));
     }
 
-    void Man::SetIsAlive(bool status)
+    void Man::SetIsAlive(bool status) // 設定存亡
     {
         if (status)
             this->status = ALIVE;
@@ -336,22 +323,22 @@ namespace game_framework
             this->status = DEAD;
     }
 
-    bool Man::IsAlive()
+    bool Man::IsAlive() // 是否存活
     {
         return this->status != DEAD && this->status != FOLLOW && this->status != LEAVING && this->status != NONE;
     }
 
-    bool Man::IsAlreadyDead()
+    bool Man::IsAlreadyDead() // 是否已經死透
     {
         return status == DEAD && (man_dead_right.IsFinalBitmap() || man_dead_left.IsFinalBitmap());
     }
 
-    bool Man::IsOver()
+    bool Man::IsOver() // 是否已經與其他女生離開
     {
         return status == LEAVING && distance <= 0;
     }
 
-    void Man::SetIsFocused(bool status)
+    void Man::SetIsFocused(bool status) // 設定是否被鎖定
     {
         is_focused = status;
 
@@ -359,7 +346,7 @@ namespace game_framework
             this->status = ALIVE;
     }
 
-    void Man::SetIsAttackedBy(int who)
+    void Man::SetIsAttackedBy(int who) // 設定被誰攻擊
     {
         if (who == MAINGIRL)
             status = ATTACKED_BY_MAINGIRL;
@@ -367,7 +354,7 @@ namespace game_framework
             status = ATTACKED_BY_ALL;
     }
 
-    bool Man::IsAttackedBy(int who)
+    bool Man::IsAttackedBy(int who) // 是否被此人攻擊
     {
         if (who == MAINGIRL && status == ATTACKED_BY_MAINGIRL)
             return true;
@@ -377,32 +364,12 @@ namespace game_framework
         return false;
     }
 
-    bool Man::IsFocused()
+    bool Man::IsFocused() // 是否被鎖定
     {
         return is_focused;
     }
 
-    int Man::GetX()
-    {
-        return x;
-    }
-
-    int Man::GetY()
-    {
-        return y;
-    }
-
-    int Man::GetWidth()
-    {
-        return man_left_stand.Width();
-    }
-
-    int Man::GetHeight()
-    {
-        return man_left_stand.Height();
-    }
-
-    void Man::LoseHP(double value)
+    void Man::LoseHP(double value) // 扣除血量
     {
         GAME_ASSERT(status == ATTACKED_BY_ALL || status == ATTACKED_BY_MAINGIRL, "Change Stat first!");
         double limit = 800;
@@ -413,13 +380,11 @@ namespace game_framework
             HP -= value;
         else
             HP = 0;
-
-        //is_attacked = true;
     }
 
-    void Man::SetIsKilledBy(int who)
+    void Man::SetIsKilledBy(int who) // 設定被誰殺死
     {
-        GAME_ASSERT(status == DEAD, "KKKK");
+        GAME_ASSERT(status == DEAD, "man is dead yet");
 
         if (who == MAINGIRL)
             velocity = 20;
@@ -429,12 +394,12 @@ namespace game_framework
         is_killed_by = who;
     }
 
-    bool Man::IsKilledBy(int who)
+    bool Man::IsKilledBy(int who) // 是否被此人殺死
     {
         return is_killed_by == who;
     }
 
-    void Man::SetIsFollowing(int who)
+    void Man::SetIsFollowing(int who) // 設定跟隨某人
     {
         if (who == mainGirl)
             this->status = FOLLOW;
@@ -442,45 +407,48 @@ namespace game_framework
             this->status = LEAVING;
     }
 
-    bool Man::IsFollowing(int who)
+    bool Man::IsFollowing(int who) // 是否跟隨某人
     {
         return (who == mainGirl && status == FOLLOW) || (who == girl && status == LEAVING);
     }
 
-    void Man::Follow(int x, int y, bool direction)
+    void Man::Follow(int x, int y, bool direction) // 跟隨座標點
     {
         GAME_ASSERT(status == FOLLOW, "Man doesn't want to follow someone.");
         fx = x;
-        fy = y;
+
+        if (y != -1)
+            fy = y;
+
         fdirection = direction;
     }
 
-    void Man::Report()
+    void Man::Report() // 回報分數動畫
     {
         is_reporting = true;
     }
 
-    bool Man::IsReporting()
+    bool Man::IsReporting() // 是否正在回報分數
     {
         return is_reporting;
     }
 
-    int Man::GetId()
+    int Man::GetId() // 取得男生ID
     {
         return id;
     }
 
-    double Man::GetHP()
+    double Man::GetHP() // 取得男生血量
     {
         return HP;
     }
 
-    int Man::GetScore()
+    int Man::GetScore() // 取得該男生的分數
     {
         return score;
     }
 
-    void Man::DrawBeam(CGameMap* map)
+    void Man::DrawClickingProgress(CGameMap* map) // 畫出搶奪進度條
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CPen pen(PS_SOLID, 1, RGB(255, 0, 255));
@@ -508,25 +476,25 @@ namespace game_framework
     {
         char text[100] = { 0 };
         strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
-        man_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+        left_stand.LoadBitmap(text, RGB(255, 255, 255));
         strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
-        man_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+        right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/right/normalMan (" + to_string(i) + ").bmp").c_str());
-            man_right.AddBitmap(text, RGB(255, 255, 255));
+            right.AddBitmap(text, RGB(255, 255, 255));
         }
 
-        man_right.SetDelayCount(13);
+        right.SetDelayCount(13);
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Man/normalMan" + to_string(type) + "/alive/left/normalMan (" + to_string(i) + ").bmp").c_str());
-            man_left.AddBitmap(text, RGB(255, 255, 255));
+            left.AddBitmap(text, RGB(255, 255, 255));
         }
 
-        man_left.SetDelayCount(13);
+        left.SetDelayCount(13);
 
         for (int i = 1; i <= 4; i++)
         {
@@ -638,7 +606,7 @@ namespace game_framework
         scoreReport.SetDelayCount(3);
     }
 
-    void NormalMan::OnBeginState()
+    void NormalMan::OnBeginState() // 初始化狀態
     {
         HP = 800;
         score = 1000;
@@ -676,70 +644,70 @@ namespace game_framework
         strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/stand.bmp").c_str());
 
         if (type != 3)
-            man_left_stand.LoadBitmap(text, RGB(0, 0, 0));
+            left_stand.LoadBitmap(text, RGB(0, 0, 0));
         else
-            man_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+            left_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/stand.bmp").c_str());
 
         if (type != 3)
-            man_right_stand.LoadBitmap(text, RGB(0, 0, 0));
+            right_stand.LoadBitmap(text, RGB(0, 0, 0));
         else
-            man_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+            right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         if (type == 1)
         {
             for (int i = 1; i <= 7; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_right.AddBitmap(text, RGB(0, 0, 0));
+                right.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_right.SetDelayCount(13);
+            right.SetDelayCount(13);
 
             for (int i = 1; i <= 7; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_left.AddBitmap(text, RGB(0, 0, 0));
+                left.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_left.SetDelayCount(13);
+            left.SetDelayCount(13);
         }
         else if (type == 2)
         {
             for (int i = 1; i <= 5; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_right.AddBitmap(text, RGB(0, 0, 0));
+                right.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_right.SetDelayCount(13);
+            right.SetDelayCount(13);
 
             for (int i = 1; i <= 5; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_left.AddBitmap(text, RGB(0, 0, 0));
+                left.AddBitmap(text, RGB(0, 0, 0));
             }
 
-            man_left.SetDelayCount(13);
+            left.SetDelayCount(13);
         }
         else if (type == 3)
         {
             for (int i = 1; i <= 6; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/right/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_right.AddBitmap(text, RGB(255, 255, 255));
+                right.AddBitmap(text, RGB(255, 255, 255));
             }
 
-            man_right.SetDelayCount(13);
+            right.SetDelayCount(13);
 
             for (int i = 1; i <= 6; i++)
             {
                 strcpy(text, ("RES/Man/specialMan" + to_string(type) + "/alive/left/specialMan (" + to_string(i) + ").bmp").c_str());
-                man_left.AddBitmap(text, RGB(255, 255, 255));
+                left.AddBitmap(text, RGB(255, 255, 255));
             }
 
-            man_left.SetDelayCount(13);
+            left.SetDelayCount(13);
         }
 
         for (int i = 1; i <= 4; i++)
@@ -845,10 +813,12 @@ namespace game_framework
 
         for (int i = 1; i <= 5; i++)
         {
-            if (type == 1 || type == 2)
+            if (type == 1)
                 strcpy(text, ("RES/Man/25000 (" + to_string(i) + ").bmp").c_str());
-            else if (type == 3)
+            else if (type == 2)
                 strcpy(text, ("RES/Man/30000 (" + to_string(i) + ").bmp").c_str());
+            else if (type == 3)
+                strcpy(text, ("RES/Man/40000 (" + to_string(i) + ").bmp").c_str());
 
             scoreReport.AddBitmap(text, RGB(255, 255, 255));
         }
@@ -856,10 +826,14 @@ namespace game_framework
         scoreReport.SetDelayCount(3);
     }
 
-    void SpecialMan::OnBeginState()
+    // type == 1 => Blue hair
+    // type == 2 => Brown hair
+    // type == 3 => Gold hair
+    void SpecialMan::OnBeginState() // 初始化狀態
     {
         HP = 800;
 
+        // 依據男生類型給予對應分數
         if (type == 1)
             score = 25000;
         else if (type == 2)
