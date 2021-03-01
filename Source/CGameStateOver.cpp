@@ -53,7 +53,7 @@ namespace game_framework
 
         loop = false;
 
-        if (*isDead || *score < 3000)
+        if (*isDead || *score <= 2000)
             section = 0;
         else if (*score < 30000)
             section = 1;
@@ -90,14 +90,7 @@ namespace game_framework
 
     void CGameStateOver::OnInit()
     {
-        //
-        // 當圖很多時，OnInit載入所有的圖要花很多時間。為避免玩遊戲的人
-        //     等的不耐煩，遊戲會出現「Loading ...」，顯示Loading的進度。
-        //
         ShowInitProgress(66);	// 接個前一個狀態的進度，此處進度視為66%
-        //
-        // 開始載入資料
-        //
         char text[100] = { 0 };
 
         for (int i = 1; i <= 10; i++)
@@ -199,10 +192,6 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_END3, "Sounds/end3.mp3");
         CAudio::Instance()->Load(AUDIO_END4, "Sounds/end4.mp3");
         CAudio::Instance()->Load(AUDIO_END5, "Sounds/end5.mp3");
-        //Sleep(300);				// 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
-        //
-        // 最終進度為100%
-        //
         ShowInitProgress(100);
     }
 
@@ -212,13 +201,9 @@ namespace game_framework
         cursor_y = point.y;
     }
 
-    void CGameStateOver::OnLButtonDown(UINT nFlags, CPoint point)
-    {
-    }
-
     void CGameStateOver::OnLButtonUp(UINT nFlags, CPoint point)
     {
-        if (155 <= cursor_x && cursor_x <= 350 && 520 <= cursor_y && cursor_y <= 580)
+        if (155 <= cursor_x && cursor_x <= 350 && 520 <= cursor_y && cursor_y <= 580) // 回到主選單按紐
         {
             playAgain = true;
             CAudio::Instance()->Stop(AUDIO_END1);
@@ -228,9 +213,9 @@ namespace game_framework
             CAudio::Instance()->Stop(AUDIO_END5);
             CAudio::Instance()->Play(AUDIO_PRESS);
         }
-        else if (380 <= cursor_x && cursor_x <= 575 && 523 <= cursor_y && cursor_y <= 583)
+        else if (380 <= cursor_x && cursor_x <= 575 && 523 <= cursor_y && cursor_y <= 583) // 離開按鈕
             PostMessage(AfxGetMainWnd()->m_hWnd, WM_CLOSE, 0, 0);	// 關閉遊戲
-        else if (610 <= cursor_x && cursor_x <= 670 && 510 <= cursor_y && cursor_y <= 590)
+        else if (610 <= cursor_x && cursor_x <= 670 && 510 <= cursor_y && cursor_y <= 590) // 靜音按鈕
         {
             if (!change)
                 waveOutSetVolume(0, 0); //On切至Off時靜音

@@ -8,13 +8,13 @@
 
 namespace game_framework
 {
-    enum State
+    enum State // 狀態
     {
-        ALIVE,
-        ATTACKING,
-        FLYING,
-        LEAVING,
-        DEAD
+        ALIVE, // 存活
+        ATTACKING, // 攻擊
+        FLYING, // 擊飛
+        LEAVING, // 離開
+        DEAD // 死亡
     };
 
     Girl::Girl()
@@ -25,21 +25,16 @@ namespace game_framework
     {
     }
 
-    void Girl::SetDirection(bool direction)
+    void Girl::SetDirection(bool direction) // 設定移動方向
     {
         this->direction = direction;
     }
 
-    void Girl::SetMoving(bool status)
-    {
-        this->moving = status;
-    }
-
     void Girl::OnMove(CGameMap* map, int seed)
     {
-        if (status == ALIVE)
+        if (status == ALIVE) // 存活
         {
-            if (is_shocking)
+            if (is_shocking) // 女生注意到女主角正在魅惑男生
             {
                 exclamation.OnMove();
 
@@ -49,9 +44,9 @@ namespace game_framework
                     surprising_left.OnMove();
             }
 
-            moving = seed % 2;
+            moving = seed % 2; // 隨機走動
 
-            if (moving && !is_shocking)
+            if (moving && !is_shocking) // 正在移動and沒有搶奪事件
             {
                 if (direction)
                 {
@@ -69,17 +64,14 @@ namespace game_framework
                 }
 
                 if (direction)
-                    girl_right.OnMove();
+                    right.OnMove();
                 else
-                    girl_left.OnMove();
+                    left.OnMove();
             }
         }
-        else if (status == ATTACKING)
+        else if (status == FLYING) // 擊飛
         {
-        }
-        else if (status == FLYING)
-        {
-            if (map->IsInScreen(x, x + girl_left_stand.Width()))
+            if (map->IsInScreen(x, x + left_stand.Width()))
                 if (direction)
                 {
                     x -= 15;
@@ -95,7 +87,7 @@ namespace game_framework
             else
                 status = DEAD;
         }
-        else if (status == LEAVING)
+        else if (status == LEAVING) // 離開
         {
             if (distance > 0)
             {
@@ -120,26 +112,26 @@ namespace game_framework
 
     void Girl::OnShow(CGameMap* map)
     {
-        if (status == ALIVE)
+        if (status == ALIVE) // 存活
         {
-            if (is_shocking)
+            if (is_shocking) // 女生注意到女主角正在魅惑男生
             {
-                exclamation.SetTopLeft(map->ScreenX(x) + girl_left_stand.Width() / 2, map->ScreenY(y) - exclamation.Height());
+                exclamation.SetTopLeft(map->ScreenX(x) + left_stand.Width() / 2, map->ScreenY(y) - exclamation.Height());
                 exclamation.OnShow();
 
                 if (direction)
                 {
-                    beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 15, map->ScreenY(y) + girl_left_stand.Height() / 5 - 10);
-                    beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 + 5, map->ScreenY(y) + girl_left_stand.Height() / 5 + 10);
+                    beam_pos[2].SetPoint(map->ScreenX(x) + left_stand.Width() / 2 + 15, map->ScreenY(y) + left_stand.Height() / 5 - 10);
+                    beam_pos[3].SetPoint(map->ScreenX(x) + left_stand.Width() / 2 + 5, map->ScreenY(y) + left_stand.Height() / 5 + 10);
                     notice_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     notice_right.ShowBitmap();
-                    surprising_right.SetTopLeft(map->ScreenX(x + girl_left_stand.Width()), map->ScreenY(y));
+                    surprising_right.SetTopLeft(map->ScreenX(x + left_stand.Width()), map->ScreenY(y));
                     surprising_right.OnShow();
                 }
                 else
                 {
-                    beam_pos[3].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 20, map->ScreenY(y) + girl_left_stand.Height() / 5 - 10);
-                    beam_pos[2].SetPoint(map->ScreenX(x) + girl_left_stand.Width() / 2 - 5, map->ScreenY(y) + girl_left_stand.Height() / 5 + 10);
+                    beam_pos[3].SetPoint(map->ScreenX(x) + left_stand.Width() / 2 - 20, map->ScreenY(y) + left_stand.Height() / 5 - 10);
+                    beam_pos[2].SetPoint(map->ScreenX(x) + left_stand.Width() / 2 - 5, map->ScreenY(y) + left_stand.Height() / 5 + 10);
                     notice_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
                     notice_left.ShowBitmap();
                     surprising_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
@@ -155,30 +147,30 @@ namespace game_framework
                 if (moving) //是否正在移動
                     if (direction) //false => 往左, true => 往右
                     {
-                        girl_right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_right.OnShow();
+                        right.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        right.OnShow();
                     }
                     else
                     {
-                        girl_left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_left.OnShow();
+                        left.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        left.OnShow();
                     }
                 else
                 {
                     if (direction) //false => 往左, true => 往右
                     {
-                        girl_right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_right_stand.ShowBitmap();
+                        right_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        right_stand.ShowBitmap();
                     }
                     else
                     {
-                        girl_left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
-                        girl_left_stand.ShowBitmap();
+                        left_stand.SetTopLeft(map->ScreenX(x), map->ScreenY(y));
+                        left_stand.ShowBitmap();
                     }
                 }
             }
         }
-        else if (status == ATTACKING)
+        else if (status == ATTACKING) // 攻擊
         {
             if (direction)
             {
@@ -211,9 +203,9 @@ namespace game_framework
                 }
             }
 
-            status = ALIVE;
+            status = ALIVE; // 每攻擊一次動畫播一次
         }
-        else if (status == FLYING)
+        else if (status == FLYING) // 擊飛
         {
             if (direction)
             {
@@ -226,7 +218,7 @@ namespace game_framework
                 flying_left.OnShow();
             }
         }
-        else if (status == LEAVING)
+        else if (status == LEAVING) // 離開
         {
             if (direction)
             {
@@ -244,76 +236,56 @@ namespace game_framework
         }
     }
 
-    void Girl::SetIsShocking(bool status)
+    void Girl::SetIsShocking(bool status) // 設定是否注意到女主角正在魅惑男生
     {
         is_shocking = status;
     }
 
-    bool Girl::IsShocking()
+    bool Girl::IsShocking() // 是否注意到女主角正在魅惑男生
     {
         return is_shocking;
     }
 
-    void Girl::LockPerson(Man* man, CGameMap* map)
+    void Girl::LockPerson(Man* man, CGameMap* map) // 鎖定男生
     {
         beam_pos[0].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 - 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
         beam_pos[1].SetPoint(map->ScreenX(man->GetX()) + man->GetWidth() / 2 + 10, map->ScreenY(man->GetY()) + man->GetHeight() / 3);
     }
 
-    void Girl::Attack(Man* man, CGameMap* map)
+    void Girl::Attack(Man* man, CGameMap* map) // 攻擊男生
     {
         man->LoseHP(-damage);
         status = ATTACKING;
     }
 
 
-    bool Girl::IsLocked()
+    bool Girl::IsLocked() // 是否鎖定
     {
         return exclamation.IsFinalBitmap();
     }
 
-    void Girl::Win()
+    void Girl::Win() // 贏
     {
         status = LEAVING;
     }
 
-    void Girl::Lose()
+    void Girl::Lose() // 輸
     {
         status = FLYING;
         CAudio::Instance()->Play(AUDIO_FLYING, false);
     }
 
-    bool Girl::IsAlive()
+    bool Girl::IsAlive() // 是否存活
     {
         return status == ALIVE;
     }
 
-    bool Girl::IsAlreadyDead()
+    bool Girl::IsAlreadyDead() // 是否已經死透
     {
         return status == DEAD;
     }
 
-    int Girl::GetX()
-    {
-        return x;
-    }
-
-    int Girl::GetY()
-    {
-        return y;
-    }
-
-    int Girl::GetWidth()
-    {
-        return girl_left_stand.Width();
-    }
-
-    int Girl::GetHeight()
-    {
-        return girl_left_stand.Height();
-    }
-
-    void Girl::DrawBeam(CGameMap* map)
+    void Girl::DrawBeam(CGameMap* map) // 畫出雷射光束
     {
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CPen pen(PS_SOLID, 3, RGB(255, 166, 0));
@@ -339,20 +311,20 @@ namespace game_framework
     {
         char text[100] = { 0 };
         strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/left/stand.bmp").c_str());
-        girl_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+        left_stand.LoadBitmap(text, RGB(255, 255, 255));
         strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/stand.bmp").c_str());
-        girl_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+        right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/right/normalGirl (" + to_string(i) + ").bmp").c_str());
-            girl_right.AddBitmap(text, RGB(255, 255, 255));
+            right.AddBitmap(text, RGB(255, 255, 255));
         }
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Girl/normalGirl" + to_string(type) + "/left/normalGirl (" + to_string(i) + ").bmp").c_str());
-            girl_left.AddBitmap(text, RGB(255, 255, 255));
+            left.AddBitmap(text, RGB(255, 255, 255));
         }
 
         for (int i = 1; i < 5; i++)
@@ -416,7 +388,7 @@ namespace game_framework
         fun.SetDelayCount(5);
     }
 
-    void NormalGirl::OnBeginState()
+    void NormalGirl::OnBeginState() // 初始化狀態
     {
         Girl::damage = 3;
         Girl::x = x;
@@ -434,7 +406,7 @@ namespace game_framework
         flying_right.Reset();
     }
 
-    bool NormalGirl::IsSpecialGirl()
+    bool NormalGirl::IsSpecialGirl() // 是否為金髮特殊女生
     {
         return false;
     }
@@ -451,20 +423,20 @@ namespace game_framework
     {
         char text[100] = { 0 };
         strcpy(text, "RES/Girl/specialGirl/left/stand.bmp");
-        girl_left_stand.LoadBitmap(text, RGB(255, 255, 255));
+        left_stand.LoadBitmap(text, RGB(255, 255, 255));
         strcpy(text, "RES/Girl/specialGirl/right/stand.bmp");
-        girl_right_stand.LoadBitmap(text, RGB(255, 255, 255));
+        right_stand.LoadBitmap(text, RGB(255, 255, 255));
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Girl/specialGirl/right/specialGirl (" + to_string(i) + ").bmp").c_str());
-            girl_right.AddBitmap(text, RGB(255, 255, 255));
+            right.AddBitmap(text, RGB(255, 255, 255));
         }
 
         for (int i = 1; i <= 5; i++)
         {
             strcpy(text, ("RES/Girl/specialGirl/left/specialGirl (" + to_string(i) + ").bmp").c_str());
-            girl_left.AddBitmap(text, RGB(255, 255, 255));
+            left.AddBitmap(text, RGB(255, 255, 255));
         }
 
         for (int i = 1; i < 5; i++)
@@ -528,7 +500,7 @@ namespace game_framework
         fun.SetDelayCount(5);
     }
 
-    void SpecialGirl::OnBeginState()
+    void SpecialGirl::OnBeginState() // 初始化狀態
     {
         Girl::damage = 18;
         Girl::x = x;
@@ -546,7 +518,7 @@ namespace game_framework
         flying_right.Reset();
     }
 
-    bool SpecialGirl::IsSpecialGirl()
+    bool SpecialGirl::IsSpecialGirl() // 是否為金髮特殊女生
     {
         return true;
     }
