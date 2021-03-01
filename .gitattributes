@@ -1,1 +1,2 @@
 game.VC.db filter=lfs diff=lfs merge=lfs -text
+ElectricalEyeGirl.msi filter=lfs diff=lfs merge=lfs -text
