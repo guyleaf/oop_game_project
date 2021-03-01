@@ -261,8 +261,8 @@ namespace game_framework
             file_type[i] = toupper(file_type[i]);
 
         if (file_type.compare(".MID") != 0 &&
-                file_type.compare(".WAV") != 0 &&
-                file_type.compare(".MP3") != 0)
+            file_type.compare(".WAV") != 0 &&
+            file_type.compare(".MP3") != 0)
         {
             string str;
             str.append("Can not load audio file ").append(lpzFileName);
