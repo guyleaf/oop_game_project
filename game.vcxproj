@@ -287,6 +287,7 @@
     </ClCompile>
     <ClCompile Include="Source\MainGirl.cpp" />
     <ClCompile Include="Source\Man.cpp" />
+    <ClCompile Include="Source\Role.cpp" />
     <ClCompile Include="Source\StdAfx.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -302,6 +303,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ObjectFileName>
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">UnitTest/</ProgramDataBaseFileName>
     </ClCompile>
+    <ClCompile Include="Source\Teacher.cpp" />
     <ClCompile Include="Source\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -321,8 +323,10 @@
     <ClInclude Include="Source\MainGirl.h" />
     <ClInclude Include="Source\Man.h" />
     <ClInclude Include="Source\Resource.h" />
+    <ClInclude Include="Source\Role.h" />
     <ClInclude Include="Source\StdAfx.h" />
     <ClInclude Include="Source\gamelib.h" />
+    <ClInclude Include="Source\Teacher.h" />
     <ClInclude Include="Source\UI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -330,15 +334,21 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">0x7c04</Culture>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="RES\About_oop.bmp" />
     <Image Include="RES\button (1).bmp" />
     <Image Include="RES\button (2).bmp" />
     <Image Include="RES\button (3).bmp" />
     <Image Include="RES\button (4).bmp" />
     <Image Include="RES\classroom.bmp" />
     <Image Include="RES\initScreen2.bmp" />
+    <Image Include="RES\init\about_icon.bmp" />
+    <Image Include="RES\init\about_icon_hover.bmp" />
+    <Image Include="RES\init\intro_icon.bmp" />
+    <Image Include="RES\init\intro_icon_hover.bmp" />
     <Image Include="RES\left_girl.bmp" />
     <Image Include="RES\loding.bmp" />
     <Image Include="RES\map1.bmp" />
