@@ -33,6 +33,7 @@ namespace game_framework
         is_reporting = false;
         x = 450;
         y = MIDDLE;
+        ny = MIDDLE;
         moving = false;
         velocity = 5;
         is_focusing = false;
@@ -190,10 +191,18 @@ namespace game_framework
     {
         if (state == INANIMATION)
         {
+            if (ui->IsGameOver() && is_bump)
+            {
+                is_reporting = true;
+                is_bump = false;
+                moving = false;
+            }
+
             if (ui->IsGameOver() && ui->GetHeartPoints() > 0) // 結算動作
             {
                 static int count = 40;
                 static unsigned int startIndex = 0;
+                y = ny;
 
                 if (moving) // 進行結算移動
                 {
@@ -524,14 +533,14 @@ namespace game_framework
                 sx -= (girl_left_stand.Width() + 8);
 
                 if (is_bump)
-                    slaves[i]->Follow(sx, -1, direction);
+                    slaves[i]->Follow(sx, ny, direction);
                 else
                     slaves[i]->Follow(sx, y, direction);
             }
             else
             {
                 if (is_bump)
-                    slaves[i]->Follow(sx, -1, direction);
+                    slaves[i]->Follow(sx, ny, direction);
                 else
                     slaves[i]->Follow(sx, y, direction);
 
@@ -974,7 +983,9 @@ namespace game_framework
     void MainGirl::Lose() // 輸掉
     {
         is_bump = true;
+        moving = false;
         focus_id = -1;
+        ny = y;
         is_interrupted = true;
         state = INANIMATION;
     }

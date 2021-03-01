@@ -43,11 +43,11 @@ namespace game_framework
             {
                 delete girl[j][1][i];
             }
-        }
 
-        for (size_t i = 0; i < hearts.size(); i++)
-        {
-            delete hearts[i];
+            for (size_t i = 0; i < hearts[j].size(); i++)
+            {
+                delete hearts[j][i];
+            }
         }
 
         delete mainGirl;
@@ -170,6 +170,13 @@ namespace game_framework
                 delete girl[level][1][index];
                 girl[level][1].erase(girl[level][1].begin() + index);
             }
+
+            for (size_t i = 0; i < hearts[level].size(); i++)
+            {
+                delete hearts[level][i];
+            }
+
+            hearts[level].erase(hearts[level].begin(), hearts[level].end());
         }
 
         srand((unsigned int)time(NULL));
@@ -178,6 +185,8 @@ namespace game_framework
         teacher->LoadBitmap();
         GenerateGoldBoy(0, false, rand() % 2);
         isGoldBoyShowUp = false; // 金髮男生預設不顯示
+        *isDead = false;
+        *score = 0;
     }
 
     void CGameStateRun::OnMove()							// 移動遊戲元素
@@ -378,13 +387,11 @@ namespace game_framework
                     man[level - 1][0][i]->SetIsFollowing(Man::girl);
                 }
             }
-
-            if (!ui.IsGameOver())
+            else if (man[level - 1][0][i]->IsAlive())
             {
                 int HP = int(man[level - 1][0][i]->GetHP());
 
-                // 女主角與女生搶奪男生的部分
-                if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
+                if (man[level - 1][0][i]->IsAttackedBy(Man::all))
                 {
                     // 輸贏決定的部分
                     if (HP >= 800 || HP <= 0)
@@ -406,7 +413,7 @@ namespace game_framework
                                     num += 1;
                             }
 
-                            hearts.push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), num));
+                            hearts[level - 1].push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), num));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -432,7 +439,29 @@ namespace game_framework
 
                         break;
                     }
+                }
+                else
+                {
+                    if (HP <= 0)
+                    {
+                        man[level - 1][0][i]->SetIsAlive(false);
+                        man[level - 1][0][i]->SetIsKilledBy(Man::mainGirl);
+                        mainGirl->SetIsFocusing(false);
+                        mainGirl->SetIsAttacking(false);
+                        hearts[level - 1].push_back(new Heart(0, 0, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), 0));
+                        CAudio::Instance()->Stop(AUDIO_LASER);
+                        break;
+                    }
+                }
+            }
 
+            if (!ui.IsGameOver())
+            {
+                int HP = int(man[level - 1][0][i]->GetHP());
+
+                // 女主角與女生搶奪男生的部分
+                if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
+                {
                     if (mainGirl->IsClicked()) // 女主角攻擊 click觸發是由MouseUp那裡觸發
                     {
                         mainGirl->Attack(man[level - 1][0][i], &map);
@@ -458,16 +487,6 @@ namespace game_framework
                 {
                     if (man[level - 1][0][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[level - 1][0][i]))
                     {
-                        if (HP <= 0)
-                        {
-                            man[level - 1][0][i]->SetIsAlive(false);
-                            man[level - 1][0][i]->SetIsKilledBy(Man::mainGirl);
-                            mainGirl->SetIsFocusing(false);
-                            mainGirl->SetIsAttacking(false);
-                            hearts.push_back(new Heart(0, 0, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), 0));
-                            CAudio::Instance()->Stop(AUDIO_LASER);
-                        }
-
                         // 是否有被女主角鎖定
                         if (man[level - 1][0][i]->HitMainGirl(&map, mainGirl))
                         {
@@ -548,13 +567,13 @@ namespace game_framework
                     man[level - 1][1][i]->SetIsFollowing(Man::girl);
                 }
             }
-
-            if (!ui.IsGameOver())
+            else if (man[level - 1][1][i]->IsAlive())
             {
                 int HP = int(man[level - 1][1][i]->GetHP());
 
-                if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
+                if (man[level - 1][1][i]->IsAttackedBy(Man::all))
                 {
+                    // 輸贏決定的部分
                     if (HP >= 800 || HP <= 0)
                     {
                         man[level - 1][1][i]->SetIsAlive(false);
@@ -574,7 +593,7 @@ namespace game_framework
                                     num += 1;
                             }
 
-                            hearts.push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, num));
+                            hearts[level - 1].push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, num));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -600,7 +619,27 @@ namespace game_framework
 
                         break;
                     }
+                }
+                else
+                {
+                    if (HP <= 0)
+                    {
+                        man[level - 1][1][i]->SetIsAlive(false);
+                        man[level - 1][1][i]->SetIsKilledBy(Man::mainGirl);
+                        mainGirl->SetIsFocusing(false);
+                        mainGirl->SetIsAttacking(false);
+                        hearts[level - 1].push_back(new Heart(1, 0, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, 0));
+                        CAudio::Instance()->Stop(AUDIO_LASER);
+                    }
+                }
+            }
 
+            if (!ui.IsGameOver())
+            {
+                int HP = int(man[level - 1][1][i]->GetHP());
+
+                if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
+                {
                     if (mainGirl->IsClicked())
                     {
                         mainGirl->Attack(man[level - 1][1][i], &map);
@@ -626,16 +665,6 @@ namespace game_framework
                 {
                     if (man[level - 1][1][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[level - 1][1][i]))
                     {
-                        if (HP <= 0)
-                        {
-                            man[level - 1][1][i]->SetIsAlive(false);
-                            man[level - 1][1][i]->SetIsKilledBy(Man::mainGirl);
-                            mainGirl->SetIsFocusing(false);
-                            mainGirl->SetIsAttacking(false);
-                            hearts.push_back(new Heart(1, 0, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, 0));
-                            CAudio::Instance()->Stop(AUDIO_LASER);
-                        }
-
                         if (man[level - 1][1][i]->HitMainGirl(&map, mainGirl))
                         {
                             if (mainGirl->IsAttacking())
@@ -730,22 +759,22 @@ namespace game_framework
         }
 
         // 愛心掉落處理
-        for (size_t i = 0; i < hearts.size(); i++)
+        for (size_t i = 0; i < hearts[level - 1].size(); i++)
         {
-            if (hearts[i]->HitMainGirl(mainGirl))
+            if (hearts[level - 1][i]->HitMainGirl(mainGirl))
             {
-                ui.AddScore(hearts[i]->GetHP());
+                ui.AddScore(hearts[level - 1][i]->GetHP());
 
                 if (!mainGirl->IsReinforced())
-                    ui.AddHeartPoints(hearts[i]->GetHP() / 2 + 300);
+                    ui.AddHeartPoints(hearts[level - 1][i]->GetHP() / 2 + 300);
 
                 CAudio::Instance()->Play(AUDIO_EAT_HEART, false);
-                delete hearts[i];
-                hearts.erase(hearts.begin() + i);
+                delete hearts[level - 1][i];
+                hearts[level - 1].erase(hearts[level - 1].begin() + i);
                 break;
             }
             else
-                hearts[i]->OnMove();
+                hearts[level - 1][i]->OnMove();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -765,6 +794,8 @@ namespace game_framework
 
             mainGirl->SetIsReinforced(false);
         }
+
+        mainGirl->OnMove(&map, &ui);
 
         if (ui.IsGameOver() && !ui.IsWin() && mainGirl->IsInAnimation()) // 遊戲結束，女主角死了的部分
         {
@@ -822,8 +853,6 @@ namespace game_framework
             }
         }
 
-        mainGirl->OnMove(&map, &ui);
-
         // 上下樓梯按鈕的部分
         if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
@@ -839,6 +868,11 @@ namespace game_framework
                 else
                     ui.SetIsButtonVisible(true, true);
             }
+        }
+        else
+        {
+            ui.SetIsButtonVisible(false, false);
+            ui.SetIsButtonVisible(false, true);
         }
     }
 
@@ -935,8 +969,8 @@ namespace game_framework
         teacher->OnShow(&map);
         mainGirl->OnShow(&map, &ui);
 
-        for (size_t i = 0; i < hearts.size(); i++)
-            hearts[i]->OnShow(&map);
+        for (size_t i = 0; i < hearts[level - 1].size(); i++)
+            hearts[level - 1][i]->OnShow(&map);
 
         for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
