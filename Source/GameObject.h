@@ -2,25 +2,25 @@
 namespace game_framework
 {
     /////////////////////////////////////////////////////////////////////////////
-    // Constants
+    // 此檔案適用於統一include檔案，方便統一管理
     /////////////////////////////////////////////////////////////////////////////
-
-    enum AUDIO_ID  				// 定義各種音效的編號
-    {
-        AUDIO_GAME,				// 0
-        AUDIO_LASER,			// 1
-        AUDIO_EAT_HEART,		// 2
-        AUDIO_FLYING			// 3
-    };
 
     class CGameMap;
     class MainGirl;
+    class Role;
     class Man;
     class Girl;
     class Heart;
+    class Teacher;
+    class CHeartPoint;
+    class UI;
 }
 #include "CGameMap.h"
 #include "MainGirl.h"
+#include "Role.h"
 #include "Man.h"
 #include "Girl.h"
 #include "Heart.h"
+#include "Teacher.h"
+#include "CHeartPoint.h"
+#include "UI.h"

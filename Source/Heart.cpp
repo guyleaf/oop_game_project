@@ -8,9 +8,40 @@
 
 namespace game_framework
 {
-    Heart::Heart(int pos, int size, int x, int y, int HP) : size(size), x(x), y(y), HP(HP), pos(pos)
+    Heart::Heart(int pos, int size, int x, int y, int numberOfPeople) : size(size), x(x), y(y), pos(pos)
     {
         LoadBitmap();
+
+        switch (numberOfPeople) // 依人數決定愛心量
+        {
+            case 0:
+                HP = 500;
+                break;
+
+            case 1:
+                HP = 1500;
+                break;
+
+            case 2:
+                HP = 3000;
+                break;
+
+            case 3:
+                HP = 5000;
+                break;
+
+            case 4:
+                HP = 10000;
+                break;
+
+            case 5:
+                HP = 25000;
+                break;
+
+            default:
+                HP = 1000000;
+                break;
+        }
     }
 
     void Heart::OnMove()
@@ -25,19 +56,33 @@ namespace game_framework
 
         if (pos == 0)
         {
-            for (int i = 1; i <= 15; i++)
-            {
-                strcpy(text, ("RES/Heart/heart_small_top (" + to_string(i) + ").bmp").c_str());
-                heart.AddBitmap(text, RGB(255, 255, 255));
-            }
+            if (size == 0)
+                for (int i = 1; i <= 15; i++)
+                {
+                    strcpy(text, ("RES/Heart/small/heart_small_top (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
+            else
+                for (int i = 1; i <= 15; i++)
+                {
+                    strcpy(text, ("RES/Heart/big/heart_big_top (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
         }
         else
         {
-            for (int i = 1; i <= 9; i++)
-            {
-                strcpy(text, ("RES/Heart/heart_small_bottom (" + to_string(i) + ").bmp").c_str());
-                heart.AddBitmap(text, RGB(255, 255, 255));
-            }
+            if (size == 0)
+                for (int i = 1; i <= 9; i++)
+                {
+                    strcpy(text, ("RES/Heart/small/heart_small_bottom (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
+            else
+                for (int i = 1; i <= 9; i++)
+                {
+                    strcpy(text, ("RES/Heart/big/heart_big_bottom (" + to_string(i) + ").bmp").c_str());
+                    heart.AddBitmap(text, RGB(255, 255, 255));
+                }
         }
 
         heart.SetDelayCount(1);
@@ -49,12 +94,12 @@ namespace game_framework
         heart.OnShow();
     }
 
-    bool Heart::HitMainGirl(MainGirl* girl)
+    bool Heart::HitMainGirl(MainGirl* girl) // 是否與女主角接觸
     {
         return girl->GetPositionX() <= this->x && this->x <= girl->GetPositionX() + girl->Width();
     }
 
-    int Heart::GetHP()
+    int Heart::GetHP() // 取得愛心量
     {
         return HP;
     }
