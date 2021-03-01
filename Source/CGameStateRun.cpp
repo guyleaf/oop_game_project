@@ -13,12 +13,11 @@ namespace game_framework
     // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameStateRun::CGameStateRun(CGame* g, int* score, bool* isDead) : CGameState(g, score, isDead)
+    CGameStateRun::CGameStateRun(CGame* g, int* score, bool* isDead) : CGameState(g, score, isDead) // score, isDead 在GameState之間傳遞
     {
         mainGirl = new MainGirl();
         LoadData();
         teacher = NULL;
-        isGoldBoyGenerated = false;
     }
 
     CGameStateRun::~CGameStateRun()
@@ -44,11 +43,11 @@ namespace game_framework
             {
                 delete girl[j][1][i];
             }
-        }
 
-        for (size_t i = 0; i < hearts.size(); i++)
-        {
-            delete hearts[i];
+            for (size_t i = 0; i < hearts[j].size(); i++)
+            {
+                delete hearts[j][i];
+            }
         }
 
         delete mainGirl;
@@ -57,14 +56,7 @@ namespace game_framework
 
     void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
     {
-        //
-        // 當圖很多時，OnInit載入所有的圖要花很多時間。為避免玩遊戲的人
-        //     等的不耐煩，遊戲會出現「Loading ...」，顯示Loading的進度。
-        //
         ShowInitProgress(33);	// 接個前一個狀態的進度，此處進度視為33%
-        //
-        // 開始載入資料
-        //
         map.LoadBitMap();
         mainGirl->LoadBitMap();
 
@@ -92,12 +84,7 @@ namespace game_framework
         }
 
         ui.LoadBitmap();
-        //
-        // 完成部分Loading動作，提高進度
-        //
         ShowInitProgress(50);
-        //Sleep(300); // 放慢，以便看清楚進度，實際遊戲請刪除此Sleep
-        //CAudio::Instance()->Load(AUDIO_GAME, "sounds\\game.mp3");	// 載入編號0的聲音game.mp3
         CAudio::Instance()->Load(AUDIO_LASER, "sounds\\laser.mp3");
         CAudio::Instance()->Load(AUDIO_EAT_HEART, "sounds\\eatheart.mp3");
         CAudio::Instance()->Load(AUDIO_FLYING, "sounds\\flying.mp3");
@@ -109,19 +96,16 @@ namespace game_framework
         CAudio::Instance()->Load(AUDIO_SUMMARIZE, "sounds\\summarize.mp3");
         CAudio::Instance()->Load(AUDIO_LOSE, "sounds\\lose.mp3");
         CAudio::Instance()->Load(AUDIO_WARNING, "sounds\\warning.mp3");
-        //
-        // 此OnInit動作會接到CGameStaterOver::OnInit()，所以進度還沒到100%
-        //
     }
 
-    void CGameStateRun::OnBeginState()
+    void CGameStateRun::OnBeginState() // 初始化狀態
     {
         ui.OnBeginState();
         ui.LoadVolume();
         map.OnBeginState();
         mainGirl->OnBeginState();
 
-        for (int level = 0; level < 4; level++)
+        for (int level = 0; level < 4; level++) // 除了初始化外，刪除金髮男生女生
         {
             int index = -1;
 
@@ -186,41 +170,42 @@ namespace game_framework
                 delete girl[level][1][index];
                 girl[level][1].erase(girl[level][1].begin() + index);
             }
+
+            for (size_t i = 0; i < hearts[level].size(); i++)
+            {
+                delete hearts[level][i];
+            }
+
+            hearts[level].erase(hearts[level].begin(), hearts[level].end());
         }
 
         srand((unsigned int)time(NULL));
         delete teacher;
         teacher = new Teacher(rand() % 4 + 1, 1000, MIDDLE);
         teacher->LoadBitmap();
-        isGoldBoyGenerated = false;
+        GenerateGoldBoy(0, false, rand() % 2);
+        isGoldBoyShowUp = false; // 金髮男生預設不顯示
+        *isDead = false;
+        *score = 0;
     }
 
     void CGameStateRun::OnMove()							// 移動遊戲元素
     {
-        //
-        // 如果希望修改cursor的樣式，則將下面程式的commment取消即可
-        //
-        //SetCursor(AfxGetApp()->LoadCursor(IDC_GAMECURSOR));
-        //mainGirl->SetIsFocusing(false);
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        int level = map.GetLevel();
+        int level = map.GetLevel(); // 取得目前樓層
         map.OnMove();
         ui.OnMove();
         srand((unsigned)time(NULL));
 
-        if (!isGoldBoyGenerated && !mainGirl->IsInAnimation() && mainGirl->IsReinforced())
-        {
-            GenerateGoldBoy(0, false, rand() % 2);
-            isGoldBoyGenerated = true;
-        }
+        if (!mainGirl->IsInAnimation() && mainGirl->IsReinforced()) // 當女主角進入特殊時間時，金髮男女出現
+            isGoldBoyShowUp = true;
 
-        if (!ui.IsGameOver() && !mainGirl->IsInAnimation() && mainGirl->IsReinforced())
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation() && mainGirl->IsReinforced()) // 特殊時間過場動畫結束
         {
             ui.GotoHRState(CHeartPoint::reinforced);
             ui.Resume();
         }
 
-        if (ui.IsGameOver())
+        if (ui.IsGameOver()) // 當遊戲結束時，解除所有狀態
         {
             if (mainGirl->IsAttacking())
                 CAudio::Instance()->Stop(AUDIO_LASER);
@@ -230,42 +215,52 @@ namespace game_framework
             mainGirl->SetIsAttacking(false);
         }
 
-        if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
+        if (!ui.IsGameOver() && !mainGirl->IsInAnimation()) // 遊戲未結束與女主角不在動畫轉場中
         {
-            if (teacher->IsInLevel(level) && teacher->HitMainGirl(mainGirl))
+            static int delay_counter = -1;
+
+            if (teacher->IsInLevel(level) && teacher->HitMainGirl(mainGirl) && delay_counter == -1) // 老師與女主角相撞
             {
-                if (mainGirl->IsAttacking())
+                if (mainGirl->IsAttacking()) // 中斷目前攻擊
                     CAudio::Instance()->Stop(AUDIO_LASER);
 
                 mainGirl->SetIsLocked(false);
                 mainGirl->SetIsFocusing(false);
                 mainGirl->SetIsAttacking(false);
 
-                if (!mainGirl->IsReinforced())
+                if (!mainGirl->IsReinforced()) // 不在特殊時間
                     ui.AddHeartPoints(-600);
 
-                CAudio::Instance()->Play(AUDIO_FLYING, false);
-                mainGirl->Lose();
+                CAudio::Instance()->Play(AUDIO_FLYING, false); // 彈飛音效
+                mainGirl->Lose(); // 女主角撞飛
+                delay_counter = 30;
             }
-            else if (mainGirl->IsAttacking() && !mainGirl->IsReinforced() && ui.GetHeartPoints() <= 0)
+            else if (mainGirl->IsAttacking() && !mainGirl->IsReinforced() && ui.GetHeartPoints() <= 0) // 搶奪中，愛心量沒了
             {
-                if (mainGirl->IsAttacking())
+                if (mainGirl->IsAttacking()) // 中斷目前攻擊
                     CAudio::Instance()->Stop(AUDIO_LASER);
 
                 mainGirl->SetIsLocked(false);
                 mainGirl->SetIsFocusing(false);
                 mainGirl->SetIsAttacking(false);
-                CAudio::Instance()->Play(AUDIO_FLYING, false);
-                mainGirl->Lose();
+                CAudio::Instance()->Play(AUDIO_FLYING, false); // 彈飛音效
+                mainGirl->Lose(); // 女主角撞飛
             }
+
+            if (delay_counter != -1)
+                delay_counter--;
         }
 
         teacher->OnMove(&map);
 
         if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
+            // 用於女主角鎖定男生的判斷
             for (size_t i = 0; i < man[level - 1][0].size(); i++)
             {
+                if (!isGoldBoyShowUp && man[level - 1][0][i]->GetScore() == 40000)
+                    continue;
+
                 if (man[level - 1][0][i]->IsAlive() && !mainGirl->IsFocusing() && man[level - 1][0][i]->HitMainGirl(&map, mainGirl))
                 {
                     man[level - 1][0][i]->SetIsFocused(true);
@@ -276,6 +271,9 @@ namespace game_framework
 
             for (size_t i = 0; i < man[level - 1][1].size(); i++)
             {
+                if (!isGoldBoyShowUp && man[level - 1][1][i]->GetScore() == 40000)
+                    continue;
+
                 if (man[level - 1][1][i]->IsAlive() && !mainGirl->IsFocusing() && man[level - 1][1][i]->HitMainGirl(&map, mainGirl))
                 {
                     man[level - 1][1][i]->SetIsFocused(true);
@@ -284,7 +282,7 @@ namespace game_framework
                 }
             }
         }
-        else
+        else // 用於當遊戲結束或進入過場動畫時，用來防止男生被女主角鎖死
         {
             for (size_t i = 0; i < man[level - 1][0].size(); i++)
             {
@@ -303,29 +301,38 @@ namespace game_framework
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        for (int i = 0; i < 4; i++)
+        //////////////////////////////////////////////////////    男生部分    /////////////////////////////////////////////////////////
+        for (int i = 0; i < 4; i++) // 樓層
         {
             for (vector<Man*>::iterator person = man[i][0].begin(); person != man[i][0].end(); person++)
             {
-                if (!(*person)->IsFollowing(Man::mainGirl))
+                if (!isGoldBoyShowUp && (*person)->GetScore() == 40000) // 還尚未觸發金髮出現時，跳過金髮
+                    continue;
+
+                if (!(*person)->IsFollowing(Man::mainGirl)) // 除了被女主角收服的之外，其餘正常運作
                     (*person)->OnMove(rand());
             }
 
             for (vector<Man*>::iterator person = man[i][1].begin(); person != man[i][1].end(); person++)
             {
+                if (!isGoldBoyShowUp && (*person)->GetScore() == 40000)
+                    continue;
+
                 if (!(*person)->IsFollowing(Man::mainGirl))
                     (*person)->OnMove(rand());
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////    女主角攻擊時，查看附近有無女生    /////////////////////////////////////////////////////////////
 
-        if (mainGirl->IsAttacking() && girlsOnScreen.size() == 0)
+        if (mainGirl->IsAttacking() && girlsOnScreen.size() == 0) // 加入女生至girlsOnScreen陣列，與女生進行搶奪
         {
             for (size_t i = 0; i < girl[level - 1][0].size(); i++)
             {
-                if (map.IsInScreen(girl[level - 1][0][i]->GetX(), girl[level - 1][0][i]->GetX() + girl[level - 1][0][i]->GetWidth()) && girl[level - 1][0][i]->IsAlive())
+                if (!isGoldBoyShowUp && girl[level - 1][0][i]->IsSpecialGirl())
+                    continue;
+
+                if (map.IsInScreen(girl[level - 1][0][i]->GetX() + 13, girl[level - 1][0][i]->GetX() + girl[level - 1][0][i]->GetWidth() - 13) && girl[level - 1][0][i]->IsAlive())
                 {
                     girlsOnScreen.push_back(girl[level - 1][0][i]);
                 }
@@ -333,18 +340,21 @@ namespace game_framework
 
             for (size_t i = 0; i < girl[level - 1][1].size(); i++)
             {
-                if (map.IsInScreen(girl[level - 1][1][i]->GetX(), girl[level - 1][1][i]->GetX() + girl[level - 1][1][i]->GetWidth()) && girl[level - 1][1][i]->IsAlive())
+                if (!isGoldBoyShowUp && girl[level - 1][1][i]->IsSpecialGirl())
+                    continue;
+
+                if (map.IsInScreen(girl[level - 1][1][i]->GetX() + 13, girl[level - 1][1][i]->GetX() + girl[level - 1][1][i]->GetWidth() - 12) && girl[level - 1][1][i]->IsAlive())
                 {
                     girlsOnScreen.push_back(girl[level - 1][1][i]);
                 }
             }
 
-            if (girlsOnScreen.size() == 0)
+            if (girlsOnScreen.size() == 0) // 都沒有的話則放置一個NULL
             {
                 girlsOnScreen.push_back(NULL);
             }
         }
-        else if (!mainGirl->IsAttacking())
+        else if (!mainGirl->IsAttacking()) // 沒有攻擊男生時，清除陣列
         {
             for (size_t i = 0; i < girlsOnScreen.size(); i++)
             {
@@ -357,9 +367,13 @@ namespace game_framework
             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////   處理攻擊男生與女生搶奪的邏輯部分   ////////////////////////////////////////////////////////////////
         for (size_t i = 0; i < man[level - 1][0].size(); i++)
         {
+            if (!isGoldBoyShowUp && man[level - 1][0][i]->GetScore() == 40000) // 一樣，金髮男生還沒觸發出現時，一律跳過
+                continue;
+
+            // 男生死亡後之處理
             if (man[level - 1][0][i]->IsAlreadyDead() && !man[level - 1][0][i]->IsFollowing(Man::mainGirl) && !man[level - 1][0][i]->IsFollowing(Man::girl))
             {
                 if (man[level - 1][0][i]->IsKilledBy(Man::mainGirl))
@@ -373,13 +387,13 @@ namespace game_framework
                     man[level - 1][0][i]->SetIsFollowing(Man::girl);
                 }
             }
-
-            if (!ui.IsGameOver())
+            else if (man[level - 1][0][i]->IsAlive())
             {
                 int HP = int(man[level - 1][0][i]->GetHP());
 
-                if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
+                if (man[level - 1][0][i]->IsAttackedBy(Man::all))
                 {
+                    // 輸贏決定的部分
                     if (HP >= 800 || HP <= 0)
                     {
                         man[level - 1][0][i]->SetIsAlive(false);
@@ -387,11 +401,11 @@ namespace game_framework
                         mainGirl->SetIsAttacking(false);
                         mainGirl->SetIsLocked(false);
 
-                        if (HP <= 0)
+                        if (HP <= 0) // 女主角贏
                         {
                             int num = 0;
 
-                            for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                            for (size_t j = 0; j < girlsOnScreen.size(); j++) // 計算女生人數
                             {
                                 if (girlsOnScreen[j]->IsSpecialGirl())
                                     num += 5;
@@ -399,7 +413,7 @@ namespace game_framework
                                     num += 1;
                             }
 
-                            hearts.push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), num));
+                            hearts[level - 1].push_back(new Heart(0, 1, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), num));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -408,12 +422,14 @@ namespace game_framework
                             CAudio::Instance()->Stop(AUDIO_LASER);
                             girlsOnScreen.erase(girlsOnScreen.begin(), girlsOnScreen.end());
                         }
-                        else if (HP >= 800)
+                        else if (HP >= 800) // 女生贏
                         {
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Win();
 
-                            ui.AddHeartPoints(-750);
+                            if (!mainGirl->IsReinforced())
+                                ui.AddHeartPoints(-750);
+
                             CAudio::Instance()->Play(AUDIO_FLYING, false);
                             mainGirl->Lose();
                             man[level - 1][0][i]->SetIsKilledBy(Man::girl);
@@ -423,8 +439,30 @@ namespace game_framework
 
                         break;
                     }
+                }
+                else
+                {
+                    if (HP <= 0)
+                    {
+                        man[level - 1][0][i]->SetIsAlive(false);
+                        man[level - 1][0][i]->SetIsKilledBy(Man::mainGirl);
+                        mainGirl->SetIsFocusing(false);
+                        mainGirl->SetIsAttacking(false);
+                        hearts[level - 1].push_back(new Heart(0, 0, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), 0));
+                        CAudio::Instance()->Stop(AUDIO_LASER);
+                        break;
+                    }
+                }
+            }
 
-                    if (mainGirl->IsClicked())
+            if (!ui.IsGameOver())
+            {
+                int HP = int(man[level - 1][0][i]->GetHP());
+
+                // 女主角與女生搶奪男生的部分
+                if (mainGirl->IsLocked() && man[level - 1][0][i]->IsAttackedBy(Man::all) && man[level - 1][0][i]->IsAlive() && mainGirl->IsAttacking())
+                {
+                    if (mainGirl->IsClicked()) // 女主角攻擊 click觸發是由MouseUp那裡觸發
                     {
                         mainGirl->Attack(man[level - 1][0][i], &map);
 
@@ -436,29 +474,20 @@ namespace game_framework
                                 ui.AddScore(3);
                         }
 
-                        if (!mainGirl->IsReinforced())
+                        if (!mainGirl->IsReinforced()) // 非特殊時間，每click一次扣18
                             ui.AddHeartPoints(-18 * girlsOnScreen.size());
                     }
 
-                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                    for (size_t j = 0; j < girlsOnScreen.size(); j++) // 女生攻擊
                     {
                         girlsOnScreen[j]->Attack(man[level - 1][0][i], &map);
                     }
                 }
-                else
+                else // 單人女主角攻擊部分
                 {
                     if (man[level - 1][0][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[level - 1][0][i]))
                     {
-                        if (HP <= 0)
-                        {
-                            man[level - 1][0][i]->SetIsAlive(false);
-                            man[level - 1][0][i]->SetIsKilledBy(Man::mainGirl);
-                            mainGirl->SetIsFocusing(false);
-                            mainGirl->SetIsAttacking(false);
-                            hearts.push_back(new Heart(0, 0, man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2, man[level - 1][0][i]->GetY(), 0));
-                            CAudio::Instance()->Stop(AUDIO_LASER);
-                        }
-
+                        // 是否有被女主角鎖定
                         if (man[level - 1][0][i]->HitMainGirl(&map, mainGirl))
                         {
                             if (mainGirl->IsAttacking())
@@ -468,37 +497,46 @@ namespace game_framework
                                 ui.AddScore(1);
                                 ui.AddHeartPoints(-8);
 
-                                if (girlsOnScreen.size() != 0)
+                                if (girlsOnScreen.size() != 0) // 如果有其他女生在，觸發搶奪事件
                                 {
                                     int ready = 0;
 
-                                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                    for (vector<Girl*>::iterator person = girlsOnScreen.begin(); person != girlsOnScreen.end(); person++) // 當所有在場的女生都準備好時，跳至女主角與女生搶奪男生的部分
                                     {
-                                        if (girlsOnScreen[j] == NULL)
+                                        if ((*person) == NULL)
                                             break;
 
-                                        if (girlsOnScreen[j]->IsLocked())
+                                        // 金髮女生的規則，只搶奪金髮男生，其餘不搶
+                                        if ((*person)->IsSpecialGirl() && man[level - 1][0][i]->GetScore() != 40000)
+                                        {
+                                            person = girlsOnScreen.erase(person);
+
+                                            if (person == girlsOnScreen.end())
+                                                break;
+                                        }
+
+                                        if ((*person)->IsLocked())
                                             ready++;
 
-                                        if (girlsOnScreen[j]->GetX() >= man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2)
-                                            girlsOnScreen[j]->SetDirection(false);
+                                        if ((*person)->GetX() >= man[level - 1][0][i]->GetX() + man[level - 1][0][i]->GetWidth() / 2)
+                                            (*person)->SetDirection(false);
                                         else
-                                            girlsOnScreen[j]->SetDirection(true);
+                                            (*person)->SetDirection(true);
 
-                                        girlsOnScreen[j]->LockPerson(man[level - 1][0][i], &map);
-                                        girlsOnScreen[j]->SetIsShocking(true);
+                                        (*person)->LockPerson(man[level - 1][0][i], &map); // 女生鎖定男生
+                                        (*person)->SetIsShocking(true); // 女生發現女主角正在攻擊男生
                                     }
 
-                                    if (ready == girlsOnScreen.size() && mainGirl->IsAttacking())
+                                    if (ready != 0 && ready == girlsOnScreen.size() && mainGirl->IsAttacking()) // 都準備好時，跳至女主角與女生搶奪男生的部分
                                     {
                                         man[level - 1][0][i]->SetIsAttackedBy(Man::all);
-                                        mainGirl->SetIsLocked(true);
-                                        CAudio::Instance()->Play(AUDIO_SNATCH, false);
+                                        mainGirl->SetIsLocked(true); // 鎖死女主角 (鎖死後滑鼠可任意移動)
+                                        CAudio::Instance()->Play(AUDIO_SNATCH, false); // 播放搶奪音效
                                     }
                                 }
                             }
                         }
-                        else
+                        else // 解除攻擊
                         {
                             man[level - 1][0][i]->SetIsFocused(false);
                             mainGirl->SetIsFocusing(false);
@@ -510,8 +548,12 @@ namespace game_framework
             }
         }
 
+        // 與上面相同
         for (size_t i = 0; i < man[level - 1][1].size(); i++)
         {
+            if (!isGoldBoyShowUp && man[level - 1][1][i]->GetScore() == 40000)
+                continue;
+
             if (man[level - 1][1][i]->IsAlreadyDead() && !man[level - 1][1][i]->IsFollowing(Man::mainGirl) && !man[level - 1][1][i]->IsFollowing(Man::girl))
             {
                 if (man[level - 1][1][i]->IsKilledBy(Man::mainGirl))
@@ -525,13 +567,13 @@ namespace game_framework
                     man[level - 1][1][i]->SetIsFollowing(Man::girl);
                 }
             }
-
-            if (!ui.IsGameOver())
+            else if (man[level - 1][1][i]->IsAlive())
             {
                 int HP = int(man[level - 1][1][i]->GetHP());
 
-                if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
+                if (man[level - 1][1][i]->IsAttackedBy(Man::all))
                 {
+                    // 輸贏決定的部分
                     if (HP >= 800 || HP <= 0)
                     {
                         man[level - 1][1][i]->SetIsAlive(false);
@@ -551,7 +593,7 @@ namespace game_framework
                                     num += 1;
                             }
 
-                            hearts.push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, num));
+                            hearts[level - 1].push_back(new Heart(1, 1, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, num));
 
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Lose();
@@ -565,7 +607,9 @@ namespace game_framework
                             for (size_t j = 0; j < girlsOnScreen.size(); j++)
                                 girlsOnScreen[j]->Win();
 
-                            ui.AddHeartPoints(-750);
+                            if (!mainGirl->IsReinforced())
+                                ui.AddHeartPoints(-750);
+
                             CAudio::Instance()->Play(AUDIO_FLYING, false);
                             mainGirl->Lose();
                             man[level - 1][1][i]->SetIsKilledBy(Man::girl);
@@ -575,7 +619,27 @@ namespace game_framework
 
                         break;
                     }
+                }
+                else
+                {
+                    if (HP <= 0)
+                    {
+                        man[level - 1][1][i]->SetIsAlive(false);
+                        man[level - 1][1][i]->SetIsKilledBy(Man::mainGirl);
+                        mainGirl->SetIsFocusing(false);
+                        mainGirl->SetIsAttacking(false);
+                        hearts[level - 1].push_back(new Heart(1, 0, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, 0));
+                        CAudio::Instance()->Stop(AUDIO_LASER);
+                    }
+                }
+            }
 
+            if (!ui.IsGameOver())
+            {
+                int HP = int(man[level - 1][1][i]->GetHP());
+
+                if (man[level - 1][1][i]->IsAttackedBy(Man::all) && man[level - 1][1][i]->IsAlive() && mainGirl->IsAttacking())
+                {
                     if (mainGirl->IsClicked())
                     {
                         mainGirl->Attack(man[level - 1][1][i], &map);
@@ -601,16 +665,6 @@ namespace game_framework
                 {
                     if (man[level - 1][1][i]->IsAlive() && mainGirl->IsFocusing() && mainGirl->IsFocusPerson(man[level - 1][1][i]))
                     {
-                        if (HP <= 0)
-                        {
-                            man[level - 1][1][i]->SetIsAlive(false);
-                            man[level - 1][1][i]->SetIsKilledBy(Man::mainGirl);
-                            mainGirl->SetIsFocusing(false);
-                            mainGirl->SetIsAttacking(false);
-                            hearts.push_back(new Heart(1, 0, man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2, man[level - 1][1][i]->GetY() - 55, 0));
-                            CAudio::Instance()->Stop(AUDIO_LASER);
-                        }
-
                         if (man[level - 1][1][i]->HitMainGirl(&map, mainGirl))
                         {
                             if (mainGirl->IsAttacking())
@@ -624,24 +678,33 @@ namespace game_framework
                                 {
                                     int ready = 0;
 
-                                    for (size_t j = 0; j < girlsOnScreen.size(); j++)
+                                    for (vector<Girl*>::iterator person = girlsOnScreen.begin(); person != girlsOnScreen.end(); person++) // 當所有在場的女生都準備好時，跳至女主角與女生搶奪男生的部分
                                     {
-                                        if (girlsOnScreen[j] == NULL)
+                                        if ((*person) == NULL)
                                             break;
 
-                                        if (girlsOnScreen[j]->IsLocked())
+                                        // 金髮女生的規則，只搶奪金髮男生，其餘不搶
+                                        if ((*person)->IsSpecialGirl() && man[level - 1][1][i]->GetScore() != 40000)
+                                        {
+                                            person = girlsOnScreen.erase(person);
+
+                                            if (person == girlsOnScreen.end())
+                                                break;
+                                        }
+
+                                        if ((*person)->IsLocked())
                                             ready++;
 
-                                        if (girlsOnScreen[j]->GetX() + girlsOnScreen[j]->GetWidth() / 2 >= man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2)
-                                            girlsOnScreen[j]->SetDirection(false);
+                                        if ((*person)->GetX() >= man[level - 1][1][i]->GetX() + man[level - 1][1][i]->GetWidth() / 2)
+                                            (*person)->SetDirection(false);
                                         else
-                                            girlsOnScreen[j]->SetDirection(true);
+                                            (*person)->SetDirection(true);
 
-                                        girlsOnScreen[j]->LockPerson(man[level - 1][1][i], &map);
-                                        girlsOnScreen[j]->SetIsShocking(true);
+                                        (*person)->LockPerson(man[level - 1][1][i], &map); // 女生鎖定男生
+                                        (*person)->SetIsShocking(true); // 女生發現女主角正在攻擊男生
                                     }
 
-                                    if (ready == girlsOnScreen.size() && mainGirl->IsAttacking())
+                                    if (ready != 0 && ready == girlsOnScreen.size() && mainGirl->IsAttacking())
                                     {
                                         man[level - 1][1][i]->SetIsAttackedBy(Man::all);
                                         mainGirl->SetIsLocked(true);
@@ -662,66 +725,81 @@ namespace game_framework
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////    女生部分    //////////////////////////////////////////////////////////
         for (size_t i = 0; i < girl[level - 1][0].size(); i++)
         {
-            girl[level - 1][0][i]->OnMove(&map, rand());
+            if (!isGoldBoyShowUp && girl[level - 1][0][i]->IsSpecialGirl()) // 還尚未觸發金髮出現時，跳過金髮
+                continue;
+
+            if (!girl[level - 1][0][i]->IsAlreadyDead()) // 女生沒死則正常動作
+                girl[level - 1][0][i]->OnMove(&map, rand());
         }
 
         for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
-            girl[level - 1][1][i]->OnMove(&map, rand());
+            if (!isGoldBoyShowUp && girl[level - 1][1][i]->IsSpecialGirl()) // 還尚未觸發金髮出現時，跳過金髮
+                continue;
+
+            if (!girl[level - 1][1][i]->IsAlreadyDead()) // 女生沒死則正常動作
+                girl[level - 1][1][i]->OnMove(&map, rand());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // special mode
+        // 進入特殊時間的入口，當愛心量全滿時，進入過場動畫
         if (!ui.IsGameOver() && !mainGirl->IsReinforced() && ui.GetHeartPoints() == 4500)
         {
-            ui.Pause();
-            ui.GotoHRState(CHeartPoint::reinforcing);
+            ui.Pause(); // 時間暫停
+            ui.GotoHRState(CHeartPoint::reinforcing); // 把愛心計分切換至量條
             mainGirl->SetIsReinforced(true);
+            // 解除女主角的一切動作
             mainGirl->SetIsFocusing(false);
             mainGirl->SetIsAttacking(false);
-            CAudio::Instance()->Pause();
-            CAudio::Instance()->Play(AUDIO_REINFORCING, false);
+            CAudio::Instance()->Pause(); // 暫停音樂
+            CAudio::Instance()->Play(AUDIO_REINFORCING, false); // 播放變身音效
         }
 
-        for (size_t i = 0; i < hearts.size(); i++)
+        // 愛心掉落處理
+        for (size_t i = 0; i < hearts[level - 1].size(); i++)
         {
-            if (hearts[i]->HitMainGirl(mainGirl))
+            if (hearts[level - 1][i]->HitMainGirl(mainGirl))
             {
-                //do something like increasing score
-                ui.AddScore(hearts[i]->GetHP());
+                ui.AddScore(hearts[level - 1][i]->GetHP());
 
                 if (!mainGirl->IsReinforced())
-                    ui.AddHeartPoints(hearts[i]->GetHP() / 2 + 300);
+                    ui.AddHeartPoints(hearts[level - 1][i]->GetHP() / 2 + 300);
 
                 CAudio::Instance()->Play(AUDIO_EAT_HEART, false);
-                delete hearts[i];
-                hearts.erase(hearts.begin() + i);
+                delete hearts[level - 1][i];
+                hearts[level - 1].erase(hearts[level - 1].begin() + i);
                 break;
             }
             else
-                hearts[i]->OnMove();
+                hearts[level - 1][i]->OnMove();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (mainGirl->IsReinforced() && ui.GetHeartPoints() == 0)
+        if (mainGirl->IsReinforced() && ui.GetHeartPoints() == 0) // 特殊時間耗盡，女主角跳回正常模式
         {
             ui.GotoHRState(CHeartPoint::normal);
-            ui.SetHeartPoints(2000);
+            ui.SetHeartPoints(2000); // 預設2000愛心量
+            mainGirl->SetIsReinforced(false); // 解除
+        }
+
+        if (ui.IsGameOver() && mainGirl->IsReinforced()) // 當遊戲結束時，解除女主角的特殊時間
+        {
+            ui.GotoHRState(CHeartPoint::normal);
+
+            if (ui.GetHeartPoints() < 2000)
+                ui.SetHeartPoints(2000);
+
             mainGirl->SetIsReinforced(false);
         }
 
-        if (ui.IsGameOver() && mainGirl->IsReinforced())
-        {
-            ui.GotoHRState(CHeartPoint::normal);
-            mainGirl->SetIsReinforced(false);
-        }
+        mainGirl->OnMove(&map, &ui);
 
-        if (ui.IsGameOver() && !ui.IsWin() && mainGirl->IsInAnimation())
+        if (ui.IsGameOver() && !ui.IsWin() && mainGirl->IsInAnimation()) // 遊戲結束，女主角死了的部分
         {
-            static int counter = 280;
+            static int counter = 280; // 延遲
 
             if (counter <= 0)
             {
@@ -733,12 +811,12 @@ namespace game_framework
 
             counter--;
         }
-        else if (ui.IsGameOver() && ui.IsWin() && mainGirl->IsInAnimation() && !mainGirl->IsReporting())
+        else if (ui.IsGameOver() && ui.IsWin() && mainGirl->IsInAnimation() && !mainGirl->IsReporting()) // 遊戲結束，女主角還活著的部分
         {
-            static bool isPlayed = false;
-            static int counter = 20;
+            static bool isPlayed = false; // 是否播放過結算音效
+            static int counter = 20; // 每20 loops 扣一次
 
-            if (ui.GetHeartPoints() > 0)
+            if (ui.GetHeartPoints() > 0) // 轉換愛心至分數
             {
                 if (!isPlayed)
                 {
@@ -754,7 +832,7 @@ namespace game_framework
                     ui.AddScore(5);
                 }
             }
-            else
+            else // 結算完時延遲幾秒後跳至Over
             {
                 if (isPlayed)
                 {
@@ -768,15 +846,14 @@ namespace game_framework
                 if (counter <= 0)
                 {
                     counter = 20;
-                    *isDead = true;
+                    *isDead = false;
                     *score = ui.GetScore();
                     ChangeGameState(GAME_STATE_OVER);
                 }
             }
         }
 
-        mainGirl->OnMove(&map, &ui);
-
+        // 上下樓梯按鈕的部分
         if (!ui.IsGameOver() && !mainGirl->IsInAnimation())
         {
             if (map.IsEmpty(mainGirl->GetPositionX(), mainGirl->GetPositionY()) && map.IsEmpty(mainGirl->GetPositionX() + mainGirl->Width(), mainGirl->GetPositionY()))
@@ -792,144 +869,140 @@ namespace game_framework
                     ui.SetIsButtonVisible(true, true);
             }
         }
+        else
+        {
+            ui.SetIsButtonVisible(false, false);
+            ui.SetIsButtonVisible(false, true);
+        }
     }
 
-    void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+    void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) // 鍵盤按下時觸發
     {
         const char KEY_LEFT = 0x25; // keyboard左箭頭
         const char KEY_UP = 0x26; // keyboard上箭頭
         const char KEY_RIGHT = 0x27; // keyboard右箭頭
         const char KEY_DOWN = 0x28; // keyboard下箭頭
 
-        if (nChar == KEY_UP)
+        if (nChar == KEY_UP) // 特殊時間模式
         {
             ui.SetHeartPoints(4500);
         }
-        else if (nChar == KEY_DOWN)
+        else if (nChar == KEY_DOWN) // 解除特殊時間
         {
             if (mainGirl->IsReinforced() && !mainGirl->IsInAnimation())
                 ui.SetHeartPoints(0);
         }
-        else if (nChar == KEY_RIGHT)
+        else if (nChar == KEY_RIGHT) // 加分
         {
             ui.AddScore(1000);
         }
-        else if (nChar == KEY_LEFT)
+        else if (nChar == KEY_LEFT) // 立即結算分數結束遊戲
         {
             ui.SetIsGameOver(true);
         }
     }
-    void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
-    {
-        const char KEY_LEFT = 0x25; // keyboard左箭頭
-        const char KEY_UP = 0x26; // keyboard上箭頭
-        const char KEY_RIGHT = 0x27; // keyboard右箭頭
-        const char KEY_DOWN = 0x28; // keyboard下箭頭
-    }
+
     void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
     {
-        if (mainGirl->IsFocusing())
+        if (mainGirl->IsFocusing()) // 女主角正在鎖定男生時
         {
-            mainGirl->SetIsAttacking(true);
+            mainGirl->SetIsAttacking(true); // 設定女主角正在攻擊男生
 
-            if (mainGirl->IsLocked() && !mainGirl->IsClicked())
+            if (mainGirl->IsLocked() && !mainGirl->IsClicked()) // 如進入搶奪模式，切換成點一下攻擊一次
                 mainGirl->Click();
             else
                 CAudio::Instance()->Play(AUDIO_LASER, true);
         }
     }
+
     void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
-        if (!mainGirl->IsLocked())
+        if (!mainGirl->IsLocked()) // 如不是搶奪模式時，按鍵放開後，解除攻擊
         {
             mainGirl->SetIsAttacking(false);
             CAudio::Instance()->Stop(AUDIO_LASER);
         }
 
-        if (ui.IsAudioButtonHoverd())
+        if (ui.IsAudioButtonHoverd()) // 聲音按鈕
             ui.Toggle();
 
-        if (!map.IsMapChanging())
+        if (!map.IsMapChanging()) // 防止地圖更換樓層過程時，連按觸發
         {
+            // 上下樓按鈕的部分
             if (map.GetLevel() != 4 && ui.IsUpButtonHoverd())
                 map.SetLevel(map.GetLevel() + 1);
             else if (map.GetLevel() != 1 && ui.IsDownButtonHoverd())
                 map.SetLevel(map.GetLevel() - 1);
         }
     }
+
     void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
     {
-        // 沒事。如果需要處理滑鼠移動的話，寫code在這裡
         mainGirl->OnMouseMove(point);
         ui.OnMouseMove(point);
-    }
-    void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
-    {
-        //waveOutSetVolume(0, 0x0000);
-        //CAudio::Instance()->Pause();
-    }
-
-    void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
-    {
-        //waveOutSetVolume(0, 0x0FFF);
-        //CAudio::Instance()->Resume();
     }
 
     void CGameStateRun::OnShow()
     {
-        //
-        //  注意：Show裡面千萬不要移動任何物件的座標，移動座標的工作應由Move做才對，
-        //        否則當視窗重新繪圖時(OnDraw)，物件就會移動，看起來會很怪。換個術語
-        //        說，Move負責MVC中的Model，Show負責View，而View不應更動Model。
-        //
-        //
-        //  貼上背景圖、撞擊數、球、擦子、彈跳的球
-        //
-        int level = map.GetLevel();
+        int level = map.GetLevel(); // 取得目前樓層
         map.OnShow();
         ui.OnShow(&map);
 
         for (size_t i = 0; i < man[level - 1][0].size(); i++)
         {
+            if (!isGoldBoyShowUp && man[level - 1][0][i]->GetScore() == 40000)
+                continue;
+
             if (!man[level - 1][0][i]->IsFollowing(Man::mainGirl))
                 man[level - 1][0][i]->OnShow(&map);
         }
 
         for (size_t i = 0; i < girl[level - 1][0].size(); i++)
         {
-            girl[level - 1][0][i]->OnShow(&map);
+            if (!isGoldBoyShowUp && girl[level - 1][0][i]->IsSpecialGirl())
+                continue;
+
+            if (!girl[level - 1][0][i]->IsAlreadyDead())
+                girl[level - 1][0][i]->OnShow(&map);
         }
 
         teacher->OnShow(&map);
         mainGirl->OnShow(&map, &ui);
 
-        for (size_t i = 0; i < hearts.size(); i++)
-            hearts[i]->OnShow(&map);
+        for (size_t i = 0; i < hearts[level - 1].size(); i++)
+            hearts[level - 1][i]->OnShow(&map);
 
         for (size_t i = 0; i < girl[level - 1][1].size(); i++)
         {
-            girl[level - 1][1][i]->OnShow(&map);
+            if (!isGoldBoyShowUp && girl[level - 1][1][i]->IsSpecialGirl())
+                continue;
+
+            if (!girl[level - 1][1][i]->IsAlreadyDead())
+                girl[level - 1][1][i]->OnShow(&map);
         }
 
         for (size_t i = 0; i < man[level - 1][1].size(); i++)
         {
+            if (!isGoldBoyShowUp && man[level - 1][1][i]->GetScore() == 40000)
+                continue;
+
             if (!man[level - 1][1][i]->IsFollowing(Man::mainGirl))
                 man[level - 1][1][i]->OnShow(&map);
         }
 
         mainGirl->ShowFocus();
+        static int counter = 130;
 
-        if (ui.IsGameOver())
+        if (ui.IsGameOver()) // 遊戲結束時，印出對應動畫
         {
-            static int counter = 120;
-
-            if (!ui.IsWin())
+            if (!ui.IsWin()) // 女主角輸(死亡)
             {
                 CRect rect;
                 CDDraw::GetClientRect(rect);
                 HBITMAP bitmap;
                 CDC bkDC;
                 CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
+                //CDDraw::BltBackColor(RGB(0, 0, 0));
                 bkDC.CreateCompatibleDC(pDC);
                 bitmap = CreateCompatibleBitmap(bkDC.m_hDC, rect.Width(), rect.Height());
                 HBITMAP* pOldBitmap = (HBITMAP*)bkDC.SelectObject(bitmap);
@@ -947,37 +1020,45 @@ namespace game_framework
                 {
                     CFont f, *fp;
                     CSize size;
-                    f.CreatePointFont(6000 * counter, "Times New Roman");	// 產生 font f; 160表示16 point的字
+                    f.CreatePointFont(8000, "Times New Roman");	// 產生 font f; 160表示16 point的字
                     LOGFONT logFont;
                     f.GetLogFont(&logFont);
                     logFont.lfWeight = FW_BOLD;
                     f.DeleteObject();
                     f.CreatePointFontIndirect(&logFont);
                     fp = pDC->SelectObject(&f);					// 選用 font f
-                    size = pDC->GetTextExtent("死");
+                    size = pDC->GetTextExtent("菜");
                     pDC->SetBkMode(TRANSPARENT);
                     char str[80];								// Demo 數字對字串的轉換
-                    sprintf(str, "死");
-                    pDC->SetTextColor(RGB(187, 13, 13));
-                    pDC->TextOut(rect.CenterPoint().x - size.cx / 2 - 3, rect.CenterPoint().y - size.cy / 2 - 3, str);
-                    pDC->SetTextColor(RGB(255, 0, 0));
+                    sprintf(str, "菜");
+                    pDC->SetTextColor(RGB(235 + counter, counter, counter));
                     pDC->TextOut(rect.CenterPoint().x - size.cx / 2, rect.CenterPoint().y - size.cy / 2, str);
+                    pDC->SelectObject(fp);
+                    f.DeleteObject();
+                    f.CreatePointFont(200, "Times New Roman");
+                    fp = pDC->SelectObject(&f);
+                    pDC->SetTextCharacterExtra(2);
+                    size = pDC->GetTextExtent("NOOB");
+                    sprintf(str, "NOOB");
+                    pDC->TextOut(rect.CenterPoint().x - size.cx / 2, rect.CenterPoint().y - size.cy / 2 + 110, str);
                     pDC->SelectObject(fp);						// 放掉 font f (千萬不要漏了放掉)
+                    f.DeleteObject();
                 }
+
+                CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
 
                 if (counter > 1)
                     counter--;
-
-                CDDraw::ReleaseBackCDC();					// 放掉 Back Plain 的 CDC
             }
-            else
-                counter = 120;
         }
+        else
+            counter = 130;
 
-        if (map.IsMapChanging())
+        if (map.IsMapChanging()) // 更換地圖樓層之轉場
             CDDraw::BltBackColor(RGB(0, 0, 0));
     }
 
+    // 生成金髮男生與女生
     void CGameStateRun::GenerateGoldBoy(int level, bool direction, bool top)
     {
         int mx, my;
@@ -1008,6 +1089,7 @@ namespace game_framework
         (*(girl[level][thresh].crbegin()))->OnBeginState();
     }
 
+    // 讀取外部資料檔案並載入
     void CGameStateRun::LoadData()
     {
         CStdioFile myFile;
@@ -1055,6 +1137,7 @@ namespace game_framework
         myFile.Close();
     }
 
+    // 切換GameState
     void CGameStateRun::ChangeGameState(int state)
     {
         CAudio::Instance()->Stop(AUDIO_GAME);

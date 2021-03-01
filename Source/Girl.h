@@ -1,44 +1,30 @@
 namespace game_framework
 {
-    class Girl
+    class Girl : public Role
     {
     public:
         Girl();
         virtual ~Girl();
         virtual void LoadBitMap() = 0;
-        virtual void OnBeginState() = 0;
-        void SetMoving(bool status);
-        void SetDirection(bool direction);
-        void OnMove(CGameMap* map, int seed);
-        void OnShow(CGameMap* map);
-        void SetIsShocking(bool status);
-        bool IsShocking();
-        void LockPerson(Man* man, CGameMap* map);
-        void Attack(Man* man, CGameMap* map);
-        bool IsLocked();
-        void Win();
-        void Lose();
-        bool IsAlive();
-        bool IsAlreadyDead();
-        int GetX();
-        int GetY();
-        int GetWidth();
-        int GetHeight();
-        virtual bool IsSpecialGirl() = 0;
+        virtual void OnBeginState() = 0;													// 初始化狀態
+        void SetDirection(bool direction);													// 設定移動方向
+        void OnMove(CGameMap* map, int seed);												// 處理動作更新邏輯
+        void OnShow(CGameMap* map);															// 處理顯示邏輯
+        void SetIsShocking(bool status);													// 設定是否注意到女主角正在魅惑男生
+        bool IsShocking();																	// 是否注意到女主角正在魅惑男生
+        void LockPerson(Man* man, CGameMap* map);											// 鎖定男生
+        void Attack(Man* man, CGameMap* map);												// 攻擊男生
+        bool IsLocked();																	// 是否鎖定
+        void Win();																			// 贏
+        void Lose();																		// 輸
+        bool IsAlive();																		// 是否存活
+        bool IsAlreadyDead();																// 是否已經死透
+        virtual bool IsSpecialGirl() = 0;													// 是否為金髮特殊女生
     protected:
-        void DrawBeam(CGameMap* map);
-        int x, y;
-        bool moving; //是否正在移動
-        bool direction; //false => 往左, true => 往右
-        int velocity;
-        int range[2];
-        bool is_shocking;
-        int distance;
-        int status;
-        int damage;
-        CPoint beam_pos[4];
-        CAnimation girl_left, girl_right;
-        CMovingBitmap girl_left_stand, girl_right_stand;
+        void DrawBeam(CGameMap* map);														// 畫出雷射光束
+        bool is_shocking;																	// 是否注意到女主角正在魅惑男生
+        int damage;																			// 攻擊力
+        CPoint beam_pos[4];																	// 雷射光束位置
         CAnimation exclamation;
         CAnimation surprising_left, surprising_right;
         CMovingBitmap shooting_left, shooting_right;
@@ -54,15 +40,16 @@ namespace game_framework
         NormalGirl(int x, int y, int start, int end, bool direction, int type);
         ~NormalGirl();
         void LoadBitMap();
-        void OnBeginState();
-        bool IsSpecialGirl();
+        void OnBeginState();																// 初始化狀態
+        bool IsSpecialGirl();																// 是否為金髮特殊女生
     private:
-        const int type;
-        const int x;
-        const int y;
-        const int start;
-        const int end;
-        const bool direction;
+        // 用於儲存原始狀態
+        const int type;																		// 人物類型
+        const int x;																		// 人物X座標 (地圖座標)
+        const int y;																		// 人物Y座標 (地圖座標)
+        const int start;																	// 移動的左邊範圍邊界 X軸
+        const int end;																		// 移動的右邊範圍邊界 X軸
+        const bool direction;																// 移動方向
     };
 
     class SpecialGirl : public Girl
@@ -74,13 +61,11 @@ namespace game_framework
         void OnBeginState();
         bool IsSpecialGirl();
     private:
-        const int type;
-        const int x;
-        const int y;
-        const int start;
-        const int end;
-        const bool direction;
+        const int type;																		// 人物類型
+        const int x;																		// 人物X座標 (地圖座標)
+        const int y;																		// 人物Y座標 (地圖座標)
+        const int start;																	// 移動的左邊範圍邊界 X軸
+        const int end;																		// 移動的右邊範圍邊界 X軸
+        const bool direction;																// 移動方向
     };
 }
-
-
