@@ -68,7 +68,7 @@
 
 #define SIZE_X				 800		// 設定遊戲畫面的解析度為640x480
 #define SIZE_Y				 600		// 註：若不使用標準的解析度，則不能切換到全螢幕
-#define OPEN_AS_FULLSCREEN	 false		// 是否以全螢幕方式開啟遊戲
+#define OPEN_AS_FULLSCREEN	 true		// 是否以全螢幕方式開啟遊戲
 #define SHOW_LOAD_PROGRESS   true		// 是否顯示loading(OnInit)的進度
 #define DEFAULT_BG_COLOR	 RGB(0,0,0)	// 遊戲畫面預設的背景顏色(黑色)
 #define GAME_CYCLE_TIME		 33		    // 每33ms跑一次Move及Show(每秒30次)
@@ -98,7 +98,16 @@ enum AUDIO_ID  				// 定義各種音效的編號
     AUDIO_INIT,
     AUDIO_REINFORCING,
     AUDIO_BLINK,
-	AUDIO_PRESS
+    AUDIO_PRESS,
+    AUDIO_BUMP,
+    AUDIO_SUMMARIZE,
+    AUDIO_LOSE,
+    AUDIO_END1,
+    AUDIO_END2,
+    AUDIO_END3,
+    AUDIO_END4,
+    AUDIO_END5,
+    AUDIO_WARNING
 };
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
@@ -303,7 +312,7 @@ namespace game_framework
     class CGameState
     {
     public:
-        CGameState(CGame* g);
+        CGameState(CGame* g, int* score, bool* isDead);
         void OnDraw();			// Template Method
         void OnCycle();			// Template Method
         //
@@ -328,6 +337,8 @@ namespace game_framework
         virtual void OnMove() {}								// 移動這個狀態的遊戲元素
         virtual void OnShow() = 0;								// 顯示這個狀態的遊戲畫面
         CGame* game;
+        int* score;
+        bool* isDead;
     };
 
     /////////////////////////////////////////////////////////////////////////////
@@ -366,6 +377,8 @@ namespace game_framework
         CGameState*		gameState;			// pointer指向目前的遊戲狀態
         CGameState*		gameStateTable[3];	// 遊戲狀態物件的pointer
         static CGame	instance;			// 遊戲唯一的instance
+        int score;
+        bool isDead;
     };
 
 }

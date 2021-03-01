@@ -271,9 +271,9 @@ namespace game_framework
         //
         if (!isBmpLoaded)
         {
-            int d[11] = {IDB_0, IDB_1, IDB_2, IDB_3, IDB_4, IDB_5, IDB_6, IDB_7, IDB_8, IDB_9, IDB_MINUS};
+            int d[11] = {IDB_0, IDB_1, IDB_2, IDB_3, IDB_4, IDB_5, IDB_6, IDB_7, IDB_8, IDB_9};
 
-            for (int i = 0; i < 11; i++)
+            for (int i = 0; i < 10; i++)
                 digit[i].LoadBitmap(d[i], RGB(182, 185, 184));
 
             isBmpLoaded = true;
@@ -437,9 +437,11 @@ namespace game_framework
     // 這個class為遊戲的各種狀態之Base class(是一個abstract class)
     /////////////////////////////////////////////////////////////////////////////
 
-    CGameState::CGameState(CGame* g)
+    CGameState::CGameState(CGame* g, int* score, bool* isDead)
     {
         game = g; 	// 設定game的pointer
+        this->score = score; //設定score的pointer
+        this->isDead = isDead; //設定isDead的pointer
     }
 
     void CGameState::GotoGameState(int state)
@@ -464,9 +466,11 @@ namespace game_framework
         const int progress_x2_end = x2 - pen_width;
         const int progress_y1 = y1 + pen_width;
         const int progress_y2 = y2 - pen_width;
-        CDDraw::BltBackColor(DEFAULT_BG_COLOR);		// 將 Back Plain 塗上預設的顏色
-        CMovingBitmap loading;						// 貼上loading圖示
-        loading.LoadBitmap(IDB_LOADING, RGB(0, 0, 0));
+        CMovingBitmap loading_bk, loading;						// 貼上background背景 與 loading圖示
+        loading_bk.LoadBitmap("RES/loading_bk.bmp");
+        loading_bk.SetTopLeft(0, 0);
+        loading_bk.ShowBitmap();
+        loading.LoadBitmap(IDB_LOADING, RGB(230, 230, 196));
         loading.SetTopLeft((SIZE_X - loading.Width()) / 2, y1 - 2 * loading.Height());
         loading.ShowBitmap();
         //
@@ -475,13 +479,13 @@ namespace game_framework
         CDC* pDC = CDDraw::GetBackCDC();			// 取得 Back Plain 的 CDC
         CPen* pp, p(PS_NULL, 0, RGB(0, 0, 0));		// 清除pen
         pp = pDC->SelectObject(&p);
-        CBrush* pb, b(RGB(0, 255, 0));				// 畫綠色 progress框
+        CBrush* pb, b(RGB(255, 51, 255));				// 畫綠色 progress框
         pb = pDC->SelectObject(&b);
         pDC->Rectangle(x1, y1, x2, y2);
-        CBrush b1(DEFAULT_BG_COLOR);				// 畫黑色 progrss中心
+        CBrush b1(RGB(255, 170, 255));				// 畫黑色 progrss中心
         pDC->SelectObject(&b1);
         pDC->Rectangle(progress_x1, progress_y1, progress_x2_end, progress_y2);
-        CBrush b2(RGB(255, 255, 0));					// 畫黃色 progrss進度
+        CBrush b2(RGB(255, 51, 255));					// 畫黃色 progrss進度
         pDC->SelectObject(&b2);
         pDC->Rectangle(progress_x1, progress_y1, progress_x2, progress_y2);
         pDC->SelectObject(pp);						// 釋放 pen
@@ -517,9 +521,11 @@ namespace game_framework
     {
         running = true;
         suspended = false;
-        gameStateTable[GAME_STATE_INIT] = new CGameStateInit(this);
-        gameStateTable[GAME_STATE_RUN]  = new CGameStateRun(this);
-        gameStateTable[GAME_STATE_OVER] = new CGameStateOver(this);
+        score = -1;
+        isDead = false;
+        gameStateTable[GAME_STATE_INIT] = new CGameStateInit(this, &score, &isDead);
+        gameStateTable[GAME_STATE_RUN]  = new CGameStateRun(this, &score, &isDead);
+        gameStateTable[GAME_STATE_OVER] = new CGameStateOver(this, &score, &isDead);
         gameState = NULL;
     }
 

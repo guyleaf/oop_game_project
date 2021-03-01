@@ -10,9 +10,9 @@ namespace game_framework
 {
     enum state
     {
-        NORMAL,
-        REINFORCING,
-        REINFORCED
+        NORMAL, // 正常模式
+        REINFORCING, // 特殊時間過場狀態
+        REINFORCED // 特殊時間狀態
     };
 
     int CHeartPoint::normal = NORMAL;
@@ -22,10 +22,11 @@ namespace game_framework
     CHeartPoint::CHeartPoint(int points, int hearts) : NUMPOINTSPERHEART(points), NUMHEARTS(hearts)
     {
         isBmpLoaded = false;
+        isWarned = false;
         state = NORMAL;
     }
 
-    void CHeartPoint::Add(int x)
+    void CHeartPoint::Add(int x) // 增加Point值
     {
         if (this->n + x < 0)
             this->n = 0;
@@ -35,7 +36,7 @@ namespace game_framework
             this->n = NUMHEARTS * NUMPOINTSPERHEART;
     }
 
-    int CHeartPoint::GetPoint()
+    int CHeartPoint::GetPoint() // 回傳Point值
     {
         return n;
     }
@@ -65,23 +66,30 @@ namespace game_framework
         }
 
         reinforced_bar.SetDelayCount(3);
+
+        for (int i = 1; i <= 3; i++)
+        {
+            strcpy(text, ("RES/UI/heart/warning (" + to_string(i) + ").bmp").c_str());
+            warning.AddBitmap(text, RGB(0, 0, 0));
+        }
+
         isBmpLoaded = true;
     }
 
-    void CHeartPoint::SetPoint(int n)
+    void CHeartPoint::SetPoint(int n) // 設定Point值
     {
         this->n = n;
     }
 
-    void CHeartPoint::SetTopLeft(int x, int y)
+    void CHeartPoint::SetTopLeft(int x, int y) // 將動畫的左上角座標移至 (x,y)
     {
         this->x = x;
         this->y = y;
     }
 
-    void CHeartPoint::OnMove()
+    void CHeartPoint::OnMove(UI* ui)
     {
-        if (state == REINFORCED)
+        if (state == REINFORCED) // 特殊時間狀態
         {
             if (!reinforced_bar.IsFinalBitmap())
                 reinforced_bar.OnMove();
@@ -92,10 +100,23 @@ namespace game_framework
         {
             star.Reset();
             reinforced_bar.Reset();
+
+            if (!ui->IsGameOver() && n <= 1000) // 小於1000時，發出警告
+            {
+                if (!isWarned)
+                {
+                    CAudio::Instance()->Play(AUDIO_WARNING, false);
+                    isWarned = true;
+                }
+
+                warning.OnMove();
+            }
+            else
+                isWarned = false;
         }
     }
 
-    void CHeartPoint::OnShow(int counter)
+    void CHeartPoint::OnShow(UI* ui, int counter)
     {
         GAME_ASSERT(isBmpLoaded, "CHeartPoint: 請先執行LoadBitmap，然後才能ShowBitmap");
         static int index = 0;
@@ -104,7 +125,7 @@ namespace game_framework
         MSB = n;
         nx = x;
 
-        if (state == NORMAL)
+        if (state == NORMAL) // 正常模式
         {
             for (int i = 0; i < NUMHEARTS; i++)
             {
@@ -115,20 +136,25 @@ namespace game_framework
                 {
                     hearts[19].SetTopLeft(nx, y);
                     hearts[19].ShowBitmap();
-                    nx += hearts[19].Width() - 2;
                 }
                 else
                 {
                     int d = MSB / 25;
                     hearts[d].SetTopLeft(nx, y);
                     hearts[d].ShowBitmap();
-                    nx += hearts[d].Width() - 2;
                 }
 
+                if (!ui->IsGameOver() && n <= 1000)
+                {
+                    warning.SetTopLeft(nx - 6, y - 7);
+                    warning.OnShow();
+                }
+
+                nx += hearts[19].Width();
                 MSB -= NUMPOINTSPERHEART;
             }
         }
-        else if (state == REINFORCING)
+        else if (state == REINFORCING) // 特殊時間過場狀態
         {
             index = (index + 1) % NUMHEARTS;
 
@@ -138,22 +164,22 @@ namespace game_framework
                 {
                     hearts[0].SetTopLeft(nx, y);
                     hearts[0].ShowBitmap();
-                    nx += hearts[0].Width() - 2;
                 }
                 else
                 {
                     hearts[19].SetTopLeft(nx, y);
                     hearts[19].ShowBitmap();
-                    nx += hearts[19].Width() - 2;
                 }
+
+                nx += hearts[19].Width();
             }
         }
-        else if (state == REINFORCED)
+        else if (state == REINFORCED) // 特殊時間狀態
         {
             reinforced_bar.SetTopLeft(x, y - 10);
             reinforced_bar.OnShow();
 
-            if (reinforced_bar.IsFinalBitmap())
+            if (reinforced_bar.IsFinalBitmap()) // 控制量條
             {
                 CDC* pDC = CDDraw::GetBackCDC();
                 CPen ppen(PS_SOLID, 0, RGB(253, 165, 253));
