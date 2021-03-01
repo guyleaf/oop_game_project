@@ -4,7 +4,7 @@ OOP 物件導向程式設計課程分為兩學期
 - 第一學期: 訓練基礎 C++ 與 OO 理論概念
 - 第二學期: 實作模仿任一款 2D 遊戲，並以 OO 開發
 
-#### 成果報告: https://guyleaf.pse.is/3925m4
+### 成果報告: https://guyleaf.pse.is/3925m4
 
 ### 安裝需求
 - Visual studio 2017，選擇 Desktop development with C++
