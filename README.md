@@ -21,6 +21,6 @@ OOP 物件導向程式設計課程分為兩學期
 - Sounds: 遊戲內的所有音效與音樂
 - Source: 所有遊戲程式碼
 
-### 主架構運作流程:
+### 主架構運作流程
 Start -> OnInit(only once) -> CGameStateInit -> CGameStateRun -> CGameStateOver  
 -> CGameStateInit (loop)... (until Alt + F4)-> Stop
